@@ -1,0 +1,1 @@
+export const LOGO = {name:'Logo',src:'/logo.png'}
