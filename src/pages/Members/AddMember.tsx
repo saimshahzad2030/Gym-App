@@ -41,7 +41,9 @@ const schema = yup.object().shape({
     .nullable()
     .required("Profile image is required"),
     dob: yup.date().required('Date is required'),
-    startingDate: yup.date().required('Date is required')
+    joiningDate: yup.date().required('Date is required'),
+    membershipStartingDate: yup.date().required('Membership Starting Date is required'),
+    membershipEndingDate: yup.date().required('Membership Ending Date is required')
 });
 
 const AddMember = () => {
@@ -49,7 +51,7 @@ const AddMember = () => {
   const [imagePreview, setImagePreview] = React.useState<string | null>(null);
   const [open,setOpen] = React.useState<boolean>(false) 
 
-  const { register, handleSubmit, formState: { errors }, setValue ,control } = useForm<FormDataType>({
+  const { register, handleSubmit, formState: { errors }, setValue ,control ,getValues} = useForm<FormDataType>({
     resolver: yupResolver(schema),
   });
   const theme = createTheme({
@@ -97,7 +99,7 @@ const AddMember = () => {
           <div className="border-b border-stroke py-4 px-6.5 dark:border-strokedark">
             <h3 className="font-medium text-black dark:text-white">Member Form</h3>
           </div>
-          <form onSubmit={handleSubmit(onSubmit)}>
+          <form onSubmit={handleSubmit(onSubmit)} onError={(err)=>{console.log(err)}}>
             <div className="p-6.5">
               {/* Image Upload Section */}
               <div className="mb-4.5 flex flex-col items-center">
@@ -305,7 +307,60 @@ const AddMember = () => {
     }}
   />
 </div>
-
+<div className="mb-4.5 flex flex-col items-center w-full ">
+      <ThemeProvider theme={theme}>
+      <LocalizationProvider 
+      dateAdapter={AdapterDayjs}>
+        <Controller
+          name="dob"
+          control={control}
+          defaultValue={null}
+          render={({ field: { onChange, value } }) => (
+            <DatePicker
+              className="w-full"
+              label="Date of birth"
+              value={value ? dayjs(value) : null}
+              onChange={(date) => onChange(date ? date.toDate() : null)}
+              sx={{
+        
+                '& .MuiOutlinedInput-root': {
+                  '& fieldset': {
+                    borderColor: 'white', // Change the border color to white
+                  },
+                  '&:hover fieldset': {
+                    borderColor: 'white', // Change the border color on hover
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: 'white', // Change the border color when focused
+                  },
+                },
+                // Optional: Change the text color if needed
+               
+                '& .MuiInputBase-input': {
+                color: 'white', // Change the text color inside the input to white
+              },
+              '& .MuiInputLabel-root': {
+                color: 'white', // Change the label color to white
+              },
+              '& .MuiInputLabel-root.Mui-focused': {
+                color: 'white', // Change the label color to white when focused
+              },
+              '& .MuiOutlinedInput-notchedOutline': {
+                borderColor: 'white', // Ensure the notched outline is white
+              },
+              '& .MuiInputBase-input::placeholder': {
+                color: 'white', // Change the placeholder color to white
+              },
+              }}
+            />
+          )}
+        />
+      </LocalizationProvider>
+      </ThemeProvider>
+      {errors.dob && (
+        <p className="text-red-500">{errors.dob.message}</p>
+      )}
+    </div>
 <div className="mb-4.5">
   <FormControl fullWidth error={!!errors.membership} className=" bg-form-input"
     sx={{
@@ -505,60 +560,7 @@ const AddMember = () => {
         <p className="text-red-500">{errors.membershipEndingDate.message}</p>
       )}
     </div>
-    <div className="mb-4.5 flex flex-col items-center w-full ">
-      <ThemeProvider theme={theme}>
-      <LocalizationProvider 
-      dateAdapter={AdapterDayjs}>
-        <Controller
-          name="dob"
-          control={control}
-          defaultValue={null}
-          render={({ field: { onChange, value } }) => (
-            <DatePicker
-              className="w-full"
-              label="Date of birth"
-              value={value ? dayjs(value) : null}
-              onChange={(date) => onChange(date ? date.toDate() : null)}
-              sx={{
-        
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': {
-                    borderColor: 'white', // Change the border color to white
-                  },
-                  '&:hover fieldset': {
-                    borderColor: 'white', // Change the border color on hover
-                  },
-                  '&.Mui-focused fieldset': {
-                    borderColor: 'white', // Change the border color when focused
-                  },
-                },
-                // Optional: Change the text color if needed
-               
-                '& .MuiInputBase-input': {
-                color: 'white', // Change the text color inside the input to white
-              },
-              '& .MuiInputLabel-root': {
-                color: 'white', // Change the label color to white
-              },
-              '& .MuiInputLabel-root.Mui-focused': {
-                color: 'white', // Change the label color to white when focused
-              },
-              '& .MuiOutlinedInput-notchedOutline': {
-                borderColor: 'white', // Ensure the notched outline is white
-              },
-              '& .MuiInputBase-input::placeholder': {
-                color: 'white', // Change the placeholder color to white
-              },
-              }}
-            />
-          )}
-        />
-      </LocalizationProvider>
-      </ThemeProvider>
-      {errors.dob && (
-        <p className="text-red-500">{errors.dob.message}</p>
-      )}
-    </div>
+    
               <div className="mb-4.5 flex flex-col items-center w-full ">
       <ThemeProvider theme={theme}>
       <LocalizationProvider 
@@ -615,12 +617,14 @@ const AddMember = () => {
       )}
     </div>
               <div className=" ">
-              <button type="submit" className="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90">
+              <button
+              
+              type="submit" className="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90">
               Add Member
             </button>
               </div>
             </div>
-          <SnackbarComp open={open} setOpen={setOpen}/>
+          <SnackbarComp open={open} setOpen={setOpen} message={'Member Added Successfully'}/>
                       
            
           </form>

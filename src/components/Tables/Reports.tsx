@@ -3,8 +3,7 @@ import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell'; 
-import EditIcon from '@mui/icons-material/Edit'
+import TableCell from '@mui/material/TableCell';  
 import CloseIcon from '@mui/icons-material/Close'
 import {format} from 'date-fns'
 import TableContainer from '@mui/material/TableContainer';
@@ -29,63 +28,49 @@ import EditMember from '../../pages/Members/EditMember';
    
  
 interface Data {
-  id: number;
-  firstName: string;
-  lastName: string;
-  phone:number;
-  image:string;
-  joiningDate:Date;
-  dob:Date;
-  address:string;
-  membership:string;
-  membershipStartingDate:Date;
-  membershipEndingDate:Date;
+    id:number;
+  from: Date;
+  to: Date;
+  income: number;
+  expense:number;
+  report:number;
+   
    
 }
 
-function createData(
-  id: number,
-  firstName: string,
-  lastName: string,
-  phone:number,
-  image:string,
-  joiningDate:Date ,
-  dob:Date,
-  address:string,
-  membership:string,
-  membershipStartingDate:Date,
-  membershipEndingDate:Date,
+function createData( 
+    id:number,
+    from: Date,
+    to: Date,
+    income: number,
+    expense:number,
+    report:number
 ): Data {
-  return {
-    id,
-    firstName,
-    lastName,
-    phone,
-    image,
-    joiningDate,
-    dob,
-    address,
-    membership,
-    membershipStartingDate,
-    membershipEndingDate,
+  return { 
+    id ,
+
+    from,
+    to,
+    income,
+    expense,
+    report
   };
 }
 
 const rows = [
-  createData(1, 'John', 'Doe', 3013415184, '/pp-1.jpg', new Date('2023-01-15'), new Date('1990-05-21'), '123 Street A', 'gold', new Date('2023-01-15'), new Date('2024-01-15')),
-  createData(2, 'Jane', 'Smith', 3013415184, '/pp-2.jpg', new Date('2023-02-10'), new Date('1988-10-11'), '456 Street B', 'silver', new Date('2023-02-10'), new Date('2024-02-10')),
-  createData(3, 'Alice', 'Johnson', 3013415184, '/pp-3.jpg', new Date('2023-03-12'), new Date('1995-07-30'), '789 Street C', 'premium', new Date('2023-03-12'), new Date('2024-03-12')),
-  createData(4, 'Bob', 'Brown', 3013415184, '/pp-4.jpg', new Date('2023-04-18'), new Date('1985-01-22'), '101 Street D', 'basic', new Date('2023-04-18'), new Date('2024-04-18')),
-  createData(5, 'Charlie', 'Wilson', 3013415184, '/pp-5.jpg', new Date('2023-05-25'), new Date('1993-09-15'), '202 Street E', 'silver', new Date('2023-05-25'), new Date('2024-05-25')),
-  createData(6, 'Diana', 'Moore', 3013415184, '/pp-6.jpg', new Date('2023-06-30'), new Date('1992-02-18'), '303 Street F', 'premium', new Date('2023-06-30'), new Date('2024-06-30')),
-  createData(7, 'Evan', 'Taylor', 3013415184, '/pp-7.jpg', new Date('2023-07-14'), new Date('1991-11-23'), '404 Street G', 'gold', new Date('2023-07-14'), new Date('2024-07-14')),
-  createData(8, 'Fiona', 'Anderson', 3013415184, '/pp-2.jpg', new Date('2023-08-09'), new Date('1986-06-07'), '505 Street H', 'basic', new Date('2023-08-09'), new Date('2024-08-09')),
-  createData(9, 'George', 'Thomas', 3013415184, '/pp-3.jpg', new Date('2023-09-05'), new Date('1989-12-25'), '606 Street I', 'premium', new Date('2023-09-05'), new Date('2024-09-05')),
-  createData(10, 'Hannah', 'White', 3013415184, '/pp-1.jpg', new Date('2023-10-15'), new Date('1994-03-08'), '707 Street J', 'gold', new Date('2023-10-15'), new Date('2024-10-15')),
-  createData(11, 'Ivy', 'Clark', 3013415184, '/pp-5.jpg', new Date('2023-11-12'), new Date('1996-04-17'), '808 Street K', 'basic', new Date('2023-11-12'), new Date('2024-11-12')),
-  createData(12, 'Jack', 'King', 3013415184, '/pp-1.jpg', new Date('2023-12-20'), new Date('1987-08-30'), '909 Street L', 'premium', new Date('2023-12-20'), new Date('2024-12-20')),
-  createData(13, 'Kara', 'Young', 3013415184, '/pp-7.jpg', new Date('2023-01-03'), new Date('1998-02-25'), '1010 Street M', 'gold', new Date('2023-01-03'), new Date('2024-01-03')),
-];
+    createData(1, new Date('2023-01-01'), new Date('2023-01-31'), 12000, 5000, 7000),
+    createData(2, new Date('2023-02-01'), new Date('2023-02-28'), 15000, 6000, 9000),
+    createData(3, new Date('2023-03-01'), new Date('2023-03-31'), 20000, 8000, 12000),
+    createData(4, new Date('2023-04-01'), new Date('2023-04-30'), 18000, 7000, 11000),
+    createData(5, new Date('2023-05-01'), new Date('2023-05-31'), 17000, 7500, 9500),
+    createData(6, new Date('2023-06-01'), new Date('2023-06-30'), 22000, 9000, 13000),
+    createData(7, new Date('2023-07-01'), new Date('2023-07-31'), 25000, 10000, 15000),
+    createData(8, new Date('2023-08-01'), new Date('2023-08-31'), 23000, 9500, 13500),
+    createData(9, new Date('2023-09-01'), new Date('2023-09-30'), 19000, 8500, 10500),
+    createData(10, new Date('2023-10-01'), new Date('2023-10-31'), 21000, 11000, 10000),
+    createData(11, new Date('2023-11-01'), new Date('2023-11-30'), 24000, 11500, 12500),
+    createData(12, new Date('2023-12-01'), new Date('2023-12-31'), 26000, 12000, 14000),
+  ];
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -101,8 +86,8 @@ type Order = 'asc' | 'desc';
 
 const getComparator = (order: 'asc' | 'desc', orderBy: keyof Data) => {
   return (a: Data, b: Data) => {
-    const valueA = orderBy === 'membershipEndingDate' ? +new Date(a[orderBy]) : a[orderBy];
-    const valueB = orderBy === 'membershipEndingDate' ? +new Date(b[orderBy]) : b[orderBy];
+    const valueA = orderBy === 'income' ? +new Date(a[orderBy]) : a[orderBy];
+    const valueB = orderBy === 'income' ? +new Date(b[orderBy]) : b[orderBy];
     if (valueA < valueB) return order === 'asc' ? -1 : 1;
     if (valueA > valueB) return order === 'asc' ? 1 : -1;
     return 0;
@@ -118,29 +103,35 @@ interface HeadCell {
 
 const headCells: readonly HeadCell[] = [
   {
-    id: 'image',
+    id: 'from',
     numeric: true,
     disablePadding: false,
-    label: 'Pic',
+    label: 'Month',
   },
   {
-    id: 'firstName',
+    id: 'to',
     numeric: false,
     disablePadding: true,
-    label: 'Name',
+    label: 'Year',
   },
   
   {
-    id: 'phone',
+    id: 'income',
     numeric: true,
     disablePadding: false,
-    label: 'Mobile',
+    label: 'Income',
   },
   {
-    id: 'membershipEndingDate',
+    id: 'expense',
     numeric: true,
     disablePadding: false,
-    label: 'Member till',
+    label: 'Expense',
+  },
+  {
+    id: 'report',
+    numeric: true,
+    disablePadding: false,
+    label: 'Profit/Loss',
   },
    
 ];
@@ -165,23 +156,23 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   return (
     <TableHead >
       <TableRow>
-        <TableCell padding="checkbox">
+      <TableCell padding="checkbox">
           
-           <Checkbox 
-                         indeterminate={numSelected > 0 && numSelected < rowCount}
-                         checked={rowCount > 0 && numSelected === rowCount}
-                         onChange={onSelectAllClick}
-                         inputProps={{
-                           'aria-label': 'select all desserts',
-                         }}
-                        sx={{
-                          color: 'gray', // default color
-                          '&.Mui-checked': {
-                            color: 'white', // color when checked
-                          },
+          <Checkbox 
+                        indeterminate={numSelected > 0 && numSelected < rowCount}
+                        checked={rowCount > 0 && numSelected === rowCount}
+                        onChange={onSelectAllClick}
+                        inputProps={{
+                          'aria-label': 'select all desserts',
                         }}
-                      />
-        </TableCell>
+                       sx={{
+                         color: 'gray', // default color
+                         '&.Mui-checked': {
+                           color: 'white', // color when checked
+                         },
+                       }}
+                     />
+       </TableCell>
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
@@ -204,14 +195,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             </TableSortLabel>
           </TableCell>
         ))}
-        <TableCell 
-            align={ 'center'}
-            padding={ 'normal'}
-            sortDirection={  false}
-            sx={{color:'white'}}
-          >
-            Actions
-          </TableCell>
+        
       </TableRow>
     </TableHead>
   );
@@ -282,7 +266,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
     </Toolbar>
   );
 }
-export default function EnhancedTable() {
+export default function Reports() {
   const [order, setOrder] = React.useState<Order>('asc');
   const [orderBy, setOrderBy] = React.useState<keyof Data>('id');
   const [selected, setSelected] = React.useState<readonly number[]>([]);
@@ -295,28 +279,36 @@ export default function EnhancedTable() {
     setSearchTerm(event.target.value);
   };
 
-  const filteredRows = rows.filter((row) =>
-    row.firstName.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredRows = rows.filter((row) => {
+    // Convert to strings for comparison and check for case-insensitive match
+    const searchTermLower = searchTerm.toLowerCase();
+  
+    // You can customize which fields you want to filter by
+    return (
+      row.income.toString().toLowerCase().includes(searchTermLower) ||
+      row.expense.toString().toLowerCase().includes(searchTermLower) ||
+      row.report.toString().toLowerCase().includes(searchTermLower) ||
+      format(new Date(row.from), 'MM/dd/yyyy').includes(searchTermLower) ||
+      format(new Date(row.to), 'MM/dd/yyyy').includes(searchTermLower)
+    );
+  });
 
  
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
-    property: keyof Data,
+    property: string
   ) => {
-    const isAsc = orderBy === property && order === 'asc';
-    setOrder(isAsc ? 'desc' : 'asc');
-    setOrderBy(property);
+    // Sorting logic
   };
 
-  const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
-    if (event.target.checked) {
-      const newSelected = rows.map((n) => n.id);
-      setSelected(newSelected);
-      return;
-    }
-    setSelected([]);
-  };
+//   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
+//     if (event.target.checked) {
+//       const newSelected = rows.map((n) => n.id);
+//       setSelected(newSelected);
+//       return;
+//     }
+//     setSelected([]);
+//   };
 
   const handleClick = (event: React.MouseEvent<unknown>, id: number) => {
     const selectedIndex = selected.indexOf(id);
@@ -400,7 +392,7 @@ export default function EnhancedTable() {
               numSelected={selected.length}
               order={order}
               orderBy={orderBy}
-              onSelectAllClick={handleSelectAllClick}
+              onSelectAllClick={()=>{}}
               onRequestSort={handleRequestSort}
               rowCount={rows.length}
             />
@@ -435,49 +427,37 @@ export default function EnhancedTable() {
                         }}
                       />
                     </TableCell>
-                    <TableCell align="center">
-                      <div className='w-12 h-12 rounded-full flex flex-col items-center justify-center overflow-hidden'>
-                        <Image className='w-14 h-14 ' image={{src:row.image,name:row.firstName}}/>
-                      </div>
-                      </TableCell> 
-                    <TableCell
-                    align="center"
-                      component="th"
-                      id={labelId}
-                      scope="row"
-                      padding="none"
-                      sx={{color:'white'}}
-                    >
-                      {`${row.firstName} ${row.lastName}`}
-                    </TableCell>
-                   
                     <TableCell
                     align="center"
                       sx={{color:'white'}}
                     
                     >
-  {format(new Date(row.membershipEndingDate), 'MM/dd/yyyy')} 
+  {format(new Date(row.from), 'MM/dd/yyyy')} 
+</TableCell>
+                   
+                   
+<TableCell
+                    align="center"
+                      sx={{color:'white'}}
+                    
+                    >
+  {format(new Date(row.to), 'MM/dd/yyyy')} 
 </TableCell>
                     <TableCell 
                     align="center"
                       sx={{color:'white'}}
                     
-                    >{row.phone}</TableCell>
-                      <TableCell align="center">
-                      <IconButton onClick={() => {
-                        setSelectedRow(row);
-                        console.log(row)
-                        setOpenEditDialog(true);
-                      }}>
-                        <EditIcon sx={{ color: 'white' }} />
-                      </IconButton>
-                      <IconButton onClick={() => {
-                        // setSelectedRow(row);
-                        // setOpenEditDialog(true);
-                      }}>
-                        <DeleteIcon sx={{ color: 'white' }} />
-                      </IconButton>
-                    </TableCell>
+                    >{row.income}</TableCell>
+                       <TableCell 
+                    align="center"
+                      sx={{color:'white'}}
+                    
+                    >{row.expense}</TableCell>
+                    <TableCell 
+                    align="center"
+                      sx={{color:'white'}}
+                    
+                    >{row.report}</TableCell>
                   </TableRow>
                   
                 );

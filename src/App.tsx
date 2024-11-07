@@ -18,6 +18,15 @@ import Buttons from './pages/UiElements/Buttons';
 import DefaultLayout from './layout/DefaultLayout';
 import AllMembers from './pages/Members/AllMembers';
 import AddMember from './pages/Members/AddMember';
+import Memberships from './components/Tables/Memeberships';
+import AllMemberships from './pages/Memberships/AllMemberships';
+import AddMembership from './pages/Memberships/AddMembership';
+import AllPayments from './pages/Payments/AllPayments';
+import AddPayment from './pages/Payments/AddPayment';
+import AllExpense from './pages/Expenses/AllExpenses';
+import AddExpense from './pages/Expenses/AddExpense';
+import Report from './pages/Report/Report';
+import CalendarComponent from './pages/Calendar/Calendar';
 
 function App() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -34,131 +43,11 @@ function App() {
   return loading ? (
     <Loader />
   ) : (
-    <DefaultLayout>
+    <>
       <Routes>
-         <Route
-                 index
-
-          element={
-            <>
-              <PageTitle title=" Dashboard | FFG - More than a Gym" />
-              <Dashboard />
-            </>
-          }
-        />
+        {/* Routes outside DefaultLayout */}
         <Route
-                    path="/dashboard"
-
-          element={
-            <>
-              <PageTitle title=" Dashboard | FFG - More than a Gym" />
-              <Dashboard />
-            </>
-          }
-        />
-        <Route
-                    path="/member/view"
-
-          element={
-            <>
-              <PageTitle title="Member | All Members" />
-              <AllMembers />
-            </>
-          }
-        />
-          <Route
-                    path="/member/add"
-
-          element={
-            <>
-              <PageTitle title="Member | Add a new Member" />
-              <AddMember />
-            </>
-          }
-        />
-        <Route
-          path="/calendar"
-          element={
-            <>
-              <PageTitle title="Calendar | FFG - More than a Gym" />
-              <Calendar />
-            </>
-          }
-        />
-        <Route
-          path="/profile"
-          element={
-            <>
-              <PageTitle title="Profile | FFG - More than a Gym" />
-              <Profile />
-            </>
-          }
-        />
-        <Route
-          path="/forms/form-elements"
-          element={
-            <>
-              <PageTitle title="Form Elements | FFG - More than a Gym" />
-              <FormElements />
-            </>
-          }
-        />
-        <Route
-          path="/forms/form-layout"
-          element={
-            <>
-              <PageTitle title="Form Layout | FFG - More than a Gym" />
-              <FormLayout />
-            </>
-          }
-        />
-        <Route
-          path="/tables"
-          element={
-            <>
-              <PageTitle title="Tables | FFG - More than a Gym" />
-              <Tables />
-            </>
-          }
-        />
-        <Route
-          path="/settings"
-          element={
-            <>
-              <PageTitle title="Settings | FFG - More than a Gym" />
-              <Settings />
-            </>
-          }
-        />
-        <Route
-          path="/chart"
-          element={
-            <>
-              <PageTitle title="Basic Chart | FFG - More than a Gym" />
-              <Chart />
-            </>
-          }
-        />
-        <Route
-          path="/ui/alerts"
-          element={
-            <>
-              <PageTitle title="Alerts | FFG - More than a Gym" />
-              <Alerts />
-            </>
-          }
-        />
-        <Route
-          path="/ui/buttons"
-          element={
-            <>
-              <PageTitle title="Buttons | FFG - More than a Gym" />
-              <Buttons />
-            </>
-          }
-        />
-        <Route
-          path="/auth/signin"
+          index
           element={
             <>
               <PageTitle title="Signin | FFG - More than a Gym" />
@@ -175,8 +64,251 @@ function App() {
             </>
           }
         />
+ 
+        <Route  >
+          <Route
+            path="/dashboard/view"
+            element={
+              <>
+              <DefaultLayout>
+                <PageTitle title="Dashboard | FFG - More than a Gym" />
+                <Dashboard />
+              </DefaultLayout>
+
+              </>
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <>
+              <DefaultLayout>
+                <PageTitle title="Dashboard | FFG - More than a Gym" />
+                <Dashboard />
+              </DefaultLayout>
+
+              </>
+            }
+          />
+          <Route
+            path="/member/view"
+            element={
+              <>
+              <DefaultLayout>
+                <PageTitle title="Member | All Members" />
+                <AllMembers />
+              </DefaultLayout>
+
+              </>
+            }
+          />
+          <Route
+            path="/member/add"
+            element={
+              <>
+              <DefaultLayout>
+                <PageTitle title="Member | Add a new Member" />
+                <AddMembership />
+              </DefaultLayout>
+
+              </>
+            }
+          />
+          <Route
+            path="/membership/view"
+            element={
+              <>
+              <DefaultLayout>
+                <PageTitle title="Membership | All Memberships" />
+                <AllMemberships />
+              </DefaultLayout>
+
+              </>
+            }
+          />
+          <Route
+            path="/membership/add"
+            element={
+              <>
+              <DefaultLayout>
+                <PageTitle title="Membership | Add a new Membership" />
+                <AddMembership />
+              </DefaultLayout>
+
+              </>
+            }
+          />
+          <Route
+            path="/payment/view"
+            element={
+              <>
+              <DefaultLayout>
+                <PageTitle title="Payment | All Payments" />
+                <AllPayments />
+              </DefaultLayout>
+
+              </>
+            }
+          />
+          <Route
+            path="/payment/add"
+            element={
+              <>
+              <DefaultLayout>
+                <PageTitle title="Payment | Add a new Payment" />
+                <AddPayment />
+              </DefaultLayout>
+
+              </>
+            }
+          />
+          <Route
+            path="/expense/view"
+            element={
+              <>
+              <DefaultLayout>
+                <PageTitle title="Expense | All Expenses" />
+                <AllExpense />
+              </DefaultLayout>
+
+              </>
+            }
+          />
+          <Route
+            path="/expense/add"
+            element={
+              <>
+              <DefaultLayout>
+                <PageTitle title="Expense | Add a new Expense" />
+                <AddExpense />
+              </DefaultLayout>
+
+              </>
+            }
+          />
+          <Route
+            path="/report/view"
+            element={
+              <>
+              <DefaultLayout>
+                <PageTitle title="Report | FFG - More than a Gym" />
+                <Report />
+              </DefaultLayout>
+
+              </>
+            }
+          />
+          <Route
+            path="/attendance"
+            element={
+              <>
+              <DefaultLayout>
+                <PageTitle title="Calendar | FFG - More than a Gym" />
+                <CalendarComponent />
+              </DefaultLayout>
+
+              </>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <>
+              <DefaultLayout>
+                <PageTitle title="Profile | FFG - More than a Gym" />
+                <Profile />
+              </DefaultLayout>
+
+              </>
+            }
+          />
+          <Route
+            path="/forms/form-elements"
+            element={
+              <>
+              <DefaultLayout>
+                <PageTitle title="Form Elements | FFG - More than a Gym" />
+                <FormElements />
+              </DefaultLayout>
+
+              </>
+            }
+          />
+          <Route
+            path="/forms/form-layout"
+            element={
+              <>
+              <DefaultLayout>
+                <PageTitle title="Form Layout | FFG - More than a Gym" />
+                <FormLayout />
+                </DefaultLayout>
+              
+              </>
+            }
+          />
+          <Route
+            path="/tables"
+            element={
+              <>
+              <DefaultLayout>
+                <PageTitle title="Tables | FFG - More than a Gym" />
+                <Tables />
+              </DefaultLayout>
+
+              </>
+            }
+          />
+          <Route
+            path="/settings"
+            element={
+              <>
+              <DefaultLayout>
+                <PageTitle title="Settings | FFG - More than a Gym" />
+                <Settings />
+              </DefaultLayout>
+
+              </>
+            }
+          />
+          <Route
+            path="/chart"
+            element={
+              <>
+              <DefaultLayout>
+                <PageTitle title="Basic Chart | FFG - More than a Gym" />
+                <Chart />
+              </DefaultLayout>
+
+              </>
+            }
+          />
+          <Route
+            path="/ui/alerts"
+            element={
+              <>
+              <DefaultLayout>
+
+                <PageTitle title="Alerts | FFG - More than a Gym" />
+                <Alerts />
+              </DefaultLayout>
+
+              </>
+            }
+          />
+          <Route
+            path="/ui/buttons"
+            element={
+              <>
+              <DefaultLayout>
+                <PageTitle title="Buttons | FFG - More than a Gym" />
+                <Buttons />
+                </DefaultLayout>
+              </>
+            }
+            />
+        </Route>
       </Routes>
-    </DefaultLayout>
+    </>
   );
 }
 

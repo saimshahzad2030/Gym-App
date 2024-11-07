@@ -5,7 +5,7 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import { SnackBarType } from '../../types/Snackbar';
 
-const SnackbarComp: React.FC<SnackBarType>  = ({ open, setOpen })=> {  
+const SnackbarComp: React.FC<SnackBarType>  = ({ open, setOpen,message })=> {  
 
   const handleClick = () => {
     setOpen(true);
@@ -44,7 +44,7 @@ const SnackbarComp: React.FC<SnackBarType>  = ({ open, setOpen })=> {
         
         autoHideDuration={6000}
         onClose={handleClose}
-        message="Member Added Succesfully"
+        message={message||'success'}
         action={action}
         anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
       />

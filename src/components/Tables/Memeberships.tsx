@@ -26,65 +26,45 @@ import { visuallyHidden } from '@mui/utils';
 import Image from '../Image/Image';
 import { Button, TextField } from '@mui/material'; 
 import EditMember from '../../pages/Members/EditMember';
+import EditMembership from '../../pages/Memberships/EditMembership';
    
  
 interface Data {
   id: number;
-  firstName: string;
-  lastName: string;
-  phone:number;
-  image:string;
-  joiningDate:Date;
-  dob:Date;
-  address:string;
-  membership:string;
-  membershipStartingDate:Date;
-  membershipEndingDate:Date;
+  name: string;
+  durationDays: number;
+  fee:number;
+  registrationFee:number | null;
+  createdAt:Date;
+   
    
 }
 
 function createData(
-  id: number,
-  firstName: string,
-  lastName: string,
-  phone:number,
-  image:string,
-  joiningDate:Date ,
-  dob:Date,
-  address:string,
-  membership:string,
-  membershipStartingDate:Date,
-  membershipEndingDate:Date,
+    id: number,
+    name: string,
+    durationDays: number,
+    fee:number,
+    registrationFee:number  | null,
+    createdAt:Date
+     
 ): Data {
   return {
-    id,
-    firstName,
-    lastName,
-    phone,
-    image,
-    joiningDate,
-    dob,
-    address,
-    membership,
-    membershipStartingDate,
-    membershipEndingDate,
+    id ,
+    name ,
+    durationDays ,
+    fee ,
+    registrationFee ,
+    createdAt 
   };
 }
 
 const rows = [
-  createData(1, 'John', 'Doe', 3013415184, '/pp-1.jpg', new Date('2023-01-15'), new Date('1990-05-21'), '123 Street A', 'gold', new Date('2023-01-15'), new Date('2024-01-15')),
-  createData(2, 'Jane', 'Smith', 3013415184, '/pp-2.jpg', new Date('2023-02-10'), new Date('1988-10-11'), '456 Street B', 'silver', new Date('2023-02-10'), new Date('2024-02-10')),
-  createData(3, 'Alice', 'Johnson', 3013415184, '/pp-3.jpg', new Date('2023-03-12'), new Date('1995-07-30'), '789 Street C', 'premium', new Date('2023-03-12'), new Date('2024-03-12')),
-  createData(4, 'Bob', 'Brown', 3013415184, '/pp-4.jpg', new Date('2023-04-18'), new Date('1985-01-22'), '101 Street D', 'basic', new Date('2023-04-18'), new Date('2024-04-18')),
-  createData(5, 'Charlie', 'Wilson', 3013415184, '/pp-5.jpg', new Date('2023-05-25'), new Date('1993-09-15'), '202 Street E', 'silver', new Date('2023-05-25'), new Date('2024-05-25')),
-  createData(6, 'Diana', 'Moore', 3013415184, '/pp-6.jpg', new Date('2023-06-30'), new Date('1992-02-18'), '303 Street F', 'premium', new Date('2023-06-30'), new Date('2024-06-30')),
-  createData(7, 'Evan', 'Taylor', 3013415184, '/pp-7.jpg', new Date('2023-07-14'), new Date('1991-11-23'), '404 Street G', 'gold', new Date('2023-07-14'), new Date('2024-07-14')),
-  createData(8, 'Fiona', 'Anderson', 3013415184, '/pp-2.jpg', new Date('2023-08-09'), new Date('1986-06-07'), '505 Street H', 'basic', new Date('2023-08-09'), new Date('2024-08-09')),
-  createData(9, 'George', 'Thomas', 3013415184, '/pp-3.jpg', new Date('2023-09-05'), new Date('1989-12-25'), '606 Street I', 'premium', new Date('2023-09-05'), new Date('2024-09-05')),
-  createData(10, 'Hannah', 'White', 3013415184, '/pp-1.jpg', new Date('2023-10-15'), new Date('1994-03-08'), '707 Street J', 'gold', new Date('2023-10-15'), new Date('2024-10-15')),
-  createData(11, 'Ivy', 'Clark', 3013415184, '/pp-5.jpg', new Date('2023-11-12'), new Date('1996-04-17'), '808 Street K', 'basic', new Date('2023-11-12'), new Date('2024-11-12')),
-  createData(12, 'Jack', 'King', 3013415184, '/pp-1.jpg', new Date('2023-12-20'), new Date('1987-08-30'), '909 Street L', 'premium', new Date('2023-12-20'), new Date('2024-12-20')),
-  createData(13, 'Kara', 'Young', 3013415184, '/pp-7.jpg', new Date('2023-01-03'), new Date('1998-02-25'), '1010 Street M', 'gold', new Date('2023-01-03'), new Date('2024-01-03')),
+    createData(1, 'basic', 30, 1000, 1000, new Date('2023-04-18') ),
+  createData(2, 'gold', 30, 3000, 1000, new Date('2023-01-15') ),
+  createData(3, 'silver', 60, 6000, null, new Date('2023-02-10') ),
+  createData(4, 'premium', 90, 9000, null, new Date('2023-03-12') ),
+   
 ];
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
@@ -101,8 +81,8 @@ type Order = 'asc' | 'desc';
 
 const getComparator = (order: 'asc' | 'desc', orderBy: keyof Data) => {
   return (a: Data, b: Data) => {
-    const valueA = orderBy === 'membershipEndingDate' ? +new Date(a[orderBy]) : a[orderBy];
-    const valueB = orderBy === 'membershipEndingDate' ? +new Date(b[orderBy]) : b[orderBy];
+    const valueA = orderBy === 'createdAt' ? +new Date(a[orderBy]) : a[orderBy];
+    const valueB = orderBy === 'createdAt' ? +new Date(b[orderBy]) : b[orderBy];
     if (valueA < valueB) return order === 'asc' ? -1 : 1;
     if (valueA > valueB) return order === 'asc' ? 1 : -1;
     return 0;
@@ -118,30 +98,31 @@ interface HeadCell {
 
 const headCells: readonly HeadCell[] = [
   {
-    id: 'image',
+    id: 'name',
     numeric: true,
     disablePadding: false,
-    label: 'Pic',
+    label: 'Name',
   },
   {
-    id: 'firstName',
+    id: 'durationDays',
+    numeric: true,
+    disablePadding: false,
+    label: 'Duration',
+  },
+  {
+    id: 'fee',
     numeric: false,
     disablePadding: true,
-    label: 'Name',
+    label: 'Monthly Charges',
   },
   
   {
-    id: 'phone',
+    id: 'registrationFee',
     numeric: true,
     disablePadding: false,
-    label: 'Mobile',
+    label: 'Registration Charges',
   },
-  {
-    id: 'membershipEndingDate',
-    numeric: true,
-    disablePadding: false,
-    label: 'Member till',
-  },
+  
    
 ];
 
@@ -250,7 +231,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
           id="tableTitle"
           component="div"
         >
-          Members
+          Membersships
         </Typography>
       )}
       {numSelected > 0 ? (
@@ -282,7 +263,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
     </Toolbar>
   );
 }
-export default function EnhancedTable() {
+export default function Memberships() {
   const [order, setOrder] = React.useState<Order>('asc');
   const [orderBy, setOrderBy] = React.useState<keyof Data>('id');
   const [selected, setSelected] = React.useState<readonly number[]>([]);
@@ -296,7 +277,7 @@ export default function EnhancedTable() {
   };
 
   const filteredRows = rows.filter((row) =>
-    row.firstName.toLowerCase().includes(searchTerm.toLowerCase())
+    row.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
  
@@ -435,11 +416,7 @@ export default function EnhancedTable() {
                         }}
                       />
                     </TableCell>
-                    <TableCell align="center">
-                      <div className='w-12 h-12 rounded-full flex flex-col items-center justify-center overflow-hidden'>
-                        <Image className='w-14 h-14 ' image={{src:row.image,name:row.firstName}}/>
-                      </div>
-                      </TableCell> 
+                   
                     <TableCell
                     align="center"
                       component="th"
@@ -448,21 +425,24 @@ export default function EnhancedTable() {
                       padding="none"
                       sx={{color:'white'}}
                     >
-                      {`${row.firstName} ${row.lastName}`}
+                      {`${row.name?row.name:'-'}`}
                     </TableCell>
                    
-                    <TableCell
-                    align="center"
-                      sx={{color:'white'}}
-                    
-                    >
-  {format(new Date(row.membershipEndingDate), 'MM/dd/yyyy')} 
-</TableCell>
                     <TableCell 
                     align="center"
                       sx={{color:'white'}}
                     
-                    >{row.phone}</TableCell>
+                    >{row.durationDays}</TableCell>
+                    <TableCell 
+                    align="center"
+                      sx={{color:'white'}}
+                    
+                    >{row.fee}</TableCell>
+                       <TableCell 
+                    align="center"
+                      sx={{color:'white'}}
+                    
+                    >{row.registrationFee}</TableCell>
                       <TableCell align="center">
                       <IconButton onClick={() => {
                         setSelectedRow(row);
@@ -505,19 +485,38 @@ export default function EnhancedTable() {
           onPageChange={handleChangePage} 
         />
       </Paper>}
-      {openEditDialog && (
-        
+      {/* {openEditDialog && (
         <div
-          className=' w-full bg-boxdark p-4 rounded '
-          onClick={(e) => e.stopPropagation()} // Prevent click from bubbling up
+          className={`scrollbar-thin fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[600]`} 
+          onClick={() => setOpenEditDialog(false)} // Close on backdrop click
         >
+          <div
+            className='h-[80vh] bg-boxdark p-4 rounded overflow-y-auto'
+            onClick={(e) => e.stopPropagation()} // Prevent click from bubbling up
+          >
             
             <div className='flex flex-row items-center justify-end w-full mt-4'>
             <Button onClick={() => setOpenEditDialog(false)}>
               <CloseIcon className='text-white mb-4'/>
             </Button>
               </div>
-            <EditMember user={selectedRow} setOpenEditDialog={setOpenEditDialog}/>
+            <EditMembership member={selectedRow} setOpenEditDialog={setOpenEditDialog}/>
+          </div>
+        </div>
+      )} */}
+       {openEditDialog && (
+        
+          <div
+            className=' w-full bg-boxdark p-4 rounded '
+            onClick={(e) => e.stopPropagation()} // Prevent click from bubbling up
+          >
+            
+            <div className='flex flex-row items-center justify-end w-full mt-2'>
+            <Button onClick={() => setOpenEditDialog(false)}>
+              <CloseIcon className='text-white mb-4'/>
+            </Button>
+              </div>
+            <EditMembership member={selectedRow} setOpenEditDialog={setOpenEditDialog}/>
           </div> 
       )}
       </div>

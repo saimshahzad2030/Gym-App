@@ -54,10 +54,12 @@ const schema = yup.object().shape({
     .nullable()
     .required("Profile image is required"),
     dob: yup.date().required('Date is required'),
-    startingDate: yup.date().required('Date is required')
+    joiningDate: yup.date().required('Date is required'),
+    membershipStartingDate: yup.date().required('Membership Starting Date is required'),
+    membershipEndingDate: yup.date().required('Membership Ending Date is required')
 });
 
-const EditMember:React.FC<FormData2Type> = ({user}) => {
+const EditMember:React.FC<FormData2Type  & { setOpenEditDialog: React.Dispatch<React.SetStateAction<boolean>> }> = ({ user, setOpenEditDialog }) => {
     console.log(user,"User")
   const [selectedOption, setSelectedOption] = React.useState<string>("");
   const [imagePreview, setImagePreview] = React.useState<string | null>(user?.image || null);
@@ -100,9 +102,19 @@ const EditMember:React.FC<FormData2Type> = ({user}) => {
   // Handle form submission
   const onSubmit = (data: FormDataType) => {
     setOpen(true)
+    setOpenEditDialog(false)
     console.log("Form data:", data);
   };
-
+  React.useEffect(() => {
+    if (user && user.membership) {
+      setSelectedOption(user.membership);
+      setValue("membership", user.membership); // Set the value for react-hook-form
+      setValue("membershipStartingDate", new Date(user.membershipStartingDate)); // Set the starting date
+      setValue("membershipEndingDate", new Date(user.membershipEndingDate));
+      setValue("dob", new Date(user.dob));
+      setValue("joiningDate", new Date(user.joiningDate));
+    }
+  }, [user, setValue]);
   return (
     <div>
       <div className="flex flex-col gap-9">
@@ -632,7 +644,7 @@ const EditMember:React.FC<FormData2Type> = ({user}) => {
             </button>
               </div>
             </div>
-          <SnackbarComp open={open} setOpen={setOpen}/>
+          <SnackbarComp open={open} setOpen={setOpen} message="Edited Succesfully"/>
                       
            
           </form>
