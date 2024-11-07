@@ -87,35 +87,56 @@ const AddExpense = () => {
       error={!!errors.expenseName}
       helperText={errors.expenseName?.message} 
       sx={{
-        
         '& .MuiOutlinedInput-root': {
           '& fieldset': {
-            borderColor: 'white', // Change the border color to white
+            borderColor: '#0f172a', // Default light mode border color
+            '.dark &': {
+              borderColor: 'white', // Example dark mode border color using Tailwind color
+            },
           },
           '&:hover fieldset': {
-            borderColor: 'white', // Change the border color on hover
+            borderColor: '#0f172a',
+            '.dark &': {
+              borderColor: 'white',
+            },
           },
           '&.Mui-focused fieldset': {
-            borderColor: 'white', // Change the border color when focused
+            borderColor: '#0f172a',
+            '.dark &': {
+              borderColor: 'white',
+            },
           },
         },
-        // Optional: Change the text color if needed
-       
         '& .MuiInputBase-input': {
-        color: 'white', // Change the text color inside the input to white
-      },
-      '& .MuiInputLabel-root': {
-        color: 'white', // Change the label color to white
-      },
-      '& .MuiInputLabel-root.Mui-focused': {
-        color: 'white', // Change the label color to white when focused
-      },
-      '& .MuiOutlinedInput-notchedOutline': {
-        borderColor: 'white', // Ensure the notched outline is white
-      },
-      '& .MuiInputBase-input::placeholder': {
-        color: 'white', // Change the placeholder color to white
-      },
+          color: '#0f172a',
+          '.dark &': {
+            color: 'white', // Example dark mode text color
+          },
+        },
+        '& .MuiInputLabel-root': {
+          color: '#0f172a',
+          '.dark &': {
+            color: 'white',
+          },
+        },
+        '& .MuiInputLabel-root.Mui-focused': {
+          color: '#0f172a',
+          '.dark &': {
+            color: 'white',
+          },
+        },
+        '& .MuiOutlinedInput-notchedOutline': {
+          borderColor: '#0f172a',
+          '.dark &': {
+            borderColor: 'white',
+          },
+        },
+        '& .MuiInputBase-input::placeholder': {
+          color: '#0f172a',
+          '.dark &': {
+            color: 'white',
+          },
+        },
       }}
     />
   </div>
@@ -133,35 +154,56 @@ const AddExpense = () => {
     error={!!errors.label}
     helperText={errors.label?.message}
     sx={{
-        
       '& .MuiOutlinedInput-root': {
         '& fieldset': {
-          borderColor: 'white', // Change the border color to white
+          borderColor: '#0f172a', // Default light mode border color
+          '.dark &': {
+            borderColor: 'white', // Example dark mode border color using Tailwind color
+          },
         },
         '&:hover fieldset': {
-          borderColor: 'white', // Change the border color on hover
+          borderColor: '#0f172a',
+          '.dark &': {
+            borderColor: 'white',
+          },
         },
         '&.Mui-focused fieldset': {
-          borderColor: 'white', // Change the border color when focused
+          borderColor: '#0f172a',
+          '.dark &': {
+            borderColor: 'white',
+          },
         },
       },
-      // Optional: Change the text color if needed
-     
       '& .MuiInputBase-input': {
-      color: 'white', // Change the text color inside the input to white
-    },
-    '& .MuiInputLabel-root': {
-      color: 'white', // Change the label color to white
-    },
-    '& .MuiInputLabel-root.Mui-focused': {
-      color: 'white', // Change the label color to white when focused
-    },
-    '& .MuiOutlinedInput-notchedOutline': {
-      borderColor: 'white', // Ensure the notched outline is white
-    },
-    '& .MuiInputBase-input::placeholder': {
-      color: 'white', // Change the placeholder color to white
-    },
+        color: '#0f172a',
+        '.dark &': {
+          color: 'white', // Example dark mode text color
+        },
+      },
+      '& .MuiInputLabel-root': {
+        color: '#0f172a',
+        '.dark &': {
+          color: 'white',
+        },
+      },
+      '& .MuiInputLabel-root.Mui-focused': {
+        color: '#0f172a',
+        '.dark &': {
+          color: 'white',
+        },
+      },
+      '& .MuiOutlinedInput-notchedOutline': {
+        borderColor: '#0f172a',
+        '.dark &': {
+          borderColor: 'white',
+        },
+      },
+      '& .MuiInputBase-input::placeholder': {
+        color: '#0f172a',
+        '.dark &': {
+          color: 'white',
+        },
+      },
     }}
   />
 </div>
@@ -176,35 +218,56 @@ const AddExpense = () => {
     error={!!errors.amount}
     helperText={errors.amount?.message}
     sx={{
-        
       '& .MuiOutlinedInput-root': {
         '& fieldset': {
-          borderColor: 'white', // Change the border color to white
+          borderColor: '#0f172a', // Default light mode border color
+          '.dark &': {
+            borderColor: 'white', // Example dark mode border color using Tailwind color
+          },
         },
         '&:hover fieldset': {
-          borderColor: 'white', // Change the border color on hover
+          borderColor: '#0f172a',
+          '.dark &': {
+            borderColor: 'white',
+          },
         },
         '&.Mui-focused fieldset': {
-          borderColor: 'white', // Change the border color when focused
+          borderColor: '#0f172a',
+          '.dark &': {
+            borderColor: 'white',
+          },
         },
       },
-      // Optional: Change the text color if needed
-     
       '& .MuiInputBase-input': {
-      color: 'white', // Change the text color inside the input to white
-    },
-    '& .MuiInputLabel-root': {
-      color: 'white', // Change the label color to white
-    },
-    '& .MuiInputLabel-root.Mui-focused': {
-      color: 'white', // Change the label color to white when focused
-    },
-    '& .MuiOutlinedInput-notchedOutline': {
-      borderColor: 'white', // Ensure the notched outline is white
-    },
-    '& .MuiInputBase-input::placeholder': {
-      color: 'white', // Change the placeholder color to white
-    },
+        color: '#0f172a',
+        '.dark &': {
+          color: 'white', // Example dark mode text color
+        },
+      },
+      '& .MuiInputLabel-root': {
+        color: '#0f172a',
+        '.dark &': {
+          color: 'white',
+        },
+      },
+      '& .MuiInputLabel-root.Mui-focused': {
+        color: '#0f172a',
+        '.dark &': {
+          color: 'white',
+        },
+      },
+      '& .MuiOutlinedInput-notchedOutline': {
+        borderColor: '#0f172a',
+        '.dark &': {
+          borderColor: 'white',
+        },
+      },
+      '& .MuiInputBase-input::placeholder': {
+        color: '#0f172a',
+        '.dark &': {
+          color: 'white',
+        },
+      },
     }}
   />
 </div>
@@ -223,35 +286,56 @@ const AddExpense = () => {
               value={value ? dayjs(value) : null}
               onChange={(date) => onChange(date ? date.toDate() : null)}
               sx={{
-        
                 '& .MuiOutlinedInput-root': {
                   '& fieldset': {
-                    borderColor: 'white', // Change the border color to white
+                    borderColor: '#0f172a', // Default light mode border color
+                    '.dark &': {
+                      borderColor: 'white', // Example dark mode border color using Tailwind color
+                    },
                   },
                   '&:hover fieldset': {
-                    borderColor: 'white', // Change the border color on hover
+                    borderColor: '#0f172a',
+                    '.dark &': {
+                      borderColor: 'white',
+                    },
                   },
                   '&.Mui-focused fieldset': {
-                    borderColor: 'white', // Change the border color when focused
+                    borderColor: '#0f172a',
+                    '.dark &': {
+                      borderColor: 'white',
+                    },
                   },
                 },
-                // Optional: Change the text color if needed
-               
                 '& .MuiInputBase-input': {
-                color: 'white', // Change the text color inside the input to white
-              },
-              '& .MuiInputLabel-root': {
-                color: 'white', // Change the label color to white
-              },
-              '& .MuiInputLabel-root.Mui-focused': {
-                color: 'white', // Change the label color to white when focused
-              },
-              '& .MuiOutlinedInput-notchedOutline': {
-                borderColor: 'white', // Ensure the notched outline is white
-              },
-              '& .MuiInputBase-input::placeholder': {
-                color: 'white', // Change the placeholder color to white
-              },
+                  color: '#0f172a',
+                  '.dark &': {
+                    color: 'white', // Example dark mode text color
+                  },
+                },
+                '& .MuiInputLabel-root': {
+                  color: '#0f172a',
+                  '.dark &': {
+                    color: 'white',
+                  },
+                },
+                '& .MuiInputLabel-root.Mui-focused': {
+                  color: '#0f172a',
+                  '.dark &': {
+                    color: 'white',
+                  },
+                },
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: '#0f172a',
+                  '.dark &': {
+                    borderColor: 'white',
+                  },
+                },
+                '& .MuiInputBase-input::placeholder': {
+                  color: '#0f172a',
+                  '.dark &': {
+                    color: 'white',
+                  },
+                },
               }}
               
             />

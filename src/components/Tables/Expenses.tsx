@@ -24,10 +24,11 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
 import Image from '../Image/Image';
-import { Button, TextField } from '@mui/material'; 
+import { Button, TextField, textFieldClasses } from '@mui/material'; 
 import EditMember from '../../pages/Members/EditMember';
 import EditPayment from '../../pages/Payments/EditPayment';
 import EditExpense from '../../pages/Expenses/EditExpense';
+import { textFieldStyle } from '../../../constants/constants';
    
  
 interface Data {
@@ -60,8 +61,8 @@ function createData(
 }
 
 const rows = [
-    createData(1,'basic',"Membership payment", 1000, new Date('2023-04-18') ),
-  createData(2, 'gold', "Membership payment", 1000, new Date('2023-01-15') ),
+    createData(1,'salary',"Membership payment", 1000, new Date('2023-04-18') ),
+  createData(2, 'interior', "Membership payment", 1000, new Date('2023-01-15') ),
   createData(3, 'silver',"Membership payment", 1000, new Date('2023-02-10') ),
   createData(4,'premium', "Membership payment", 1000, new Date('2023-03-12') ),
    
@@ -146,9 +147,11 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     };
 
   return (
-    <TableHead >
+    <TableHead className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white font-bold'>
       <TableRow>
-        <TableCell padding="checkbox">
+        <TableCell padding="checkbox"
+        
+        className='dark:text-white'>
           
            <Checkbox 
                          indeterminate={numSelected > 0 && numSelected < rowCount}
@@ -157,10 +160,9 @@ function EnhancedTableHead(props: EnhancedTableProps) {
                          inputProps={{
                            'aria-label': 'select all desserts',
                          }}
-                        sx={{
-                          color: 'gray', // default color
+                        sx={{ 
                           '&.Mui-checked': {
-                            color: 'white', // color when checked
+                            color: 'gray', // color when checked
                           },
                         }}
                       />
@@ -170,8 +172,8 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             key={headCell.id}
             align={ 'center'}
             padding={headCell.disablePadding ? 'none' : 'normal'}
-            sortDirection={orderBy === headCell.id ? order : false}
-            sx={{color:'white'}}
+            sortDirection={orderBy === headCell.id ? order : false} 
+            className='dark:text-white'
           >
             <TableSortLabel
               active={orderBy === headCell.id}
@@ -188,10 +190,10 @@ function EnhancedTableHead(props: EnhancedTableProps) {
           </TableCell>
         ))}
         <TableCell 
+        className='dark:text-white'
             align={ 'center'}
             padding={ 'normal'}
-            sortDirection={  false}
-            sx={{color:'white'}}
+            sortDirection={  false} 
           >
             Actions
           </TableCell>
@@ -206,34 +208,36 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   const { numSelected } = props;
   return (
     <Toolbar
-      sx={[
-        {
-          pl: { sm: 2 },
-          pr: { xs: 1, sm: 1 },
-        },
-        numSelected > 0 && {
-          bgcolor: (theme) =>
-            alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
-        },
-      ]}
-    >
+    className='dark:bg-[#1A222C] bg-white sm:pl-2'
+    // sx={[
+    //   {
+    //     pl: { sm: 2 },
+    //     pr: { xs: 1, sm: 1 },
+    //   },
+    //   numSelected > 0 && {
+    //     bgcolor:  'white'
+    //   },
+    //   {
+    //     // Add dark mode styles using Tailwind's dark class
+    //     '.dark &': {
+    //       pl: { sm: 2 }, // Example padding; adjust based on your needs
+    //       pr: { xs: 1, sm: 1 },
+    //       bgcolor: '#30f172a'
+    //     },
+    //   },
+    // ]}
+  >
       {numSelected > 0 ? (
-        <Typography
-          sx={{ flex: '1 1 100%',color:'white' }}
-          color="inherit"
-          variant="subtitle1"
-          component="div"
+        <p
+           className='dark:text-white text-[#1A222C]'
         >
           {numSelected} selected
-        </Typography>
+        </p>
       ) : (
         <Typography
-          sx={{ flex: '1 1 100%',color:'white' }}
-          variant="h6"
-          id="tableTitle"
-          component="div"
+         className='dark:text-white text-#1A222C'
         >
-          Membersships
+          Memberships
         </Typography>
       )}
       {numSelected > 0 ? (
@@ -241,19 +245,10 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
         <Tooltip title="Delete">
         <IconButton onClick={()=>{console.log('first')}}>
 
-            <DeleteIcon  sx={{color:'white'}}/>
+            <DeleteIcon  className='dark:text-white text-[#1A222C]'/>
           </IconButton>
         </Tooltip>
-        {/* {numSelected == 1 &&  <Tooltip title="Edit">
-         <IconButton
-          
-          onClick={() => {
-            // setSelectedRow(row);
-            // setOpenEditDialog(true);
-          }}>
-           < EditIcon sx={{color:'white'}}/>
-         </IconButton>
-       </Tooltip>} */}
+     
         </>
       ) : (
         <Tooltip title="Filter list">
@@ -344,9 +339,18 @@ export default function Expenses() {
   );
 
   return (
-    <Box sx={{ width: '100%',backgroundColor:'rgb(26 34 44)',color:'white' }}>
+    <Box
+    className='w-full mb-2 bg-white dark:bg-[#1A222C] text-[#1A222C]'
+    
+    // sx={{ width: '100%',backgroundColor:'rgb(26 34 44)',color:'white' }}
+    
+    >
       <div className='flex flex-col items-center w-full relative'>
-      {!openEditDialog && <Paper sx={{ width: '100%', mb: 2,backgroundColor:'rgb(26 34 44)' }}>
+      {!openEditDialog && <Paper 
+      
+      className='w-full mb-2 bg-white dark:bg-[#1A222C]'
+      // sx={{ width: '100%', mb: 2,backgroundColor:'white' }}
+      >
         <EnhancedTableToolbar numSelected={selected.length} />
         <Box sx={{ padding: '16px' }}>
           <TextField
@@ -355,27 +359,13 @@ export default function Expenses() {
             value={searchTerm}
             onChange={handleSearchChange}
             fullWidth
-            size='small'
-            sx={{ 
-              bgcolor:'white',
-              '& .MuiOutlinedInput-root': {
-      border: 'none', // Remove the border
-      '& fieldset': {
-        border: 'none', // Remove the border around the input
-      },
-      '&:hover fieldset': {
-        border: 'none', // Remove border on hover
-      },
-      '&.Mui-focused fieldset': {
-        border: 'none', // Remove border on focus
-      },
-    },
-            }}
+            size='medium'
+           sx={textFieldStyle}
           />
         </Box>
         <TableContainer>
           <Table
-            sx={{ minWidth: 750,backgroundColor:'rgb(26 34 44)' }}
+            sx={{ minWidth: 750,backgroundColor:'#1A222C' }}
             aria-labelledby="tableTitle"
             size={ 'medium'}
           >
@@ -387,7 +377,10 @@ export default function Expenses() {
               onRequestSort={handleRequestSort}
               rowCount={rows.length}
             />
-            <TableBody>
+            <TableBody
+     className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white' 
+            
+            >
               {visibleRows.map((row, index) => {
                 const isItemSelected = selected.includes(row.id);
                 const labelId = `enhanced-table-checkbox-${index}`;
@@ -401,7 +394,7 @@ export default function Expenses() {
                     tabIndex={-1}
                     key={row.id}
                     selected={isItemSelected}
-                    sx={{ cursor: 'pointer',color:'white' }}
+                    // sx={{ cursor: 'pointer',color:'white' }}
                   >
 
                     <TableCell padding="checkbox">
@@ -411,9 +404,9 @@ export default function Expenses() {
                           'aria-labelledby': labelId,
                         }}
                         sx={{
-                          color: 'gray', // default color
+                          
                           '&.Mui-checked': {
-                            color: 'white', // color when checked
+                            color: 'gray', // color when checked
                           },
                         }}
                       />
@@ -425,24 +418,31 @@ export default function Expenses() {
                       id={labelId}
                       scope="row"
                       padding="none"
-                      sx={{color:'white'}}
+                      className='dark:text-white'
+                      // sx={{color:'white'}}
                     >
                       {`${row.expenseName}`}
                     </TableCell>
                    
                     <TableCell 
                     align="center"
-                      sx={{color:'white'}}
+                    className='dark:text-white'
+
+                      // sx={{color:'white'}}
                     
                     >{row.label}</TableCell>
                     <TableCell 
+                      className='dark:text-white'
+
                     align="center"
-                      sx={{color:'white'}}
+                      // sx={{color:'white'}}
                     
                     >{row.amount}</TableCell>
                        <TableCell 
                     align="center"
-                      sx={{color:'white'}}
+                    className='dark:text-white'
+
+                      // sx={{color:'white'}}
                     
                     >
                         {row.paymentDate ? format(new Date(row.paymentDate), 'yyyy-MM-dd') : 'N/A'}
@@ -454,13 +454,13 @@ export default function Expenses() {
                         console.log(row)
                         setOpenEditDialog(true);
                       }}>
-                        <EditIcon sx={{ color: 'white' }} />
+                        <EditIcon className='dark:text-white text-[#1A222C]' />
                       </IconButton>
                       <IconButton onClick={() => {
                         // setSelectedRow(row);
                         // setOpenEditDialog(true);
                       }}>
-                        <DeleteIcon sx={{ color: 'white' }} />
+                        <DeleteIcon className='dark:text-white text-[#1A222C]' />
                       </IconButton>
                     </TableCell>
                   </TableRow>
@@ -481,7 +481,8 @@ export default function Expenses() {
           </Table>
         </TableContainer>
         <TablePagination
-        sx={{color:'white'}}
+                      className='dark:text-white' 
+        // sx={{color:'white'}}
           rowsPerPageOptions={[10]}
           component="div"
           count={rows.length}
@@ -493,13 +494,13 @@ export default function Expenses() {
        {openEditDialog && (
         
         <div
-          className=' w-full bg-boxdark p-4 rounded '
+          className=' w-full dark:bg-boxdark bg-white p-4 rounded '
           onClick={(e) => e.stopPropagation()} // Prevent click from bubbling up
         >
             
             <div className='flex flex-row items-center justify-end w-full mt-4'>
             <Button onClick={() => setOpenEditDialog(false)}>
-              <CloseIcon className='text-white mb-4'/>
+              <CloseIcon className='dark:text-white text-boxdark mb-4'/>
             </Button>
               </div>
             <EditExpense expense={selectedRow} setOpenEditDialog={setOpenEditDialog}/>

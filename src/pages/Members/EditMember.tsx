@@ -11,6 +11,7 @@ import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { createTheme, FormControl, FormHelperText,  MenuItem, Select, TextField } from "@mui/material";
 import { ThemeProvider } from "@emotion/react"; 
+import { textFieldStyle } from "../../../constants/constants";
 type FormDataType = {
   firstName: string;
   lastName: string;
@@ -166,37 +167,7 @@ const EditMember:React.FC<FormData2Type  & { setOpenEditDialog: React.Dispatch<R
       {...register("firstName")}
       error={!!errors.firstName}
       helperText={errors.firstName?.message} 
-      sx={{
-        
-        '& .MuiOutlinedInput-root': {
-          '& fieldset': {
-            borderColor: 'white', // Change the border color to white
-          },
-          '&:hover fieldset': {
-            borderColor: 'white', // Change the border color on hover
-          },
-          '&.Mui-focused fieldset': {
-            borderColor: 'white', // Change the border color when focused
-          },
-        },
-        // Optional: Change the text color if needed
-       
-        '& .MuiInputBase-input': {
-        color: 'white', // Change the text color inside the input to white
-      },
-      '& .MuiInputLabel-root': {
-        color: 'white', // Change the label color to white
-      },
-      '& .MuiInputLabel-root.Mui-focused': {
-        color: 'white', // Change the label color to white when focused
-      },
-      '& .MuiOutlinedInput-notchedOutline': {
-        borderColor: 'white', // Ensure the notched outline is white
-      },
-      '& .MuiInputBase-input::placeholder': {
-        color: 'white', // Change the placeholder color to white
-      },
-      }}
+      sx={textFieldStyle}
     />
   </div>
 
@@ -211,37 +182,8 @@ const EditMember:React.FC<FormData2Type  & { setOpenEditDialog: React.Dispatch<R
       {...register("lastName")}
       error={!!errors.lastName}
       helperText={errors.lastName?.message}
-      sx={{
-        
-        '& .MuiOutlinedInput-root': {
-          '& fieldset': {
-            borderColor: 'white', // Change the border color to white
-          },
-          '&:hover fieldset': {
-            borderColor: 'white', // Change the border color on hover
-          },
-          '&.Mui-focused fieldset': {
-            borderColor: 'white', // Change the border color when focused
-          },
-        },
-        // Optional: Change the text color if needed
-       
-        '& .MuiInputBase-input': {
-        color: 'white', // Change the text color inside the input to white
-      },
-      '& .MuiInputLabel-root': {
-        color: 'white', // Change the label color to white
-      },
-      '& .MuiInputLabel-root.Mui-focused': {
-        color: 'white', // Change the label color to white when focused
-      },
-      '& .MuiOutlinedInput-notchedOutline': {
-        borderColor: 'white', // Ensure the notched outline is white
-      },
-      '& .MuiInputBase-input::placeholder': {
-        color: 'white', // Change the placeholder color to white
-      },
-      }}
+      sx={textFieldStyle}
+
     />
   </div>
 </div>
@@ -257,37 +199,8 @@ const EditMember:React.FC<FormData2Type  & { setOpenEditDialog: React.Dispatch<R
     {...register("phone")}
     error={!!errors.phone}
     helperText={errors.phone?.message}
-    sx={{
-        
-      '& .MuiOutlinedInput-root': {
-        '& fieldset': {
-          borderColor: 'white', // Change the border color to white
-        },
-        '&:hover fieldset': {
-          borderColor: 'white', // Change the border color on hover
-        },
-        '&.Mui-focused fieldset': {
-          borderColor: 'white', // Change the border color when focused
-        },
-      },
-      // Optional: Change the text color if needed
-     
-      '& .MuiInputBase-input': {
-      color: 'white', // Change the text color inside the input to white
-    },
-    '& .MuiInputLabel-root': {
-      color: 'white', // Change the label color to white
-    },
-    '& .MuiInputLabel-root.Mui-focused': {
-      color: 'white', // Change the label color to white when focused
-    },
-    '& .MuiOutlinedInput-notchedOutline': {
-      borderColor: 'white', // Ensure the notched outline is white
-    },
-    '& .MuiInputBase-input::placeholder': {
-      color: 'white', // Change the placeholder color to white
-    },
-    }}
+    sx={textFieldStyle}
+
   />
 </div>
 
@@ -302,73 +215,66 @@ const EditMember:React.FC<FormData2Type  & { setOpenEditDialog: React.Dispatch<R
     {...register("address")}
     error={!!errors.address}
     helperText={errors.address?.message}
-    sx={{
-        
-      '& .MuiOutlinedInput-root': {
-        '& fieldset': {
-          borderColor: 'white', // Change the border color to white
-        },
-        '&:hover fieldset': {
-          borderColor: 'white', // Change the border color on hover
-        },
-        '&.Mui-focused fieldset': {
-          borderColor: 'white', // Change the border color when focused
-        },
-      },
-      // Optional: Change the text color if needed
-     
-      '& .MuiInputBase-input': {
-      color: 'white', // Change the text color inside the input to white
-    },
-    '& .MuiInputLabel-root': {
-      color: 'white', // Change the label color to white
-    },
-    '& .MuiInputLabel-root.Mui-focused': {
-      color: 'white', // Change the label color to white when focused
-    },
-    '& .MuiOutlinedInput-notchedOutline': {
-      borderColor: 'white', // Ensure the notched outline is white
-    },
-    '& .MuiInputBase-input::placeholder': {
-      color: 'white', // Change the placeholder color to white
-    },
-    }}
+    sx={textFieldStyle}
+
   />
 </div>
 
 <div className="mb-4.5">
-  <FormControl fullWidth error={!!errors.membership} className=" bg-form-input"
-    sx={{
-        
-      '& .MuiOutlinedInput-root': {
-        '& fieldset': {
-          borderColor: 'white', // Change the border color to white
-        },
-        '&:hover fieldset': {
-          borderColor: 'white', // Change the border color on hover
-        },
-        '&.Mui-focused fieldset': {
-          borderColor: 'white', // Change the border color when focused
-        },
+  <FormControl fullWidth error={!!errors.membership} className="border-black"
+   sx={{
+    // Default Light Mode styling (border color, text, label colors)
+    '& .MuiOutlinedInput-root': {
+      '& fieldset': {
+        borderColor: 'black', // Light mode border color (black)
       },
-      // Optional: Change the text color if needed
-     
-      '& .MuiInputBase-input': {
-      color: 'white', // Change the text color inside the input to white
+      '&:hover fieldset': {
+        borderColor: 'black', // Light mode hover border color (black)
+      },
+      '&.Mui-focused fieldset': {
+        borderColor: 'black', // Light mode focused border color (black)
+      },
+    },
+    '& .MuiInputBase-input': {
+      color: 'black', // Light mode text color (black)
     },
     '& .MuiInputLabel-root': {
-      color: 'white', // Change the label color to white
+      color: 'black', // Light mode label color (black)
     },
     '& .MuiInputLabel-root.Mui-focused': {
-      color: 'white', // Change the label color to white when focused
+      color: 'black', // Focused label color in light mode
     },
     '& .MuiOutlinedInput-notchedOutline': {
-      borderColor: 'white', // Ensure the notched outline is white
+      borderColor: 'black', // Ensure notched outline is black in light mode
     },
     '& .MuiInputBase-input::placeholder': {
-      color: 'white', // Change the placeholder color to white
+      color: 'black', // Light mode placeholder color (black)
     },
-    }}>
+
+    // Dark Mode styles inside @media query
+    '@media (prefers-color-scheme: dark)': {
+      '& .MuiOutlinedInput-root': {
+        '& fieldset': {
+          borderColor: 'white', // Dark mode border color (white)
+        },
+      },
+      '& .MuiInputBase-input': {
+        color: '#E2E2E2', // Dark mode text color (light gray)
+      },
+      '& .MuiInputLabel-root': {
+        color: '#E2E2E2', // Dark mode label color (light gray)
+      },
+      '& .MuiInputLabel-root.Mui-focused': {
+        color: '#E2E2E2', // Focused label color in dark mode
+      },
+      '& .MuiOutlinedInput-notchedOutline': {
+        borderColor: 'white', // Dark mode notched outline color (white)
+      },
+      '& .MuiInputBase-input::placeholder': {
+        color: '#E2E2E2', // Dark mode placeholder color (light gray)
+      },
+    },
+  }}>
      <Select
       labelId="membership-label"
       {...register("membership")}
@@ -381,14 +287,14 @@ const EditMember:React.FC<FormData2Type  & { setOpenEditDialog: React.Dispatch<R
       sx={{
         '& .MuiOutlinedInput-root': {
           '& fieldset': {
-            borderColor: 'white', // Change the border color to white
+            borderColor: 'black', // Light mode border color (black)
           },
           '&:hover fieldset': {
-            borderColor: 'white', // Change the border color on hover
+            borderColor: 'black', // Hover state in light mode
           },
           '&.Mui-focused fieldset': {
-            borderColor: 'white', // Change the border color when focused
-            borderWidth: 1, // Ensure the border width remains consistent
+            borderColor: 'black', // Focus state in light mode
+            borderWidth: 1, // Ensure consistent border width
           },
           '&.Mui-focused': {
             backgroundColor: 'transparent', // Maintain background on focus
@@ -396,16 +302,31 @@ const EditMember:React.FC<FormData2Type  & { setOpenEditDialog: React.Dispatch<R
           },
         },
         '& .MuiInputBase-input': {
-          color: 'white', // Change the text color inside the input to white
+          color: 'black', // Text color in light mode
         },
         '& .MuiInputLabel-root': {
-          color: 'white', // Change the label color to white
+          color: 'black', // Label color in light mode
         },
         '& .MuiInputLabel-root.Mui-focused': {
-          color: 'white', // Change the label color to white when focused
+          color: 'black', // Focused label color in light mode
         },
         '& .MuiInputBase-input::placeholder': {
-          color: 'white', // Change the placeholder color to white
+          color: 'black', // Placeholder color in light mode
+        },
+  
+        // Dark Mode styles for Select component
+        '@media (prefers-color-scheme: dark)': {
+          '& .MuiOutlinedInput-root': {
+            '& fieldset': {
+              borderColor: 'white', // Dark mode border color (white)
+            },
+          },
+          '& .MuiInputBase-input': {
+            color: '#E2E2E2', // Text color in dark mode (light gray)
+          },
+          '& .MuiInputLabel-root': {
+            color: '#E2E2E2', // Label color in dark mode (light gray)
+          },
         },
       }}
     >
@@ -434,37 +355,8 @@ const EditMember:React.FC<FormData2Type  & { setOpenEditDialog: React.Dispatch<R
               label="Membership Starting from"
               value={value ? dayjs(value) : null}
               onChange={(date) => onChange(date ? date.toDate() : null)}
-              sx={{
-        
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': {
-                    borderColor: 'white', // Change the border color to white
-                  },
-                  '&:hover fieldset': {
-                    borderColor: 'white', // Change the border color on hover
-                  },
-                  '&.Mui-focused fieldset': {
-                    borderColor: 'white', // Change the border color when focused
-                  },
-                },
-                // Optional: Change the text color if needed
-               
-                '& .MuiInputBase-input': {
-                color: 'white', // Change the text color inside the input to white
-              },
-              '& .MuiInputLabel-root': {
-                color: 'white', // Change the label color to white
-              },
-              '& .MuiInputLabel-root.Mui-focused': {
-                color: 'white', // Change the label color to white when focused
-              },
-              '& .MuiOutlinedInput-notchedOutline': {
-                borderColor: 'white', // Ensure the notched outline is white
-              },
-              '& .MuiInputBase-input::placeholder': {
-                color: 'white', // Change the placeholder color to white
-              },
-              }}
+              sx={textFieldStyle}
+
                
             />
           )}
@@ -489,37 +381,8 @@ const EditMember:React.FC<FormData2Type  & { setOpenEditDialog: React.Dispatch<R
               label="Membership Valid till"
               value={value ? dayjs(value) : null}
               onChange={(date) => onChange(date ? date.toDate() : null)}
-              sx={{
-        
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': {
-                    borderColor: 'white', // Change the border color to white
-                  },
-                  '&:hover fieldset': {
-                    borderColor: 'white', // Change the border color on hover
-                  },
-                  '&.Mui-focused fieldset': {
-                    borderColor: 'white', // Change the border color when focused
-                  },
-                },
-                // Optional: Change the text color if needed
-               
-                '& .MuiInputBase-input': {
-                color: 'white', // Change the text color inside the input to white
-              },
-              '& .MuiInputLabel-root': {
-                color: 'white', // Change the label color to white
-              },
-              '& .MuiInputLabel-root.Mui-focused': {
-                color: 'white', // Change the label color to white when focused
-              },
-              '& .MuiOutlinedInput-notchedOutline': {
-                borderColor: 'white', // Ensure the notched outline is white
-              },
-              '& .MuiInputBase-input::placeholder': {
-                color: 'white', // Change the placeholder color to white
-              },
-              }}
+              sx={textFieldStyle}
+
             />
           )}
         />
@@ -543,37 +406,8 @@ const EditMember:React.FC<FormData2Type  & { setOpenEditDialog: React.Dispatch<R
               label="Date of birth"
               value={value ? dayjs(value) : null}
               onChange={(date) => onChange(date ? date.toDate() : null)}
-              sx={{
-        
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': {
-                    borderColor: 'white', // Change the border color to white
-                  },
-                  '&:hover fieldset': {
-                    borderColor: 'white', // Change the border color on hover
-                  },
-                  '&.Mui-focused fieldset': {
-                    borderColor: 'white', // Change the border color when focused
-                  },
-                },
-                // Optional: Change the text color if needed
-               
-                '& .MuiInputBase-input': {
-                color: 'white', // Change the text color inside the input to white
-              },
-              '& .MuiInputLabel-root': {
-                color: 'white', // Change the label color to white
-              },
-              '& .MuiInputLabel-root.Mui-focused': {
-                color: 'white', // Change the label color to white when focused
-              },
-              '& .MuiOutlinedInput-notchedOutline': {
-                borderColor: 'white', // Ensure the notched outline is white
-              },
-              '& .MuiInputBase-input::placeholder': {
-                color: 'white', // Change the placeholder color to white
-              },
-              }}
+              sx={textFieldStyle}
+
             />
           )}
         />
@@ -593,37 +427,11 @@ const EditMember:React.FC<FormData2Type  & { setOpenEditDialog: React.Dispatch<R
           defaultValue={null}
           render={({ field: { onChange, value } }) => (
             <DatePicker
-            sx={{
-        
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': {
-                  borderColor: 'white', // Change the border color to white
-                },
-                '&:hover fieldset': {
-                  borderColor: 'white', // Change the border color on hover
-                },
-                '&.Mui-focused fieldset': {
-                  borderColor: 'white', // Change the border color when focused
-                },
-              },
-              // Optional: Change the text color if needed
-             
-              '& .MuiInputBase-input': {
-              color: 'white', // Change the text color inside the input to white
-            },
-            '& .MuiInputLabel-root': {
-              color: 'white', // Change the label color to white
-            },
-            '& .MuiInputLabel-root.Mui-focused': {
-              color: 'white', // Change the label color to white when focused
-            },
-            '& .MuiOutlinedInput-notchedOutline': {
-              borderColor: 'white', // Ensure the notched outline is white
-            },
-            '& .MuiInputBase-input::placeholder': {
-              color: 'white', // Change the placeholder color to white
-            },
-            }}
+            sx={textFieldStyle}
+
+
+
+
               className="w-full"
               label="Joining from"
               value={value ? dayjs(value) : null}

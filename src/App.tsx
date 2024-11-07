@@ -108,7 +108,7 @@ function App() {
               <>
               <DefaultLayout>
                 <PageTitle title="Member | Add a new Member" />
-                <AddMembership />
+                <AddMember />
               </DefaultLayout>
 
               </>

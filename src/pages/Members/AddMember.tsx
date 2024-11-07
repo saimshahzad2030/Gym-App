@@ -12,6 +12,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { createTheme, FormControl, FormHelperText, InputAdornment, InputLabel, MenuItem, Select, TextField } from "@mui/material";
 import { ThemeProvider } from "@emotion/react";
 import { CalendarIcon } from "@mui/x-date-pickers/icons";
+import { textFieldStyle } from "../../../constants/constants";
 type FormDataType = {
   firstName: string;
   lastName: string;
@@ -144,37 +145,7 @@ const AddMember = () => {
       {...register("firstName")}
       error={!!errors.firstName}
       helperText={errors.firstName?.message} 
-      sx={{
-        
-        '& .MuiOutlinedInput-root': {
-          '& fieldset': {
-            borderColor: 'white', // Change the border color to white
-          },
-          '&:hover fieldset': {
-            borderColor: 'white', // Change the border color on hover
-          },
-          '&.Mui-focused fieldset': {
-            borderColor: 'white', // Change the border color when focused
-          },
-        },
-        // Optional: Change the text color if needed
-       
-        '& .MuiInputBase-input': {
-        color: 'white', // Change the text color inside the input to white
-      },
-      '& .MuiInputLabel-root': {
-        color: 'white', // Change the label color to white
-      },
-      '& .MuiInputLabel-root.Mui-focused': {
-        color: 'white', // Change the label color to white when focused
-      },
-      '& .MuiOutlinedInput-notchedOutline': {
-        borderColor: 'white', // Ensure the notched outline is white
-      },
-      '& .MuiInputBase-input::placeholder': {
-        color: 'white', // Change the placeholder color to white
-      },
-      }}
+      sx={textFieldStyle}
     />
   </div>
 
@@ -187,37 +158,8 @@ const AddMember = () => {
       {...register("lastName")}
       error={!!errors.lastName}
       helperText={errors.lastName?.message}
-      sx={{
-        
-        '& .MuiOutlinedInput-root': {
-          '& fieldset': {
-            borderColor: 'white', // Change the border color to white
-          },
-          '&:hover fieldset': {
-            borderColor: 'white', // Change the border color on hover
-          },
-          '&.Mui-focused fieldset': {
-            borderColor: 'white', // Change the border color when focused
-          },
-        },
-        // Optional: Change the text color if needed
-       
-        '& .MuiInputBase-input': {
-        color: 'white', // Change the text color inside the input to white
-      },
-      '& .MuiInputLabel-root': {
-        color: 'white', // Change the label color to white
-      },
-      '& .MuiInputLabel-root.Mui-focused': {
-        color: 'white', // Change the label color to white when focused
-      },
-      '& .MuiOutlinedInput-notchedOutline': {
-        borderColor: 'white', // Ensure the notched outline is white
-      },
-      '& .MuiInputBase-input::placeholder': {
-        color: 'white', // Change the placeholder color to white
-      },
-      }}
+      sx={textFieldStyle}
+
     />
   </div>
 </div>
@@ -231,37 +173,8 @@ const AddMember = () => {
     {...register("phone")}
     error={!!errors.phone}
     helperText={errors.phone?.message}
-    sx={{
-        
-      '& .MuiOutlinedInput-root': {
-        '& fieldset': {
-          borderColor: 'white', // Change the border color to white
-        },
-        '&:hover fieldset': {
-          borderColor: 'white', // Change the border color on hover
-        },
-        '&.Mui-focused fieldset': {
-          borderColor: 'white', // Change the border color when focused
-        },
-      },
-      // Optional: Change the text color if needed
-     
-      '& .MuiInputBase-input': {
-      color: 'white', // Change the text color inside the input to white
-    },
-    '& .MuiInputLabel-root': {
-      color: 'white', // Change the label color to white
-    },
-    '& .MuiInputLabel-root.Mui-focused': {
-      color: 'white', // Change the label color to white when focused
-    },
-    '& .MuiOutlinedInput-notchedOutline': {
-      borderColor: 'white', // Ensure the notched outline is white
-    },
-    '& .MuiInputBase-input::placeholder': {
-      color: 'white', // Change the placeholder color to white
-    },
-    }}
+    sx={textFieldStyle}
+
   />
 </div>
 
@@ -274,37 +187,8 @@ const AddMember = () => {
     {...register("address")}
     error={!!errors.address}
     helperText={errors.address?.message}
-    sx={{
-        
-      '& .MuiOutlinedInput-root': {
-        '& fieldset': {
-          borderColor: 'white', // Change the border color to white
-        },
-        '&:hover fieldset': {
-          borderColor: 'white', // Change the border color on hover
-        },
-        '&.Mui-focused fieldset': {
-          borderColor: 'white', // Change the border color when focused
-        },
-      },
-      // Optional: Change the text color if needed
-     
-      '& .MuiInputBase-input': {
-      color: 'white', // Change the text color inside the input to white
-    },
-    '& .MuiInputLabel-root': {
-      color: 'white', // Change the label color to white
-    },
-    '& .MuiInputLabel-root.Mui-focused': {
-      color: 'white', // Change the label color to white when focused
-    },
-    '& .MuiOutlinedInput-notchedOutline': {
-      borderColor: 'white', // Ensure the notched outline is white
-    },
-    '& .MuiInputBase-input::placeholder': {
-      color: 'white', // Change the placeholder color to white
-    },
-    }}
+    sx={textFieldStyle}
+
   />
 </div>
 <div className="mb-4.5 flex flex-col items-center w-full ">
@@ -321,37 +205,8 @@ const AddMember = () => {
               label="Date of birth"
               value={value ? dayjs(value) : null}
               onChange={(date) => onChange(date ? date.toDate() : null)}
-              sx={{
-        
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': {
-                    borderColor: 'white', // Change the border color to white
-                  },
-                  '&:hover fieldset': {
-                    borderColor: 'white', // Change the border color on hover
-                  },
-                  '&.Mui-focused fieldset': {
-                    borderColor: 'white', // Change the border color when focused
-                  },
-                },
-                // Optional: Change the text color if needed
-               
-                '& .MuiInputBase-input': {
-                color: 'white', // Change the text color inside the input to white
-              },
-              '& .MuiInputLabel-root': {
-                color: 'white', // Change the label color to white
-              },
-              '& .MuiInputLabel-root.Mui-focused': {
-                color: 'white', // Change the label color to white when focused
-              },
-              '& .MuiOutlinedInput-notchedOutline': {
-                borderColor: 'white', // Ensure the notched outline is white
-              },
-              '& .MuiInputBase-input::placeholder': {
-                color: 'white', // Change the placeholder color to white
-              },
-              }}
+              sx={textFieldStyle}
+
             />
           )}
         />
@@ -362,88 +217,129 @@ const AddMember = () => {
       )}
     </div>
 <div className="mb-4.5">
-  <FormControl fullWidth error={!!errors.membership} className=" bg-form-input"
-    sx={{
-        
-      '& .MuiOutlinedInput-root': {
-        '& fieldset': {
-          borderColor: 'white', // Change the border color to white
-        },
-        '&:hover fieldset': {
-          borderColor: 'white', // Change the border color on hover
-        },
-        '&.Mui-focused fieldset': {
-          borderColor: 'white', // Change the border color when focused
-        },
+<FormControl fullWidth error={!!errors.membership} 
+  sx={{
+    // Default Light Mode styling (border color, text, label colors)
+    '& .MuiOutlinedInput-root': {
+      '& fieldset': {
+        borderColor: 'black', // Light mode border color (black)
       },
-      // Optional: Change the text color if needed
-     
-      '& .MuiInputBase-input': {
-      color: 'white', // Change the text color inside the input to white
+      '&:hover fieldset': {
+        borderColor: 'black', // Light mode hover border color (black)
+      },
+      '&.Mui-focused fieldset': {
+        borderColor: 'black', // Light mode focused border color (black)
+      },
+    },
+    '& .MuiInputBase-input': {
+      color: 'black', // Light mode text color (black)
     },
     '& .MuiInputLabel-root': {
-      color: 'white', // Change the label color to white
+      color: 'black', // Light mode label color (black)
     },
     '& .MuiInputLabel-root.Mui-focused': {
-      color: 'white', // Change the label color to white when focused
+      color: 'black', // Focused label color in light mode
     },
     '& .MuiOutlinedInput-notchedOutline': {
-      borderColor: 'white', // Ensure the notched outline is white
+      borderColor: 'black', // Ensure notched outline is black in light mode
     },
     '& .MuiInputBase-input::placeholder': {
-      color: 'white', // Change the placeholder color to white
+      color: 'black', // Light mode placeholder color (black)
     },
-    }}>
-     <Select
-      labelId="membership-label"
-      {...register("membership")}
-      value={selectedOption}
-      onChange={(e) => {
-        setSelectedOption(e.target.value);
-        setValue("membership", e.target.value); // Set the value for react-hook-form
-      }}
-      displayEmpty
-      sx={{
+
+    // Dark Mode styles inside @media query
+    '@media (prefers-color-scheme: dark)': {
+      '& .MuiOutlinedInput-root': {
+        '& fieldset': {
+          borderColor: 'white', // Dark mode border color (white)
+        },
+      },
+      '& .MuiInputBase-input': {
+        color: '#E2E2E2', // Dark mode text color (light gray)
+      },
+      '& .MuiInputLabel-root': {
+        color: '#E2E2E2', // Dark mode label color (light gray)
+      },
+      '& .MuiInputLabel-root.Mui-focused': {
+        color: '#E2E2E2', // Focused label color in dark mode
+      },
+      '& .MuiOutlinedInput-notchedOutline': {
+        borderColor: 'white', // Dark mode notched outline color (white)
+      },
+      '& .MuiInputBase-input::placeholder': {
+        color: '#E2E2E2', // Dark mode placeholder color (light gray)
+      },
+    },
+  }}
+>
+  <Select
+    labelId="membership-label"
+    {...register("membership")}
+    value={selectedOption}
+    onChange={(e) => {
+      setSelectedOption(e.target.value);
+      setValue("membership", e.target.value); // Set the value for react-hook-form
+    }}
+    displayEmpty
+    sx={{
+      '& .MuiOutlinedInput-root': {
+        '& fieldset': {
+          borderColor: 'black', // Light mode border color (black)
+        },
+        '&:hover fieldset': {
+          borderColor: 'black', // Hover state in light mode
+        },
+        '&.Mui-focused fieldset': {
+          borderColor: 'black', // Focus state in light mode
+          borderWidth: 1, // Ensure consistent border width
+        },
+        '&.Mui-focused': {
+          backgroundColor: 'transparent', // Maintain background on focus
+          boxShadow: 'none', // Remove the default blue shadow
+        },
+      },
+      '& .MuiInputBase-input': {
+        color: 'black', // Text color in light mode
+      },
+      '& .MuiInputLabel-root': {
+        color: 'black', // Label color in light mode
+      },
+      '& .MuiInputLabel-root.Mui-focused': {
+        color: 'black', // Focused label color in light mode
+      },
+      '& .MuiInputBase-input::placeholder': {
+        color: 'black', // Placeholder color in light mode
+      },
+
+      // Dark Mode styles for Select component
+      '@media (prefers-color-scheme: dark)': {
         '& .MuiOutlinedInput-root': {
           '& fieldset': {
-            borderColor: 'white', // Change the border color to white
-          },
-          '&:hover fieldset': {
-            borderColor: 'white', // Change the border color on hover
-          },
-          '&.Mui-focused fieldset': {
-            borderColor: 'white', // Change the border color when focused
-            borderWidth: 1, // Ensure the border width remains consistent
-          },
-          '&.Mui-focused': {
-            backgroundColor: 'transparent', // Maintain background on focus
-            boxShadow: 'none', // Remove the default blue shadow
+            borderColor: 'white', // Dark mode border color (white)
           },
         },
         '& .MuiInputBase-input': {
-          color: 'white', // Change the text color inside the input to white
+          color: '#E2E2E2', // Text color in dark mode (light gray)
         },
         '& .MuiInputLabel-root': {
-          color: 'white', // Change the label color to white
+          color: '#E2E2E2', // Label color in dark mode (light gray)
         },
-        '& .MuiInputLabel-root.Mui-focused': {
-          color: 'white', // Change the label color to white when focused
-        },
-        '& .MuiInputBase-input::placeholder': {
-          color: 'white', // Change the placeholder color to white
-        },
-      }}
-    >
-      <MenuItem value="" disabled className="text-black">
-        Select member's membership
-      </MenuItem>
-      <MenuItem value="basic"  className="text-black">Basic</MenuItem>
-      <MenuItem value="silver"  className="text-black">Silver</MenuItem>
-      <MenuItem value="gold"  className="text-black">Gold</MenuItem>
-      <MenuItem value="premium" className="text-black">Premium</MenuItem>
-    </Select>
-    {errors.membership && <FormHelperText>{errors.membership.message}</FormHelperText>}
-  </FormControl>
+      },
+    }}
+  >
+    <MenuItem value="" disabled className="text-black dark:text-white">
+      Select member's membership
+    </MenuItem>
+    <MenuItem value="basic" className="text-black dark:text-white">Basic</MenuItem>
+    <MenuItem value="silver" className="text-black dark:text-white">Silver</MenuItem>
+    <MenuItem value="gold" className="text-black dark:text-white">Gold</MenuItem>
+    <MenuItem value="premium" className="text-black dark:text-white">Premium</MenuItem>
+  </Select>
+  {errors.membership && <FormHelperText>{errors.membership.message}</FormHelperText>}
+</FormControl>
+
+
+
 </div>
               <div className="mb-4.5 flex flex-col items-center w-full ">
       <ThemeProvider theme={theme}>
@@ -459,37 +355,8 @@ const AddMember = () => {
               label="Membership Starting from"
               value={value ? dayjs(value) : null}
               onChange={(date) => onChange(date ? date.toDate() : null)}
-              sx={{
-        
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': {
-                    borderColor: 'white', // Change the border color to white
-                  },
-                  '&:hover fieldset': {
-                    borderColor: 'white', // Change the border color on hover
-                  },
-                  '&.Mui-focused fieldset': {
-                    borderColor: 'white', // Change the border color when focused
-                  },
-                },
-                // Optional: Change the text color if needed
-               
-                '& .MuiInputBase-input': {
-                color: 'white', // Change the text color inside the input to white
-              },
-              '& .MuiInputLabel-root': {
-                color: 'white', // Change the label color to white
-              },
-              '& .MuiInputLabel-root.Mui-focused': {
-                color: 'white', // Change the label color to white when focused
-              },
-              '& .MuiOutlinedInput-notchedOutline': {
-                borderColor: 'white', // Ensure the notched outline is white
-              },
-              '& .MuiInputBase-input::placeholder': {
-                color: 'white', // Change the placeholder color to white
-              },
-              }}
+              sx={textFieldStyle}
+
               InputProps={{ 
                 startAdornment: (
                   <InputAdornment position="start">
@@ -520,37 +387,8 @@ const AddMember = () => {
               label="Membership Valid till"
               value={value ? dayjs(value) : null}
               onChange={(date) => onChange(date ? date.toDate() : null)}
-              sx={{
-        
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': {
-                    borderColor: 'white', // Change the border color to white
-                  },
-                  '&:hover fieldset': {
-                    borderColor: 'white', // Change the border color on hover
-                  },
-                  '&.Mui-focused fieldset': {
-                    borderColor: 'white', // Change the border color when focused
-                  },
-                },
-                // Optional: Change the text color if needed
-               
-                '& .MuiInputBase-input': {
-                color: 'white', // Change the text color inside the input to white
-              },
-              '& .MuiInputLabel-root': {
-                color: 'white', // Change the label color to white
-              },
-              '& .MuiInputLabel-root.Mui-focused': {
-                color: 'white', // Change the label color to white when focused
-              },
-              '& .MuiOutlinedInput-notchedOutline': {
-                borderColor: 'white', // Ensure the notched outline is white
-              },
-              '& .MuiInputBase-input::placeholder': {
-                color: 'white', // Change the placeholder color to white
-              },
-              }}
+              sx={textFieldStyle}
+
             />
           )}
         />
@@ -571,37 +409,8 @@ const AddMember = () => {
           defaultValue={null}
           render={({ field: { onChange, value } }) => (
             <DatePicker
-            sx={{
-        
-              '& .MuiOutlinedInput-root': {
-                '& fieldset': {
-                  borderColor: 'white', // Change the border color to white
-                },
-                '&:hover fieldset': {
-                  borderColor: 'white', // Change the border color on hover
-                },
-                '&.Mui-focused fieldset': {
-                  borderColor: 'white', // Change the border color when focused
-                },
-              },
-              // Optional: Change the text color if needed
-             
-              '& .MuiInputBase-input': {
-              color: 'white', // Change the text color inside the input to white
-            },
-            '& .MuiInputLabel-root': {
-              color: 'white', // Change the label color to white
-            },
-            '& .MuiInputLabel-root.Mui-focused': {
-              color: 'white', // Change the label color to white when focused
-            },
-            '& .MuiOutlinedInput-notchedOutline': {
-              borderColor: 'white', // Ensure the notched outline is white
-            },
-            '& .MuiInputBase-input::placeholder': {
-              color: 'white', // Change the placeholder color to white
-            },
-            }}
+            sx={textFieldStyle}
+
               className="w-full"
               label="Joining from"
               value={value ? dayjs(value) : null}

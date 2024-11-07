@@ -126,37 +126,29 @@ setOpenSnackBar(true)
           {/* Table */}
           <TableContainer component={Paper}>
             <Table
-               sx={{ minWidth: 750,backgroundColor:'rgb(26 34 44)' }}
+               sx={{ minWidth: 750 }}
+               className='dark:bg-[#1A222C] bg-white dark:text-white text-[#1A222C]'
                aria-labelledby="tableTitle"
                size={ 'medium'}
             >
               <TableHead>
-                <TableRow
-                sx={{ cursor: 'pointer',color:'white' }}
+                <TableRow 
                 >
                   <TableCell
-                   sx={{
-                          color: 'white', // default color
-                          
-                        }}
+                   
+                       className='text-[#1A222C] dark:text-white'
                   >ID</TableCell>
                   <TableCell
-                   sx={{
-                          color: 'white', // default color
-                           
-                        }}
+                                         className='text-[#1A222C] dark:text-white'
+
                   >Image</TableCell>
                   <TableCell
-                   sx={{
-                          color: 'white', // default color
-                           
-                        }}
+                                        className='text-[#1A222C] dark:text-white'
+
                   >Name</TableCell>
                   <TableCell
-                   sx={{
-                          color: 'white', // default color
-                           
-                        }}
+                                         className='text-[#1A222C] dark:text-white'
+
                   >Attendance</TableCell>
                 </TableRow>
               </TableHead>
@@ -164,25 +156,19 @@ setOpenSnackBar(true)
                 {paginatedUsers.map((user) => (
                   <TableRow key={user.id}>
                     <TableCell
-                     sx={{
-                        color: 'white', // default color
-                         
-                      }}
+                                          className='text-[#1A222C] dark:text-white'
+
                     >{user.id}</TableCell>
                     <TableCell
-                     sx={{
-                        color: 'white', // default color
-                         
-                      }}
+                                           className='text-[#1A222C] dark:text-white'
+
                     >
                       <img src={user.image} alt={user.firstName} width={40} height={40} style={{ borderRadius: '50%' }} />
                     </TableCell>
                     <TableCell
                     
-                    sx={{
-                        color: 'white', // default color
-                         
-                      }}>
+                    className='text-[#1A222C] dark:text-white'
+>
                         
                         {`${user.firstName} ${user.lastName}`}</TableCell>
                     <TableCell
