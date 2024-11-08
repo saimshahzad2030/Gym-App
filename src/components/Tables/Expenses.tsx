@@ -342,15 +342,13 @@ export default function Expenses() {
     <Box
     className='w-full mb-2 bg-white dark:bg-[#1A222C] text-[#1A222C]'
     
-    // sx={{ width: '100%',backgroundColor:'rgb(26 34 44)',color:'white' }}
-    
+   
     >
       <div className='flex flex-col items-center w-full relative'>
       {!openEditDialog && <Paper 
       
       className='w-full mb-2 bg-white dark:bg-[#1A222C]'
-      // sx={{ width: '100%', mb: 2,backgroundColor:'white' }}
-      >
+        >
         <EnhancedTableToolbar numSelected={selected.length} />
         <Box sx={{ padding: '16px' }}>
           <TextField
@@ -457,8 +455,7 @@ export default function Expenses() {
                         <EditIcon className='dark:text-white text-[#1A222C]' />
                       </IconButton>
                       <IconButton onClick={() => {
-                        // setSelectedRow(row);
-                        // setOpenEditDialog(true);
+                        
                       }}>
                         <DeleteIcon className='dark:text-white text-[#1A222C]' />
                       </IconButton>
@@ -481,8 +478,7 @@ export default function Expenses() {
           </Table>
         </TableContainer>
         <TablePagination
-                      className='dark:text-white' 
-        // sx={{color:'white'}}
+                      className='dark:text-white'  
           rowsPerPageOptions={[10]}
           component="div"
           count={rows.length}
@@ -495,7 +491,7 @@ export default function Expenses() {
         
         <div
           className=' w-full dark:bg-boxdark bg-white p-4 rounded '
-          onClick={(e) => e.stopPropagation()} // Prevent click from bubbling up
+          onClick={(e) => e.stopPropagation()} 
         >
             
             <div className='flex flex-row items-center justify-end w-full mt-4'>

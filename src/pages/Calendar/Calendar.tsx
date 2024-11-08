@@ -31,8 +31,8 @@ export default function CalendarComponent() {
   const [selectedDate, setSelectedDate] = useState('');
   const [users, setUsers] = useState(sampleUsers);
   const [searchTerm, setSearchTerm] = useState('');
-  const [page, setPage] = useState(0); // Current page
-  const [rowsPerPage, setRowsPerPage] = useState(5); // Rows per page
+  const [page, setPage] = useState(0); 
+  const [rowsPerPage, setRowsPerPage] = useState(5);  
 
   const handleDateClick = (arg) => {
     setSelectedDate(arg.dateStr);
@@ -47,26 +47,21 @@ setOpenSnackBar(true)
       )
     );
   };
-
-  // Filter users based on search term (by first or last name)
+ 
   const filteredUsers = users.filter(
     (user) =>
       user.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.lastName.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  // Slice filtered users for pagination
+ 
   const paginatedUsers = filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
-
-  // Handle page change
+ 
   const handleChangePage = (event, newPage:number) => {
     setPage(newPage);
   };
-
-  // Handle rows per page change
+ 
   const handleChangeRowsPerPage = (event) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0); // Reset to first page
+    setRowsPerPage(parseInt(event.target.value, 10)); 
   };
 
   return (
@@ -75,13 +70,12 @@ setOpenSnackBar(true)
         <FullCalendar
           plugins={[dayGridPlugin, interactionPlugin]}
           initialView="dayGridMonth"
-          dateClick={handleDateClick} // Date click handler
+          dateClick={handleDateClick} 
         />
       ) : (
         <div>
           <h2>Attendance for {selectedDate}</h2>
-
-          {/* Search Input */}
+ 
           <TextField
             label="Search by Name"
             variant="outlined"
@@ -93,37 +87,34 @@ setOpenSnackBar(true)
         
                 '& .MuiOutlinedInput-root': {
                   '& fieldset': {
-                    borderColor: 'white', // Change the border color to white
+                    borderColor: 'white',  
                   },
                   '&:hover fieldset': {
-                    borderColor: 'white', // Change the border color on hover
+                    borderColor: 'white',  
                   },
                   '&.Mui-focused fieldset': {
-                    borderColor: 'white', // Change the border color when focused
+                    borderColor: 'white',  
                   },
-                },
-                // Optional: Change the text color if needed
-               
+                }, 
                 '& .MuiInputBase-input': {
-                color: 'white', // Change the text color inside the input to white
+                color: 'white',  
               },
               '& .MuiInputLabel-root': {
-                color: 'white', // Change the label color to white
+                color: 'white', 
               },
               '& .MuiInputLabel-root.Mui-focused': {
-                color: 'white', // Change the label color to white when focused
+                color: 'white', 
               },
               '& .MuiOutlinedInput-notchedOutline': {
-                borderColor: 'white', // Ensure the notched outline is white
+                borderColor: 'white', 
               },
               '& .MuiInputBase-input::placeholder': {
-                color: 'white', // Change the placeholder color to white
+                color: 'white', 
               },
               }}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-
-          {/* Table */}
+ 
           <TableContainer component={Paper}>
             <Table
                sx={{ minWidth: 750 }}
@@ -173,7 +164,7 @@ setOpenSnackBar(true)
                         {`${user.firstName} ${user.lastName}`}</TableCell>
                     <TableCell
                      sx={{
-                        color: 'white', // default color
+                        color: 'white',  
                          
                       }}
                     >
@@ -182,8 +173,7 @@ setOpenSnackBar(true)
                         sx={{backgroundColor:user.isPresent ? 'white' : 'gray',
                             color:user.isPresent ? 'gray' : 'white'
                         }}
-                        // color={user.isPresent ? 'secondary' : 'primary'}
-                        onClick={() => toggleUserAttendance(user.id)}
+                         onClick={() => toggleUserAttendance(user.id)}
                       >
                         {user.isPresent ? 'Mark Absent' : 'Mark Present'}
                       </Button>
@@ -194,8 +184,7 @@ setOpenSnackBar(true)
             </Table>
             <SnackbarComp open={openSnackBar} setOpen={setOpenSnackBar} message='User Marked Present'/>
           </TableContainer>
-
-          {/* Pagination */}
+ 
           <TablePagination
             sx={{ color: 'white' }}
             rowsPerPageOptions={[5, 10, 25]}

@@ -208,24 +208,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   const { numSelected } = props;
   return (
     <Toolbar
-    className='dark:bg-[#1A222C] bg-white sm:pl-2'
-    // sx={[
-    //   {
-    //     pl: { sm: 2 },
-    //     pr: { xs: 1, sm: 1 },
-    //   },
-    //   numSelected > 0 && {
-    //     bgcolor:  'white'
-    //   },
-    //   {
-    //     // Add dark mode styles using Tailwind's dark class
-    //     '.dark &': {
-    //       pl: { sm: 2 }, // Example padding; adjust based on your needs
-    //       pr: { xs: 1, sm: 1 },
-    //       bgcolor: '#30f172a'
-    //     },
-    //   },
-    // ]}
+   
   >
       {numSelected > 0 ? (
         <p
@@ -291,18 +274,10 @@ export default function Reports() {
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
     property: string
-  ) => {
-    // Sorting logic
+  ) => { 
   };
 
-//   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
-//     if (event.target.checked) {
-//       const newSelected = rows.map((n) => n.id);
-//       setSelected(newSelected);
-//       return;
-//     }
-//     setSelected([]);
-//   };
+ 
 const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
   if (event.target.checked) {
     const newSelected = rows.map((n) => n.id);

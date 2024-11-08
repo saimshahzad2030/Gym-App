@@ -358,15 +358,13 @@ export default function EnhancedTable() {
   return (
     <Box
     className='w-full mb-2 bg-white dark:bg-[#1A222C] text-[#1A222C]'
-    
-    // sx={{ width: '100%',backgroundColor:'rgb(26 34 44)',color:'white' }}
+     
     
     >
       <div className='flex flex-col items-center w-full relative'>
       {!openEditDialog && <Paper 
       
-      className='w-full mb-2 bg-white dark:bg-[#1A222C]'
-      // sx={{ width: '100%', mb: 2,backgroundColor:'white' }}
+      className='w-full mb-2 bg-white dark:bg-[#1A222C]'  
       >
         <EnhancedTableToolbar numSelected={selected.length} />
         <Box sx={{ padding: '16px' }}>
@@ -410,8 +408,7 @@ export default function EnhancedTable() {
                     aria-checked={isItemSelected}
                     tabIndex={-1}
                     key={row.id}
-                    selected={isItemSelected}
-                    // sx={{ cursor: 'pointer',color:'white' }}
+                    selected={isItemSelected} 
                   >
 
                     <TableCell padding="checkbox">
@@ -423,7 +420,7 @@ export default function EnhancedTable() {
                         sx={{
                           
                           '&.Mui-checked': {
-                            color: 'gray', // color when checked
+                            color: 'gray', 
                           },
                         }}
                       />
@@ -471,8 +468,7 @@ export default function EnhancedTable() {
                         />
                       </IconButton>
                       <IconButton onClick={() => {
-                        // setSelectedRow(row);
-                        // setOpenEditDialog(true);
+                         
                       }}>
                         <DeleteIcon                       className='dark:text-white'
  />
@@ -509,7 +505,7 @@ export default function EnhancedTable() {
         
          <div
           className=' w-full dark:bg-boxdark bg-white p-4 rounded '
-          onClick={(e) => e.stopPropagation()} // Prevent click from bubbling up
+          onClick={(e) => e.stopPropagation()}  
         >
             
             <div className='flex flex-row items-center justify-end w-full mt-4'>

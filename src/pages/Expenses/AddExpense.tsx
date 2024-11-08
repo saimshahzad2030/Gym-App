@@ -11,6 +11,7 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
+import { textFieldStyle } from "../../../constants/constants";
  
 type FormDataType = {
   label: string;
@@ -86,58 +87,7 @@ const AddExpense = () => {
       {...register("expenseName")}
       error={!!errors.expenseName}
       helperText={errors.expenseName?.message} 
-      sx={{
-        '& .MuiOutlinedInput-root': {
-          '& fieldset': {
-            borderColor: '#0f172a', // Default light mode border color
-            '.dark &': {
-              borderColor: 'white', // Example dark mode border color using Tailwind color
-            },
-          },
-          '&:hover fieldset': {
-            borderColor: '#0f172a',
-            '.dark &': {
-              borderColor: 'white',
-            },
-          },
-          '&.Mui-focused fieldset': {
-            borderColor: '#0f172a',
-            '.dark &': {
-              borderColor: 'white',
-            },
-          },
-        },
-        '& .MuiInputBase-input': {
-          color: '#0f172a',
-          '.dark &': {
-            color: 'white', // Example dark mode text color
-          },
-        },
-        '& .MuiInputLabel-root': {
-          color: '#0f172a',
-          '.dark &': {
-            color: 'white',
-          },
-        },
-        '& .MuiInputLabel-root.Mui-focused': {
-          color: '#0f172a',
-          '.dark &': {
-            color: 'white',
-          },
-        },
-        '& .MuiOutlinedInput-notchedOutline': {
-          borderColor: '#0f172a',
-          '.dark &': {
-            borderColor: 'white',
-          },
-        },
-        '& .MuiInputBase-input::placeholder': {
-          color: '#0f172a',
-          '.dark &': {
-            color: 'white',
-          },
-        },
-      }}
+      sx={textFieldStyle}
     />
   </div>
 
@@ -153,58 +103,7 @@ const AddExpense = () => {
     {...register("label")}
     error={!!errors.label}
     helperText={errors.label?.message}
-    sx={{
-      '& .MuiOutlinedInput-root': {
-        '& fieldset': {
-          borderColor: '#0f172a', // Default light mode border color
-          '.dark &': {
-            borderColor: 'white', // Example dark mode border color using Tailwind color
-          },
-        },
-        '&:hover fieldset': {
-          borderColor: '#0f172a',
-          '.dark &': {
-            borderColor: 'white',
-          },
-        },
-        '&.Mui-focused fieldset': {
-          borderColor: '#0f172a',
-          '.dark &': {
-            borderColor: 'white',
-          },
-        },
-      },
-      '& .MuiInputBase-input': {
-        color: '#0f172a',
-        '.dark &': {
-          color: 'white', // Example dark mode text color
-        },
-      },
-      '& .MuiInputLabel-root': {
-        color: '#0f172a',
-        '.dark &': {
-          color: 'white',
-        },
-      },
-      '& .MuiInputLabel-root.Mui-focused': {
-        color: '#0f172a',
-        '.dark &': {
-          color: 'white',
-        },
-      },
-      '& .MuiOutlinedInput-notchedOutline': {
-        borderColor: '#0f172a',
-        '.dark &': {
-          borderColor: 'white',
-        },
-      },
-      '& .MuiInputBase-input::placeholder': {
-        color: '#0f172a',
-        '.dark &': {
-          color: 'white',
-        },
-      },
-    }}
+   sx={textFieldStyle}
   />
 </div>
 
@@ -217,58 +116,7 @@ const AddExpense = () => {
     {...register("amount")}
     error={!!errors.amount}
     helperText={errors.amount?.message}
-    sx={{
-      '& .MuiOutlinedInput-root': {
-        '& fieldset': {
-          borderColor: '#0f172a', // Default light mode border color
-          '.dark &': {
-            borderColor: 'white', // Example dark mode border color using Tailwind color
-          },
-        },
-        '&:hover fieldset': {
-          borderColor: '#0f172a',
-          '.dark &': {
-            borderColor: 'white',
-          },
-        },
-        '&.Mui-focused fieldset': {
-          borderColor: '#0f172a',
-          '.dark &': {
-            borderColor: 'white',
-          },
-        },
-      },
-      '& .MuiInputBase-input': {
-        color: '#0f172a',
-        '.dark &': {
-          color: 'white', // Example dark mode text color
-        },
-      },
-      '& .MuiInputLabel-root': {
-        color: '#0f172a',
-        '.dark &': {
-          color: 'white',
-        },
-      },
-      '& .MuiInputLabel-root.Mui-focused': {
-        color: '#0f172a',
-        '.dark &': {
-          color: 'white',
-        },
-      },
-      '& .MuiOutlinedInput-notchedOutline': {
-        borderColor: '#0f172a',
-        '.dark &': {
-          borderColor: 'white',
-        },
-      },
-      '& .MuiInputBase-input::placeholder': {
-        color: '#0f172a',
-        '.dark &': {
-          color: 'white',
-        },
-      },
-    }}
+    sx={textFieldStyle}
   />
 </div>
 <div className="mb-4.5 flex flex-col items-center w-full ">
@@ -285,58 +133,7 @@ const AddExpense = () => {
               label="Payment Date"
               value={value ? dayjs(value) : null}
               onChange={(date) => onChange(date ? date.toDate() : null)}
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': {
-                    borderColor: '#0f172a', // Default light mode border color
-                    '.dark &': {
-                      borderColor: 'white', // Example dark mode border color using Tailwind color
-                    },
-                  },
-                  '&:hover fieldset': {
-                    borderColor: '#0f172a',
-                    '.dark &': {
-                      borderColor: 'white',
-                    },
-                  },
-                  '&.Mui-focused fieldset': {
-                    borderColor: '#0f172a',
-                    '.dark &': {
-                      borderColor: 'white',
-                    },
-                  },
-                },
-                '& .MuiInputBase-input': {
-                  color: '#0f172a',
-                  '.dark &': {
-                    color: 'white', // Example dark mode text color
-                  },
-                },
-                '& .MuiInputLabel-root': {
-                  color: '#0f172a',
-                  '.dark &': {
-                    color: 'white',
-                  },
-                },
-                '& .MuiInputLabel-root.Mui-focused': {
-                  color: '#0f172a',
-                  '.dark &': {
-                    color: 'white',
-                  },
-                },
-                '& .MuiOutlinedInput-notchedOutline': {
-                  borderColor: '#0f172a',
-                  '.dark &': {
-                    borderColor: 'white',
-                  },
-                },
-                '& .MuiInputBase-input::placeholder': {
-                  color: '#0f172a',
-                  '.dark &': {
-                    color: 'white',
-                  },
-                },
-              }}
+              sx={textFieldStyle}
               
             />
           )}
