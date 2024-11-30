@@ -2,6 +2,10 @@ import * as React from 'react';
 import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions'; 
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell'; 
 import EditIcon from '@mui/icons-material/Edit'
@@ -24,70 +28,184 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
 import Image from '../Image/Image';
-import { Button, TextField } from '@mui/material'; 
+import { Button, styled, TextField } from '@mui/material'; 
 import EditMember from '../../pages/Members/EditMember';
-import { textFieldStyle } from '../../../constants/constants';
+import { checkBoxStyle, textFieldStyle } from '../../../constants/constants';
+import { deleteMember, fetchMembers, fetchMembersUsingSearch } from '../../services/members.services';
+import SnackbarComp from '../SnackBar/Snackbar';
+import LoaderComp from '../Loader/Loader';
    
- 
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  '& .MuiDialogContent-root': {
+    padding: theme.spacing(2),
+  },
+  '& .MuiDialogActions-root': {
+    padding: theme.spacing(1),
+  },
+}));
 interface Data {
   id: number;
-  firstName: string;
-  lastName: string;
-  phone:number;
-  image:string;
-  joiningDate:Date;
-  dob:Date;
-  address:string;
-  membership:string;
-  membershipStartingDate:Date;
-  membershipEndingDate:Date;
+  activated: number;
+  role_name: string;
+  member_id: string;
+  token: string;
+  is_exist: number;
+  first_name: string;
+  middle_name: string;
+  last_name: string;
+  member_type: string;
+  role: number;
+  s_specialization: string;
+  gender: string;
+  birth_date: string; // Format: YYYY-MM-DD
+  assign_class: number;
+  assign_group: string;
+  address: string;
+  city: string;
+  state: string;
+  zipcode: string;
+  mobile: number;
+  phone: string;
+  email: string;
+  weight: string;
+  height: string;
+  chest: string;
+  waist: string;
+  thing: string;
+  arms: string;
+  fat: string;
+  username: string;
+  password: string;
+  image: string;
+  assign_staff_mem: number;
+  intrested_area: number;
+  g_source: number;
+  referrer_by: number;
+  inquiry_date: string; // Format: YYYY-MM-DD
+  trial_end_date: string; // Format: YYYY-MM-DD
+  selected_membership: string;
+  membership_status: string;
+  membership_valid_from: string; // Format: YYYY-MM-DD
+  membership_valid_to: string; // Format: YYYY-MM-DD
+  first_pay_date: string; // Format: YYYY-MM-DD
+  created_by: number;
+  created_date: string; // Format: YYYY-MM-DD
+  alert_sent: number;
+  admin_alert: number;
+  alert_send_date: string; // Format: YYYY-MM-DD
+  members_reg_number: string;
+  fingerprint: string;
    
 }
 
 function createData(
   id: number,
-  firstName: string,
-  lastName: string,
-  phone:number,
-  image:string,
-  joiningDate:Date ,
-  dob:Date,
-  address:string,
-  membership:string,
-  membershipStartingDate:Date,
-  membershipEndingDate:Date,
+  activated: number,
+  role_name: string,
+  member_id: string,
+  token: string,
+  is_exist: number,
+  first_name: string,
+  middle_name: string,
+  last_name: string,
+  member_type: string,
+  role: number,
+  s_specialization: string,
+  gender: string,
+  birth_date: string, // Format: YYYY-MM-DD
+  assign_class: number,
+  assign_group: string,
+  address: string,
+  city: string,
+  state: string,
+  zipcode: string,
+  mobile: number,
+  phone: string,
+  email: string,
+  weight: string,
+  height: string,
+  chest: string,
+  waist: string,
+  thing: string,
+  arms: string,
+  fat: string,
+  username: string,
+  password: string,
+  image: string,
+  assign_staff_mem: number,
+  intrested_area: number,
+  g_source: number,
+  referrer_by: number,
+  inquiry_date: string, // Format: YYYY-MM-DD
+  trial_end_date: string, // Format: YYYY-MM-DD
+  selected_membership: string,
+  membership_status: string,
+  membership_valid_from: string, // Format: YYYY-MM-DD
+  membership_valid_to: string, // Format: YYYY-MM-DD
+  first_pay_date: string, // Format: YYYY-MM-DD
+  created_by: number,
+  created_date: string, // Format: YYYY-MM-DD
+  alert_sent: number,
+  admin_alert: number,
+  alert_send_date: string, // Format: YYYY-MM-DD
+  members_reg_number: string,
+  fingerprint: string,
 ): Data {
   return {
     id,
-    firstName,
-    lastName,
-    phone,
-    image,
-    joiningDate,
-    dob,
+    activated,
+    role_name,
+    member_id,
+    token,
+    is_exist,
+    first_name,
+    middle_name,
+    last_name,
+    member_type,
+    role,
+    s_specialization,
+    gender,
+    birth_date, // Format: YYYY-MM-DD
+    assign_class,
+    assign_group,
     address,
-    membership,
-    membershipStartingDate,
-    membershipEndingDate,
+    city,
+    state,
+    zipcode,
+    mobile,
+    phone,
+    email,
+    weight,
+    height,
+    chest,
+    waist,
+    thing,
+    arms,
+    fat,
+    username,
+    password,
+    image,
+    assign_staff_mem,
+    intrested_area,
+    g_source,
+    referrer_by,
+    inquiry_date, // Format: YYYY-MM-DD
+    trial_end_date, // Format: YYYY-MM-DD
+    selected_membership,
+    membership_status,
+    membership_valid_from, // Format: YYYY-MM-DD
+    membership_valid_to, // Format: YYYY-MM-DD
+    first_pay_date, // Format: YYYY-MM-DD
+    created_by,
+    created_date, // Format: YYYY-MM-DD
+    alert_sent,
+    admin_alert,
+    alert_send_date, // Format: YYYY-MM-DD
+    members_reg_number,
+    fingerprint,
   };
 }
-
-const rows = [
-  createData(1, 'John', 'Doe', 3013415184, '/pp-1.jpg', new Date('2023-01-15'), new Date('1990-05-21'), '123 Street A', 'gold', new Date('2023-01-15'), new Date('2024-01-15')),
-  createData(2, 'Jane', 'Smith', 3013415184, '/pp-2.jpg', new Date('2023-02-10'), new Date('1988-10-11'), '456 Street B', 'silver', new Date('2023-02-10'), new Date('2024-02-10')),
-  createData(3, 'Alice', 'Johnson', 3013415184, '/pp-3.jpg', new Date('2023-03-12'), new Date('1995-07-30'), '789 Street C', 'premium', new Date('2023-03-12'), new Date('2024-03-12')),
-  createData(4, 'Bob', 'Brown', 3013415184, '/pp-4.jpg', new Date('2023-04-18'), new Date('1985-01-22'), '101 Street D', 'basic', new Date('2023-04-18'), new Date('2024-04-18')),
-  createData(5, 'Charlie', 'Wilson', 3013415184, '/pp-5.jpg', new Date('2023-05-25'), new Date('1993-09-15'), '202 Street E', 'silver', new Date('2023-05-25'), new Date('2024-05-25')),
-  createData(6, 'Diana', 'Moore', 3013415184, '/pp-6.jpg', new Date('2023-06-30'), new Date('1992-02-18'), '303 Street F', 'premium', new Date('2023-06-30'), new Date('2024-06-30')),
-  createData(7, 'Evan', 'Taylor', 3013415184, '/pp-7.jpg', new Date('2023-07-14'), new Date('1991-11-23'), '404 Street G', 'gold', new Date('2023-07-14'), new Date('2024-07-14')),
-  createData(8, 'Fiona', 'Anderson', 3013415184, '/pp-2.jpg', new Date('2023-08-09'), new Date('1986-06-07'), '505 Street H', 'basic', new Date('2023-08-09'), new Date('2024-08-09')),
-  createData(9, 'George', 'Thomas', 3013415184, '/pp-3.jpg', new Date('2023-09-05'), new Date('1989-12-25'), '606 Street I', 'premium', new Date('2023-09-05'), new Date('2024-09-05')),
-  createData(10, 'Hannah', 'White', 3013415184, '/pp-1.jpg', new Date('2023-10-15'), new Date('1994-03-08'), '707 Street J', 'gold', new Date('2023-10-15'), new Date('2024-10-15')),
-  createData(11, 'Ivy', 'Clark', 3013415184, '/pp-5.jpg', new Date('2023-11-12'), new Date('1996-04-17'), '808 Street K', 'basic', new Date('2023-11-12'), new Date('2024-11-12')),
-  createData(12, 'Jack', 'King', 3013415184, '/pp-1.jpg', new Date('2023-12-20'), new Date('1987-08-30'), '909 Street L', 'premium', new Date('2023-12-20'), new Date('2024-12-20')),
-  createData(13, 'Kara', 'Young', 3013415184, '/pp-7.jpg', new Date('2023-01-03'), new Date('1998-02-25'), '1010 Street M', 'gold', new Date('2023-01-03'), new Date('2024-01-03')),
-];
-
+ 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
     return -1;
@@ -102,8 +220,8 @@ type Order = 'asc' | 'desc';
 
 const getComparator = (order: 'asc' | 'desc', orderBy: keyof Data) => {
   return (a: Data, b: Data) => {
-    const valueA = orderBy === 'membershipEndingDate' ? +new Date(a[orderBy]) : a[orderBy];
-    const valueB = orderBy === 'membershipEndingDate' ? +new Date(b[orderBy]) : b[orderBy];
+    const valueA = orderBy === 'membership_valid_to' ? +new Date(a[orderBy]) : a[orderBy];
+    const valueB = orderBy === 'membership_valid_to' ? +new Date(b[orderBy]) : b[orderBy];
     if (valueA < valueB) return order === 'asc' ? -1 : 1;
     if (valueA > valueB) return order === 'asc' ? 1 : -1;
     return 0;
@@ -177,11 +295,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
                          inputProps={{
                            'aria-label': 'select all desserts',
                          }}
-                        sx={{ 
-                          '&.Mui-checked': {
-                            color: 'gray', // color when checked
-                          },
-                        }}
+                         sx={checkBoxStyle}
                       />
         </TableCell>
         {headCells.map((headCell) => (
@@ -281,23 +395,92 @@ export default function EnhancedTable() {
   const [order, setOrder] = React.useState<Order>('asc');
   const [orderBy, setOrderBy] = React.useState<keyof Data>('id');
   const [selected, setSelected] = React.useState<readonly number[]>([]);
-  const [page, setPage] = React.useState(0); 
+  const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [searchTerm, setSearchTerm] = React.useState<string>('');
   const [openEditDialog, setOpenEditDialog] = React.useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
+  const [totalEntries,setTotalEntries]  = React.useState<number>(0)
   const [selectedRow, setSelectedRow] = React.useState<Data | null>(null);
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const [members, setMembers] = React.useState<Data[]>([]);
+  const [loading, setLoading] = React.useState<boolean>(true);
+  const [newEntriesloading, setNewEntriesLoading] = React.useState<boolean>(false);
+  const [openSnackBar, setOpenSnackBar] = React.useState<boolean>(false);
+  const [nextUrl, setNextUrl] = React.useState<string>("");
+  const [previousUrl, setPreviousUrl] = React.useState<string>("");
+
+  const handleSearchChange = async(event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
+    const members:{results:Data[],count:number,next:string,previous:string,error?:string} = await fetchMembersUsingSearch(event.target.value);
+    setLoading(false)
+    console.log(members)
+    if (!members.error) {
+      setNextUrl(members.next)
+      setPreviousUrl(members.previous)
+      setTotalEntries(members.count);
+
+      setMembers(members.results);
+    }
   };
 
-  const filteredRows = rows.filter((row) =>
-    row.firstName.toLowerCase().includes(searchTerm.toLowerCase())
+  React.useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true)
+      const members:{results:Data[],count:number,next:string,previous:string,error?:string} = await fetchMembers("");
+      setLoading(false)
+      if (!members.error) {
+        setNextUrl(members.next)
+        setPreviousUrl(members.previous)
+        setTotalEntries(members.count);
+
+        setMembers(members.results);
+      }
+    };
+    fetchData();
+  }, []);
+  let filteredRows:Data[];
+  filteredRows = members.filter((row) =>
+    row.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  row.last_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  const handleChangePage = async(event: unknown, newPage: number) => {
+    const isNext = newPage > page;
+    const isPrevious = newPage < page;
+     setPage(newPage);
+    const urlToFetch = isNext ? nextUrl : previousUrl;
+    setNewEntriesLoading(true)
+    if (urlToFetch) {
+      const members:{results:Data[],count:number,next:string,previous:string,error?:string} = await fetchMembers(urlToFetch);
+      setNewEntriesLoading(false);
+  
+      if (!members.error) {
+         setNextUrl(members.next);
+        setPreviousUrl(members.previous);
+        setTotalEntries(members.count);
+        setMembers(members.results);
+        filteredRows = members.results.filter((row) =>
+          row.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        row.last_name.toLowerCase().includes(searchTerm.toLowerCase())
+        ); 
+      }
+    } else {
+      setLoading(false);
+      console.error('No URL available for fetching members.');
+    }
+  };
+  const updateMember = (updatedMember: Data) => {
+    setMembers((prevMembers) =>
+      prevMembers.map((member) =>
+        member.id == updatedMember.id ? updatedMember : member
+      )
+    );
+  };
 
  
+
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
-    property: keyof Data,
+    property: keyof Data
   ) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
@@ -306,7 +489,7 @@ export default function EnhancedTable() {
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
-      const newSelected = rows.map((n) => n.id);
+      const newSelected = members.map((n) => n.id);
       setSelected(newSelected);
       return;
     }
@@ -326,34 +509,26 @@ export default function EnhancedTable() {
     } else if (selectedIndex > 0) {
       newSelected = newSelected.concat(
         selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1),
+        selected.slice(selectedIndex + 1)
       );
     }
     setSelected(newSelected);
   };
 
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage);
-  };
+ 
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
+ 
 
-   
-
-  // Avoid a layout jump when reaching the last page with empty rows.
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+  // const emptyRows =
+  //   page > 0 ? Math.max(0, (1 + page) * rowsPerPage - filteredRows.length) : 0;
 
   const visibleRows = React.useMemo(
     () =>
       [...filteredRows]
-        .sort(getComparator(order, orderBy))
-        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
+    .sort(getComparator(order, orderBy))
+    .slice(0, page * rowsPerPage + rowsPerPage),
     [order, orderBy, page, rowsPerPage, filteredRows]
-  );
+  ); 
 
   return (
     <Box
@@ -361,7 +536,8 @@ export default function EnhancedTable() {
      
     
     >
-      <div className='flex flex-col items-center w-full relative'>
+      {loading?<LoaderComp />:
+      visibleRows.length>0?<div className='flex flex-col items-center w-full relative'>
       {!openEditDialog && <Paper 
       
       className='w-full mb-2 bg-white dark:bg-[#1A222C]'  
@@ -390,7 +566,7 @@ export default function EnhancedTable() {
               orderBy={orderBy}
               onSelectAllClick={handleSelectAllClick}
               onRequestSort={handleRequestSort}
-              rowCount={rows.length}
+              rowCount={members.length}
             />
             <TableBody
      className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white' 
@@ -417,19 +593,14 @@ export default function EnhancedTable() {
                         inputProps={{
                           'aria-labelledby': labelId,
                         }}
-                        sx={{
-                          
-                          '&.Mui-checked': {
-                            color: 'gray', 
-                          },
-                        }}
+                        sx={checkBoxStyle}
                       />
                     </TableCell>
                     <TableCell align="center"
                       className='dark:text-white'
                       >
                       <div className='w-12 h-12 rounded-full flex flex-col items-center justify-center overflow-hidden'>
-                        <Image className='w-14 h-14 ' image={{src:row.image,name:row.firstName}}/>
+                        <Image className='w-14 h-14 ' image={{src:row.image,name:row.first_name}}/>
                       </div>
                       </TableCell> 
                     <TableCell
@@ -441,34 +612,36 @@ export default function EnhancedTable() {
                       className='dark:text-white'
 
                     >
-                      {`${row.firstName} ${row.lastName}`}
+                      {`${row.first_name} `}
                     </TableCell>
-                   
-                    <TableCell
-                    align="center"                      className='dark:text-white'
-
-                    >
-  {format(new Date(row.membershipEndingDate), 'MM/dd/yyyy')} 
-</TableCell>
                     <TableCell 
                     align="center"
                     className='dark:text-white'
 
                     
-                    >{row.phone}</TableCell>
+                    >{row.mobile}</TableCell>
+                    <TableCell
+                    align="center"                      className='dark:text-white'
+
+                    >
+  {format(new Date(row.membership_valid_to), 'MM/dd/yyyy')} 
+</TableCell>
+                   
                       <TableCell align="center"
                       className='dark:text-white'
                       >
                       <IconButton onClick={() => {
                         setSelectedRow(row);
-                        console.log(row)
+                    
                         setOpenEditDialog(true);
                       }}>
                         <EditIcon                       className='dark:text-white'
                         />
                       </IconButton>
-                      <IconButton onClick={() => {
-                         
+                      <IconButton  onClick={() => {
+                        setSelectedRow(row);
+                        
+                        setOpenDeleteDialog(true);
                       }}>
                         <DeleteIcon                       className='dark:text-white'
  />
@@ -478,7 +651,7 @@ export default function EnhancedTable() {
                   
                 );
               })}
-              {emptyRows > 0 && (
+              {/* {emptyRows > 0 && (
                 <TableRow
                   style={{
                     height: (  53) * emptyRows,
@@ -487,15 +660,15 @@ export default function EnhancedTable() {
                   <TableCell colSpan={6} />
                   
                 </TableRow>
-              )}
+              )} */}
             </TableBody>
           </Table>
         </TableContainer>
         <TablePagination
-        sx={{color:'white'}}
+        className='dark:text-white' 
           rowsPerPageOptions={[10]}
           component="div"
-          count={rows.length}
+          count={filteredRows.length}
           rowsPerPage={rowsPerPage}
           page={page}
           onPageChange={handleChangePage} 
@@ -513,10 +686,60 @@ export default function EnhancedTable() {
               <CloseIcon className='dark:text-white text-boxdark mb-4'/>
             </Button>
               </div>
-            <EditMember user={selectedRow} setOpenEditDialog={setOpenEditDialog}/>
+            <EditMember
+             user={selectedRow} 
+             setOpenEditDialog={setOpenEditDialog}
+             onUpdateMember={updateMember}
+
+             />
           </div> 
       )}
-      </div>
+       <BootstrapDialog
+        onClose={()=>{setOpenDeleteDialog(false)}}
+        aria-labelledby="customized-dialog-title"
+        open={openDeleteDialog}
+      >
+        <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
+          Warning
+        </DialogTitle>
+        <IconButton
+          aria-label="close"
+          onClick={()=>{setOpenDeleteDialog(false)}}
+          sx={(theme) => ({
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: theme.palette.grey[500],
+          })}
+        >
+          <CloseIcon />
+        </IconButton>
+        <DialogContent dividers>
+          <Typography gutterBottom>
+           Are you sure you want to delete this member? If yes then click on continue
+          </Typography>
+          
+        </DialogContent>
+        <DialogActions>
+          <Button autoFocus onClick={async()=>{
+            const deleteEntry = await deleteMember(selectedRow?.id || 0);
+            if(deleteEntry.status == 204){
+              setOpenDeleteDialog(false)
+              setMembers((prevMembers) => prevMembers.filter((member) => member.id !== selectedRow?.id));
+              setOpenSnackBar(true)
+              setTotalEntries(totalEntries-1)
+            }
+            console.log(deleteEntry.status)
+
+          }}>
+            Continue
+          </Button>
+        </DialogActions>
+      </BootstrapDialog>
+      </div>:
+      <p className='dark:text-white text-graydark p-4'>No members to show</p>}
+          <SnackbarComp open={openSnackBar} setOpen={setOpenSnackBar} message={  "Deleted Succesfully"}/>
+
     </Box>
   );
 }

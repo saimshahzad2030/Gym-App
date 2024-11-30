@@ -5,50 +5,89 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup"; 
 import SnackbarComp from "../../components/SnackBar/Snackbar";
  
-import { createTheme, FormControl, FormHelperText,  MenuItem, Select, TextField } from "@mui/material";
+import { Autocomplete, createTheme, FormControl, FormHelperText,  MenuItem, Select, TextField } from "@mui/material";
 import { ThemeProvider } from "@emotion/react";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-import { textFieldStyle } from "../../../constants/constants";
+import { selectFieldStyle, textFieldStyle } from "../../../constants/constants";
+import { editPayment } from "../../services/payment.services";
+import { fetchMembers } from "../../services/members.services";
+import LoaderComp from "../../components/Loader/Loader";
  
-type FormDataType = {
-  membershipName: string;
-  nameOfMember: string;
+type FormDataType = { 
+  id: number;
+  membership_name: string;
+  member_id: number;
+  name_of_member: string;
   label: string;
-  amount:number;
-  paymentDate: Date | null; 
+  amount: string;
+  payment_date: Date | null;
   
 };
 
 type FormDataType2 = {
  payment?:{
-  membershipName: string;
-  nameOfMember: string;
+  id: number;
+
+  membership_name: string;
+  member_id: number;
+  name_of_member: string;
   label: string;
-  amount:number;
-  paymentDate: Date; 
+  amount: string;
+  payment_date: Date | null;
  }
   
 };
-// Define the validation schema
+
+
+interface memberData {
+  
+      
+    
+  id: number;
+  first_name: string;
+  last_name: string;
+  phone:number;
+  image:string;
+  joining_date:Date;
+  dob:Date;
+  address:string;
+  membership:string;
+  membership_starting_date:Date;
+  membership_ending_date:Date;
+   
+}
 const schema = yup.object().shape({
-  membershipName: yup.string().required(" membershipName is required"),
-  nameOfMember: yup.string().required(" name of member is required"),
+  membership_name: yup.string().required(" membershipName is required"),
+  name_of_member: yup.string().required(" name of member is required"),
   label: yup.string().required(" label is required"),
-  paymentDate:yup.date().required(" label is required"), 
+  member_id: yup.number(), 
+
+  payment_date:yup.date().required(" label is required"), 
   amount: yup.number().required("Membership Fee is required"), 
   
 });
 
-const EditPayment:React.FC<FormDataType2  & { setOpenEditDialog: React.Dispatch<React.SetStateAction<boolean>> }> = ({ payment, setOpenEditDialog }) => {
+const EditPayment:React.FC<FormDataType2  & { setOpenEditDialog: React.Dispatch<React.SetStateAction<boolean>>,
+  onUpdatePayment: (updatedpayment: FormDataType) => void; 
+ }> = ({ payment,onUpdatePayment, setOpenEditDialog }) => {
  console.log('payment',payment)
-  const [selectedOption, setSelectedOption] = React.useState<string >(payment?.membershipName || 'none');
+  const [selectedOption, setSelectedOption] = React.useState<string >(payment?.membership_name || 'none');
    const [open,setOpen] = React.useState<boolean>(false) 
+   const [loading,setLoading] = React.useState<boolean>(false) 
 
   const { register, handleSubmit, formState: { errors }, setValue ,control ,getValues} = useForm<FormDataType>({
     resolver: yupResolver(schema),
+    defaultValues: {
+      membership_name: payment?.membership_name,
+      name_of_member: payment?.name_of_member,
+      amount:payment?.amount,
+      label:payment?.label, 
+  member_id: payment?.member_id, 
+
+    },
   });
   const theme = createTheme({
     components: {
@@ -71,12 +110,42 @@ const EditPayment:React.FC<FormDataType2  & { setOpenEditDialog: React.Dispatch<
   });
  
   // Handle form submission
-  const onSubmit = (data: FormDataType) => {
+  const onSubmit = async(data: FormDataType) => { 
+    setLoading(true)
+    const edit = await editPayment(payment?.id || 0,data) 
+    setLoading(false)
+    if(!edit.error){
+     
+    
+    onUpdatePayment({
+      id: payment?.id || 0,
+    membership_name: data?.membership_name,
+    member_id: data?.member_id,
+    name_of_member: data?.name_of_member,
+    label: data?.label,
+    amount: data?.amount,
+    payment_date: data?.payment_date,
+    })
     setOpen(true)
+    setTimeout(()=>{
     setOpenEditDialog(false)
-    console.log("Form data:", data);
-  };
 
+    },1000)
+  }
+  };
+  const [memberId,setMemberId] = React.useState<number>(0) 
+
+  const [members,setMembers] = React.useState<memberData[]>([])
+  React.useEffect(() => {
+    const fetchData = async () => {
+      const members = await fetchMembers();
+      if (!members.error) {
+        console.log(members)
+        setMembers(members);
+      }
+    };
+    fetchData();
+  }, []);
   return (
     <div>
        <div className="flex flex-col gap-9">
@@ -91,131 +160,48 @@ const EditPayment:React.FC<FormDataType2  & { setOpenEditDialog: React.Dispatch<
               {/* Other Form Fields */}
               <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
   <div className="w-full xl:w-full border-none">
+  <Autocomplete
+  disablePortal
+  options={members}
+  getOptionLabel={(option) => option.first_name} // Specify how to display options
+  sx={{ width: '100%' }}
+  renderInput={(params) => (
     <TextField
+      {...params}
       label="Member name"
-      value={payment?.nameOfMember}
       placeholder="Enter Member name"
       variant="outlined"
-      fullWidth
-      {...register("nameOfMember")}
-      error={!!errors.nameOfMember}
-      helperText={errors.nameOfMember?.message} 
-   sx={textFieldStyle}
+      error={!!errors.name_of_member}
+      helperText={errors.name_of_member?.message}
+      sx={textFieldStyle}
     />
+  )}
+  onChange={(event, value) => {
+    setValue("name_of_member", `${value?.first_name} ${value?.last_name}`); // Update react-hook-form with selected value
+     setMemberId(value?.id || 0)
+     setValue("member_id",value?.id || 0)
+  }}
+/>
   </div>
 
   
 </div>
 <div className="mb-4.5">
-  <FormControl fullWidth error={!!errors.membershipName} 
-    sx={{ 
-      // Default Light Mode styling (border color, text, label colors)
-      '& .MuiOutlinedInput-root': {
-        '& fieldset': {
-          borderColor: 'black', // Light mode border color (black) by default
-        },
-        '&:hover fieldset': {
-          borderColor: 'black', // Keep the border black on hover in light mode
-        },
-        '&.Mui-focused fieldset': {
-          borderColor: 'black', // Focused border color in light mode
-        },
-      },
-      '& .MuiInputBase-input': {
-        color: 'black', // Light mode text color (black)
-      },
-      '& .MuiInputLabel-root': {
-        color: 'black', // Light mode label color (black)
-      },
-      '& .MuiInputLabel-root.Mui-focused': {
-        color: 'black', // Focused label color in light mode
-      },
-      '& .MuiOutlinedInput-notchedOutline': {
-        borderColor: 'black', // Ensure notched outline is black in light mode
-      },
-      '& .MuiInputBase-input::placeholder': {
-        color: 'black', // Light mode placeholder color (black)
-      },
+  <FormControl fullWidth error={!!errors.membership_name} 
+       sx={ selectFieldStyle}
 
-      // Dark Mode styles inside @media query
-      '@media (prefers-color-scheme: dark)': {
-        '& .MuiOutlinedInput-root': {
-          '& fieldset': {
-            borderColor: 'white', // Dark mode border color (white)
-          },
-        },
-        '& .MuiInputBase-input': {
-          color: '#E2E2E2', // Dark mode text color (light gray)
-        },
-        '& .MuiInputLabel-root': {
-          color: '#E2E2E2', // Dark mode label color (light gray)
-        },
-        '& .MuiInputLabel-root.Mui-focused': {
-          color: '#E2E2E2', // Focused label color in dark mode
-        },
-        '& .MuiOutlinedInput-notchedOutline': {
-          borderColor: 'white', // Dark mode notched outline color (white)
-        },
-        '& .MuiInputBase-input::placeholder': {
-          color: '#E2E2E2', // Dark mode placeholder color (light gray)
-        },
-      },
-    }}
   >
     <Select
       labelId="membership-label"
-      {...register("membershipName")}
+      {...register("membership_name")}
       value={selectedOption}
       onChange={(e) => {
         setSelectedOption(e.target.value);
-        setValue("membershipName", e.target.value); // Set the value for react-hook-form
+        setValue("membership_name", e.target.value); // Set the value for react-hook-form
       }}
       displayEmpty
-      sx={{
-        '& .MuiOutlinedInput-root': {
-          '& fieldset': {
-            borderColor: 'black', // Light mode border color (black) by default
-          },
-          '&:hover fieldset': {
-            borderColor: 'black', // Keep the border black on hover in light mode
-          },
-          '&.Mui-focused fieldset': {
-            borderColor: 'black', // Focused border color in light mode
-            borderWidth: 1, // Ensure consistent border width
-          },
-          '&.Mui-focused': {
-            backgroundColor: 'transparent', // Maintain background on focus
-            boxShadow: 'none', // Remove the default blue shadow
-          },
-        },
-        '& .MuiInputBase-input': {
-          color: 'black', // Text color in light mode
-        },
-        '& .MuiInputLabel-root': {
-          color: 'black', // Label color in light mode
-        },
-        '& .MuiInputLabel-root.Mui-focused': {
-          color: 'black', // Focused label color in light mode
-        },
-        '& .MuiInputBase-input::placeholder': {
-          color: 'black', // Placeholder color in light mode
-        },
+      sx={ selectFieldStyle}
 
-        // Dark Mode styles for Select component
-        '@media (prefers-color-scheme: dark)': {
-          '& .MuiOutlinedInput-root': {
-            '& fieldset': {
-              borderColor: 'white', // Dark mode border color (white)
-            },
-          },
-          '& .MuiInputBase-input': {
-            color: '#E2E2E2', // Text color in dark mode (light gray)
-          },
-          '& .MuiInputLabel-root': {
-            color: '#E2E2E2', // Label color in dark mode (light gray)
-          },
-        },
-      }}
     >
       <MenuItem value={'none'} disabled className="text-black">
         Select Membership
@@ -225,13 +211,12 @@ const EditPayment:React.FC<FormDataType2  & { setOpenEditDialog: React.Dispatch<
       <MenuItem value={'gold'} className="text-black">Gold</MenuItem>
       <MenuItem value={'premium'} className="text-black">Premium</MenuItem>
     </Select>
-    {errors.membershipName && <FormHelperText>{errors.membershipName.message}</FormHelperText>}
+    {errors.membership_name && <FormHelperText>{errors.membership_name.message}</FormHelperText>}
   </FormControl>
 </div>
 <div className="mb-4.5">
   <TextField
-    label="Label"
-    value={payment?.label}
+    label="Label" 
 
     placeholder="Enter Label"
     variant="outlined"
@@ -249,8 +234,7 @@ const EditPayment:React.FC<FormDataType2  & { setOpenEditDialog: React.Dispatch<
     label="Amount"
     placeholder="Enter Amount"
     variant="outlined"
-    fullWidth
-    value={payment?.amount}
+    fullWidth 
 
     {...register("amount")}
     error={!!errors.amount}
@@ -264,9 +248,9 @@ const EditPayment:React.FC<FormDataType2  & { setOpenEditDialog: React.Dispatch<
       <LocalizationProvider 
       dateAdapter={AdapterDayjs}>
         <Controller
-          name="paymentDate"
+          name="payment_date"
           control={control}
-          defaultValue={payment?.paymentDate || null}
+          defaultValue={payment?.payment_date || null}
           render={({ field: { onChange, value } }) => (
             <DatePicker
               className="w-full"
@@ -281,15 +265,15 @@ const EditPayment:React.FC<FormDataType2  & { setOpenEditDialog: React.Dispatch<
         />
       </LocalizationProvider>
       </ThemeProvider>
-      {errors.paymentDate && (
-        <p className="text-red-500">{errors.paymentDate.message}</p>
+      {errors.payment_date && (
+        <p className="text-red-500">{errors.payment_date.message}</p>
       )}
     </div>
               <div className=" ">
               <button
               
               type="submit" className="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90">
-              Add Member
+              {loading?<LoaderComp />:"Update Member"}
             </button>
               </div>
             </div>

@@ -1,5 +1,5 @@
 import React from 'react'
-import EnhancedTable from '../../components/Tables/TableFour'
+import EnhancedTable from '../../components/Tables/Members'
 
 const AllMembers  = () => {
   return (

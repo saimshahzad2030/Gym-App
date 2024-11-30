@@ -6,68 +6,206 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import EditIcon from '@mui/icons-material/Edit';
 import SnackbarComp from "../../components/SnackBar/Snackbar";
 import dayjs from "dayjs";
+import { parse,isDate } from "date-fns";
+
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import { createTheme, FormControl, FormHelperText,  MenuItem, Select, TextField } from "@mui/material";
+import { Autocomplete, createTheme, FormControl, FormHelperText,  MenuItem, Select, TextField } from "@mui/material";
 import { ThemeProvider } from "@emotion/react"; 
-import { textFieldStyle } from "../../../constants/constants";
+import { selectFieldStyle, textFieldStyle } from "../../../constants/constants";
+import { editMember } from "../../services/members.services"; 
+import LoaderComp from "../../components/Loader/Loader";
+import { fetchMemberships } from "../../services/memberships.services";
+interface MembershipData {
+  id: number;
+    membership_label?: string;
+    membership_cat_id?: number;
+    membership_length?: number;
+    membership_class_limit?: string | null;
+    limit_days?: number;
+    limitation?: string | null;
+    install_plan_id?: number;
+    membership_amount?: number;
+    membership_class?: string | null;
+    installment_amount?: number;
+    signup_fee?: number;
+    gmgt_membershipimage?: string;
+    created_date?: string;
+    created_by_id?: number;
+    membership_description?: string | null;
+
+   
+}
 type FormDataType = {
-  firstName: string;
-  lastName: string;
-  phone: string; // Update phone to string because form input is text
-  membership: string;
-  address:string;
-  joiningDate:Date | null;
-  dob:Date | null;
-  membershipStartingDate?:Date | null;
-  membershipEndingDate?:Date | null;
-  currentSubscription?:string;
-  image: FileList |null ;  
+   id:number;
+  activated?: number;
+  role_name?: string;
+  member_id?: string;
+  token?: string;
+  is_exist?: number;
+  first_name: string;
+  middle_name?: string;
+  last_name: string;
+  member_type?: string;
+  role?: number;
+  s_specialization?: string;
+  gender: string;
+  birth_date: string; // Format: YYYY-MM-DD
+  assign_class?: number;
+  assign_group?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  zipcode?: string;
+  mobile: number;
+  phone?: string;
+  email?: string;
+  weight?: string;
+  height?: string;
+  chest?: string;
+  waist?: string;
+  thing?: string;
+  arms?: string;
+  fat?: string;
+  username?: string;
+  password?: string;
+  image: string;
+  assign_staff_mem?: number;
+  intrested_area?: number;
+  g_source?: number;
+  referrer_by?: number;
+  inquiry_date?: string; // Format: YYYY-MM-DD
+  trial_end_date?: string; // Format: YYYY-MM-DD
+  selected_membership?: string;
+  membership_status?: string;
+  membership_valid_from?: string; // Format: YYYY-MM-DD
+  membership_valid_to?: string; // Format: YYYY-MM-DD
+  first_pay_date?: string; // Format: YYYY-MM-DD
+  created_by?: number;
+  created_date?: string; // Format: YYYY-MM-DD
+  alert_sent?: number;
+  admin_alert?: number;
+  alert_send_date?: string; // Format: YYYY-MM-DD
+  members_reg_number?: string;
+  fingerprint?: string;
 };
 type FormData2Type = {
-    user?: {
-      firstName: string;
-      lastName: string;
-      phone: string;
-      membership: string;
-      address: string;
-      joiningDate: Date | null;
-      dob: Date | null;
-      membershipStartingDate?: Date | null;
-      membershipEndingDate?: Date | null;
-      currentSubscription?: string;
-      image: FileList | string | null;
-    };
-  };
+  user?: {
+    id:number;
+  activated?: number;
+  role_name?: string;
+  member_id?: string;
+  token?: string;
+  is_exist?: number;
+  first_name: string;
+  middle_name?: string;
+  last_name: string;
+  member_type?: string;
+  role?: number;
+  s_specialization?: string;
+  gender: string;
+  birth_date: string; // Format: YYYY-MM-DD
+  assign_class?: number;
+  assign_group?: string;
+  address?: string;
+  city?: string;
+  state?: string;
+  zipcode?: string;
+  mobile: number;
+  phone?: string;
+  email?: string;
+  weight?: string;
+  height?: string;
+  chest?: string;
+  waist?: string;
+  thing?: string;
+  arms?: string;
+  fat?: string;
+  username?: string;
+  password?: string;
+  image: string;
+  assign_staff_mem?: number;
+  intrested_area?: number;
+  g_source?: number;
+  referrer_by?: number;
+  inquiry_date?: string; // Format: YYYY-MM-DD
+  trial_end_date?: string; // Format: YYYY-MM-DD
+  selected_membership?: string;
+  membership_status?: string;
+  membership_valid_from?: string; // Format: YYYY-MM-DD
+  membership_valid_to?: string; // Format: YYYY-MM-DD
+  first_pay_date?: string; // Format: YYYY-MM-DD
+  created_by?: number;
+  created_date?: string; // Format: YYYY-MM-DD
+  alert_sent?: number;
+  admin_alert?: number;
+  alert_send_date?: string; // Format: YYYY-MM-DD
+  members_reg_number?: string;
+  fingerprint?: string;
+  }
+};
+ 
+ 
 // Define the validation schema
 const schema = yup.object().shape({
-  firstName: yup.string().required("First name is required"),
-  lastName: yup.string().required("Last name is required"),
+  first_name: yup.string().required("First name is required"),
+  last_name: yup.string().required("Last name is required"),
   address:yup.string().required("Address is required"),
-  phone: yup
-    .string()
-    .matches(/^[0-9]+$/, "Phone number must contain only digits")
-    .required("Phone number is required"),
-  membership: yup.string().required("Please select a membership"),
+  mobile: yup
+  .number()
+  .typeError("Phone number must be a number")
+  .required("Phone number is required"),
+  selected_membership: yup.string().required("Please select a membership"),
+  role_name: yup.string().required("Please select type of Member"),
+  gender: yup.string().required("Please select gender of member"),
   image: yup
     .mixed<FileList>()
     .nullable()
     .required("Profile image is required"),
-    dob: yup.date().required('Date is required'),
-    joiningDate: yup.date().required('Date is required'),
-    membershipStartingDate: yup.date().required('Membership Starting Date is required'),
-    membershipEndingDate: yup.date().required('Membership Ending Date is required')
+    birth_date: yup.date().transform((value, originalValue) => {
+      if (isDate(originalValue)) return originalValue; // Already a valid Date
+      return parse(originalValue, 'dd/MM/yyyy', new Date());
+    })
+    .typeError('Invalid date format')
+    .typeError('Invalid date format')
+    .required('Date is required'),
+    membership_valid_from: yup.date().transform((value, originalValue) => {
+      if (isDate(originalValue)) return originalValue; // Already a valid Date
+      return parse(originalValue, 'dd/MM/yyyy', new Date());
+    })
+    .typeError('Invalid date format').required('Membership Starting Date is required'),
+    membership_valid_to: yup.date().transform((value, originalValue) => {
+      if (isDate(originalValue)) return originalValue; // Already a valid Date
+      return parse(originalValue, 'dd/MM/yyyy', new Date());
+    })
+    .typeError('Invalid date format').required('Membership Ending Date is required')
 });
-
-const EditMember:React.FC<FormData2Type  & { setOpenEditDialog: React.Dispatch<React.SetStateAction<boolean>> }> = ({ user, setOpenEditDialog }) => {
-    console.log(user,"User")
+const EditMember:React.FC<FormData2Type  & {
+  
+  onUpdateMember: (updatedMember: FormDataType) => void;
+  setOpenEditDialog: React.Dispatch<React.SetStateAction<boolean>> }> = ({ user,onUpdateMember , setOpenEditDialog }) => {
+  const [loading,setLoading] = React.useState(false)
   const [selectedOption, setSelectedOption] = React.useState<string>("");
   const [imagePreview, setImagePreview] = React.useState<string | null>(user?.image || null);
   const [open,setOpen] = React.useState<boolean>(false) 
 
   const { register, handleSubmit, formState: { errors }, setValue ,control } = useForm<FormDataType>({
     resolver: yupResolver(schema),
+    defaultValues: {
+      first_name:user?.first_name,
+  last_name: user?.last_name,
+  address:user?.address,
+  mobile:user?.mobile,
+  selected_membership:user?.selected_membership,
+  role_name:user?.role_name,
+  gender: user?.gender,
+  image: user?.image,
+    birth_date:user?.birth_date,
+    membership_valid_from:user?.membership_valid_from,
+    membership_valid_to: user?.membership_valid_to
+
+    },
   });
   const theme = createTheme({
     components: {
@@ -100,20 +238,59 @@ const EditMember:React.FC<FormData2Type  & { setOpenEditDialog: React.Dispatch<R
     }
   };
 
-  // Handle form submission
-  const onSubmit = (data: FormDataType) => {
-    setOpen(true)
-    setOpenEditDialog(false)
-    console.log("Form data:", data);
+  const onSubmit = async(data: FormDataType) => { 
+    console.log(data)
+    const transformedData = {
+      ...data,
+      phone: Number(data.phone), // Ensure phone is sent as a number
+    };
+    setLoading(true)
+    const edit = await editMember(user?.id || 0,transformedData);
+    console.log(edit)
+    setLoading(false)
+    if(!edit.error){
+      
+      onUpdateMember({
+        id:user?.id || 0,
+        first_name:data?.first_name,
+        last_name: data?.last_name,
+        address:data?.address,
+        mobile:data?.mobile,
+        selected_membership:data?.selected_membership,
+        role_name:data?.role_name,
+        gender: data?.gender,
+        image: data?.image,
+          birth_date:data?.birth_date,
+          membership_valid_from:data?.membership_valid_from,
+          membership_valid_to: data?.membership_valid_to
+      })
+      setOpen(true);
+      setTimeout(()=>{
+        setOpenEditDialog(false)
+        },1000)
+    }
+    
   };
+  const [memberships,setMemberships] = React.useState<MembershipData[]>([])
   React.useEffect(() => {
-    if (user && user.membership) {
-      setSelectedOption(user.membership);
-      setValue("membership", user.membership); // Set the value for react-hook-form
-      setValue("membershipStartingDate", new Date(user.membershipStartingDate)); // Set the starting date
-      setValue("membershipEndingDate", new Date(user.membershipEndingDate));
-      setValue("dob", new Date(user.dob));
-      setValue("joiningDate", new Date(user.joiningDate));
+    const fetchData = async () => {
+      const fetchedData = await fetchMemberships("");
+      if (!fetchedData.error) {
+        console.log(fetchedData)
+        setMemberships(fetchedData.results);
+      }
+    };
+    fetchData();
+  }, []);
+  React.useEffect(() => {
+    if (user && user.selected_membership) {
+      setSelectedOption(user.selected_membership);
+      setValue("selected_membership", user.selected_membership); // Set the value for react-hook-form
+      setValue("membership_valid_from", new Date(user?.membership_valid_from)); // Set the starting date
+      setValue("membership_valid_to", new Date(user?.membership_valid_to));
+      setValue("birth_date", new Date(user?.birth_date));
+      setValue("image",user?.image); 
+
     }
   }, [user, setValue]);
   return (
@@ -161,12 +338,11 @@ const EditMember:React.FC<FormData2Type  & { setOpenEditDialog: React.Dispatch<R
     <TextField
       label="First name"
       placeholder="Enter your first name"
-      variant="outlined"
-      value={user?.firstName}
+      variant="outlined" 
       fullWidth
-      {...register("firstName")}
-      error={!!errors.firstName}
-      helperText={errors.firstName?.message} 
+      {...register("first_name")}
+      error={!!errors.first_name}
+      helperText={errors.first_name?.message} 
       sx={textFieldStyle}
     />
   </div>
@@ -176,12 +352,11 @@ const EditMember:React.FC<FormData2Type  & { setOpenEditDialog: React.Dispatch<R
       label="Last name"
       placeholder="Enter your last name"
       variant="outlined"
-      fullWidth
-      value={user?.lastName}
+      fullWidth 
 
-      {...register("lastName")}
-      error={!!errors.lastName}
-      helperText={errors.lastName?.message}
+      {...register("last_name")}
+      error={!!errors.last_name}
+      helperText={errors.last_name?.message}
       sx={textFieldStyle}
 
     />
@@ -192,25 +367,66 @@ const EditMember:React.FC<FormData2Type  & { setOpenEditDialog: React.Dispatch<R
   <TextField
     label="Phone"
     placeholder="Enter phone"
-    variant="outlined"
-    value={user?.phone}
+    variant="outlined" 
 
     fullWidth
-    {...register("phone")}
-    error={!!errors.phone}
-    helperText={errors.phone?.message}
+    {...register("mobile")}
+    error={!!errors.mobile}
+    helperText={errors.mobile?.message}
     sx={textFieldStyle}
 
   />
 </div>
-
+<div className="mb-4.5">
+ 
+  <Autocomplete
+  disablePortal
+  options={[{name:'Male',value:'male'},{name:'Female',value:'female'}]}
+  getOptionLabel={(option) => option.name} // Specify how to display options
+  sx={{ width: '100%' }}
+  renderInput={(params) => (
+    <TextField
+      {...params}
+      label="Gender"
+      placeholder="Enter Gender"
+      variant="outlined"
+      error={!!errors.gender}
+      helperText={errors.gender?.message}
+      sx={textFieldStyle}
+    />
+  )}
+  onChange={(event, value) => {
+    setValue("gender", value?.value || "male");  }}
+/>
+</div>
+<div className="mb-4.5">
+ 
+  <Autocomplete
+  disablePortal
+  options={[{name:'Admin',value:'admin'},{name:'Member',value:'member'},{name:'Staff Member',value:'staff_member'}]}
+  getOptionLabel={(option) => option.name} // Specify how to display options
+  sx={{ width: '100%' }}
+  renderInput={(params) => (
+    <TextField
+      {...params}
+      label="Type"
+      placeholder="Enter Type"
+      variant="outlined"
+      error={!!errors.role_name}
+      helperText={errors.role_name?.message}
+      sx={textFieldStyle}
+    />
+  )}
+  onChange={(event, value) => {
+    setValue("role_name", value?.value || "member");  }}
+/>
+</div>
 <div className="mb-4.5">
   <TextField
     label="Address"
     placeholder="Enter Address"
     variant="outlined"
-    fullWidth
-    value={user?.address}
+    fullWidth 
 
     {...register("address")}
     error={!!errors.address}
@@ -221,134 +437,34 @@ const EditMember:React.FC<FormData2Type  & { setOpenEditDialog: React.Dispatch<R
 </div>
 
 <div className="mb-4.5">
-  <FormControl fullWidth error={!!errors.membership} className="border-black"
-   sx={{
-    // Default Light Mode styling (border color, text, label colors)
-    '& .MuiOutlinedInput-root': {
-      '& fieldset': {
-        borderColor: 'black', // Light mode border color (black)
-      },
-      '&:hover fieldset': {
-        borderColor: 'black', // Light mode hover border color (black)
-      },
-      '&.Mui-focused fieldset': {
-        borderColor: 'black', // Light mode focused border color (black)
-      },
-    },
-    '& .MuiInputBase-input': {
-      color: 'black', // Light mode text color (black)
-    },
-    '& .MuiInputLabel-root': {
-      color: 'black', // Light mode label color (black)
-    },
-    '& .MuiInputLabel-root.Mui-focused': {
-      color: 'black', // Focused label color in light mode
-    },
-    '& .MuiOutlinedInput-notchedOutline': {
-      borderColor: 'black', // Ensure notched outline is black in light mode
-    },
-    '& .MuiInputBase-input::placeholder': {
-      color: 'black', // Light mode placeholder color (black)
-    },
-
-    // Dark Mode styles inside @media query
-    '@media (prefers-color-scheme: dark)': {
-      '& .MuiOutlinedInput-root': {
-        '& fieldset': {
-          borderColor: 'white', // Dark mode border color (white)
-        },
-      },
-      '& .MuiInputBase-input': {
-        color: '#E2E2E2', // Dark mode text color (light gray)
-      },
-      '& .MuiInputLabel-root': {
-        color: '#E2E2E2', // Dark mode label color (light gray)
-      },
-      '& .MuiInputLabel-root.Mui-focused': {
-        color: '#E2E2E2', // Focused label color in dark mode
-      },
-      '& .MuiOutlinedInput-notchedOutline': {
-        borderColor: 'white', // Dark mode notched outline color (white)
-      },
-      '& .MuiInputBase-input::placeholder': {
-        color: '#E2E2E2', // Dark mode placeholder color (light gray)
-      },
-    },
-  }}>
-     <Select
-      labelId="membership-label"
-      {...register("membership")}
-      value={selectedOption}
-      onChange={(e) => {
-        setSelectedOption(e.target.value);
-        setValue("membership", e.target.value); // Set the value for react-hook-form
-      }}
-      displayEmpty
-      sx={{
-        '& .MuiOutlinedInput-root': {
-          '& fieldset': {
-            borderColor: 'black', // Light mode border color (black)
-          },
-          '&:hover fieldset': {
-            borderColor: 'black', // Hover state in light mode
-          },
-          '&.Mui-focused fieldset': {
-            borderColor: 'black', // Focus state in light mode
-            borderWidth: 1, // Ensure consistent border width
-          },
-          '&.Mui-focused': {
-            backgroundColor: 'transparent', // Maintain background on focus
-            boxShadow: 'none', // Remove the default blue shadow
-          },
-        },
-        '& .MuiInputBase-input': {
-          color: 'black', // Text color in light mode
-        },
-        '& .MuiInputLabel-root': {
-          color: 'black', // Label color in light mode
-        },
-        '& .MuiInputLabel-root.Mui-focused': {
-          color: 'black', // Focused label color in light mode
-        },
-        '& .MuiInputBase-input::placeholder': {
-          color: 'black', // Placeholder color in light mode
-        },
-  
-        // Dark Mode styles for Select component
-        '@media (prefers-color-scheme: dark)': {
-          '& .MuiOutlinedInput-root': {
-            '& fieldset': {
-              borderColor: 'white', // Dark mode border color (white)
-            },
-          },
-          '& .MuiInputBase-input': {
-            color: '#E2E2E2', // Text color in dark mode (light gray)
-          },
-          '& .MuiInputLabel-root': {
-            color: '#E2E2E2', // Label color in dark mode (light gray)
-          },
-        },
-      }}
-    >
-      <MenuItem value="" disabled className="text-black">
-        Select member's membership
-      </MenuItem>
-      <MenuItem value="basic"  className="text-black">Basic</MenuItem>
-      <MenuItem value="silver"  className="text-black">Silver</MenuItem>
-      <MenuItem value="gold"  className="text-black">Gold</MenuItem>
-      <MenuItem value="premium" className="text-black">Premium</MenuItem>
-    </Select>
-    {errors.membership && <FormHelperText>{errors.membership.message}</FormHelperText>}
-  </FormControl>
+<Autocomplete
+  disablePortal
+  options={memberships}
+  getOptionLabel={(option) => option.membership_label} // Specify how to display options
+  sx={{ width: '100%' }}
+  renderInput={(params) => (
+    <TextField
+      {...params}
+      label="Membership"
+      placeholder="Enter Membership Name"
+      variant="outlined"
+      error={!!errors.selected_membership}
+      helperText={errors.selected_membership?.message}
+      sx={textFieldStyle}
+    />
+  )}
+  onChange={(event, value) => {
+    setValue("selected_membership", value?.membership_label || 'sdas' );  }}
+/>
 </div>
               <div className="mb-4.5 flex flex-col items-center w-full ">
       <ThemeProvider theme={theme}>
       <LocalizationProvider 
       dateAdapter={AdapterDayjs}>
         <Controller
-          name="membershipStartingDate"
+          name="membership_valid_from"
           control={control}
-          defaultValue={null}
+          defaultValue={user?.membership_valid_from}
           render={({ field: { onChange, value } }) => (
             <DatePicker
               className="w-full"
@@ -363,8 +479,8 @@ const EditMember:React.FC<FormData2Type  & { setOpenEditDialog: React.Dispatch<R
         />
       </LocalizationProvider>
       </ThemeProvider>
-      {errors.membershipStartingDate && (
-        <p className="text-red-500">{errors.membershipStartingDate.message}</p>
+      {errors.membership_valid_from && (
+        <p className="text-red-500">{errors.membership_valid_from.message}</p>
       )}
     </div>
     <div className="mb-4.5 flex flex-col items-center w-full ">
@@ -372,9 +488,9 @@ const EditMember:React.FC<FormData2Type  & { setOpenEditDialog: React.Dispatch<R
       <LocalizationProvider 
       dateAdapter={AdapterDayjs}>
         <Controller
-          name="membershipEndingDate"
+          name="membership_valid_to"
           control={control}
-          defaultValue={null}
+          defaultValue={user?.membership_valid_to}
           render={({ field: { onChange, value } }) => (
             <DatePicker
               className="w-full"
@@ -388,8 +504,8 @@ const EditMember:React.FC<FormData2Type  & { setOpenEditDialog: React.Dispatch<R
         />
       </LocalizationProvider>
       </ThemeProvider>
-      {errors.membershipEndingDate && (
-        <p className="text-red-500">{errors.membershipEndingDate.message}</p>
+      {errors.membership_valid_to && (
+        <p className="text-red-500">{errors.membership_valid_to.message}</p>
       )}
     </div>
     <div className="mb-4.5 flex flex-col items-center w-full ">
@@ -397,9 +513,9 @@ const EditMember:React.FC<FormData2Type  & { setOpenEditDialog: React.Dispatch<R
       <LocalizationProvider 
       dateAdapter={AdapterDayjs}>
         <Controller
-          name="dob"
+          name="birth_date"
           control={control}
-          defaultValue={null}
+          defaultValue={user?.birth_date}
           render={({ field: { onChange, value } }) => (
             <DatePicker
               className="w-full"
@@ -413,49 +529,19 @@ const EditMember:React.FC<FormData2Type  & { setOpenEditDialog: React.Dispatch<R
         />
       </LocalizationProvider>
       </ThemeProvider>
-      {errors.dob && (
-        <p className="text-red-500">{errors.dob.message}</p>
+      {errors.birth_date && (
+        <p className="text-red-500">{errors.birth_date.message}</p>
       )}
     </div>
-              <div className="mb-4.5 flex flex-col items-center w-full ">
-      <ThemeProvider theme={theme}>
-      <LocalizationProvider 
-      dateAdapter={AdapterDayjs}>
-        <Controller
-          name="joiningDate"
-          control={control}
-          defaultValue={null}
-          render={({ field: { onChange, value } }) => (
-            <DatePicker
-            sx={textFieldStyle}
-
-
-
-
-              className="w-full"
-              label="Joining from"
-              value={value ? dayjs(value) : null}
-              onChange={(date) => onChange(date ? date.toDate() : null)}
-              
-            />
-          )}
-        />
-      </LocalizationProvider>
-      </ThemeProvider>
-      {errors.joiningDate && (
-        <p className="text-red-500">{errors.joiningDate.message}</p>
-      )}
-    </div>
-              <div className=" ">
+             
+            <div className=" ">
               <button type="submit" className="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90">
-              Save Changes
-            </button>
+              {loading?<LoaderComp/>:'Save Changes'}
+              </button>
               </div>
             </div>
           <SnackbarComp open={open} setOpen={setOpen} message="Edited Succesfully"/>
-                      
-           
-          </form>
+      </form>
         </div>
       </div>
     </div>

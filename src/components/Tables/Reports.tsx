@@ -25,7 +25,7 @@ import { visuallyHidden } from '@mui/utils';
 import Image from '../Image/Image';
 import { Button, TextField } from '@mui/material'; 
 import EditMember from '../../pages/Members/EditMember';
-import { textFieldStyle } from '../../../constants/constants';
+import { checkBoxStyle, textFieldStyle } from '../../../constants/constants';
    
  
 interface Data {
@@ -107,13 +107,13 @@ const headCells: readonly HeadCell[] = [
     id: 'from',
     numeric: true,
     disablePadding: false,
-    label: 'Month',
+    label: 'From',
   },
   {
     id: 'to',
     numeric: false,
     disablePadding: true,
-    label: 'Year',
+    label: 'To',
   },
   
   {
@@ -167,11 +167,8 @@ function EnhancedTableHead(props: EnhancedTableProps) {
                          inputProps={{
                            'aria-label': 'select all desserts',
                          }}
-                        sx={{ 
-                          '&.Mui-checked': {
-                            color: 'gray', // color when checked
-                          },
-                        }}
+                         sx={checkBoxStyle}
+
                       />
         </TableCell>
         {headCells.map((headCell) => (
@@ -390,12 +387,8 @@ const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
                         inputProps={{
                           'aria-labelledby': labelId,
                         }}
-                        sx={{
-                          
-                          '&.Mui-checked': {
-                            color: 'gray', // color when checked
-                          },
-                        }}
+                        sx={checkBoxStyle}
+
                       />
                     </TableCell>
                     <TableCell
@@ -465,14 +458,14 @@ const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
       {openEditDialog && (
         
         <div
-          className=' w-full dark:bg-boxdark bg-white  p-4 rounded '
-          onClick={(e) => e.stopPropagation()} // Prevent click from bubbling up
-        >
-            
-            <div className='flex flex-row items-center justify-end w-full mt-4'>
-            <Button onClick={() => setOpenEditDialog(false)}>
-              <CloseIcon className='text-white mb-4'/>
-            </Button>
+        className=' w-full dark:bg-boxdark bg-white p-4 rounded '
+        onClick={(e) => e.stopPropagation()} // Prevent click from bubbling up
+      >
+        
+        <div className='flex flex-row items-center justify-end w-full mt-2'>
+        <Button onClick={() => setOpenEditDialog(false)}>
+          <CloseIcon className='dark:text-white text-boxdark mb-4'/>
+        </Button>
               </div>
             <EditMember user={selectedRow} setOpenEditDialog={setOpenEditDialog}/>
           </div> 

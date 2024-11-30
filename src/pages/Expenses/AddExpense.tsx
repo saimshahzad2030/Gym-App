@@ -5,37 +5,52 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup"; 
 import SnackbarComp from "../../components/SnackBar/Snackbar";
  
-import { createTheme, FormControl, FormHelperText,  MenuItem, Select, TextField } from "@mui/material";
+import { Autocomplete, createTheme, FormControl, FormHelperText,  MenuItem, Select, TextField } from "@mui/material";
 import { ThemeProvider } from "@emotion/react";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { textFieldStyle } from "../../../constants/constants";
+import { addExpense } from "../../services/expenses.services";
  
 type FormDataType = {
-  label: string;
-  amount:number;
-  paymentDate: Date | null;  
-    expenseName: string; 
- 
+  invoice_type: 'expense' | 'income';  
+  invoice_label: string | null ;
+  supplier_name: string;  
+  entry: string; 
+  payment_status: 'Paid' | 'Unpaid' | 'Pending'; 
+  total_amount: number; 
+  receiver_id: number | null; 
+  invoice_date: string; 
+  is_active: 0 | 1; 
+  delete_reason: string | null; 
+  mp_id: number | null; 
 };
 
  
 // Define the validation schema
 const schema = yup.object().shape({
-  expenseName: yup.string().required(" membershipName is required"), 
-  label: yup.string().required(" label is required"),
-  paymentDate:yup.date().required(" label is required"), 
-  amount: yup.number().required("Membership Fee is required"), 
-  
+  invoice_type: yup.string().required(" Invoice type is required"),   
+  invoice_label: yup.string().required(" label is required"),
+  supplier_name: yup.string().required(" Supplier Name is required"),  
+  entry:  yup.string() ,
+  payment_status:  yup.string().required(" Payment Status is required"),
+  total_amount:  yup.number().required(" Total Amount is required"),
+  receiver_id:  yup.number().required(" Reciever id is required"),
+  invoice_date: yup.date().required(" label is required"),
+  is_active: yup.number().required('Required'),
+  delete_reason:yup.string() ,
+  mp_id: yup.number() ,
+ 
 });
 
 const AddExpense = () => {
   const [selectedOption, setSelectedOption] = React.useState<string >('none');
    const [open,setOpen] = React.useState<boolean>(false) 
+   const [message,setMessage] = React.useState<string>("") 
 
-  const { register, handleSubmit, formState: { errors }, setValue ,control ,getValues} = useForm<FormDataType>({
+  const { register, handleSubmit, formState: { errors }, setValue ,control ,reset,getValues} = useForm<FormDataType>({
     resolver: yupResolver(schema),
   });
   const theme = createTheme({
@@ -59,14 +74,35 @@ const AddExpense = () => {
   });
  
   // Handle form submission
-  const onSubmit = (data: FormDataType) => {
-    setOpen(true)
-    console.log("Form data:", data);
+  const onSubmit = async(data: FormDataType) => {
+    const add = await addExpense(data) 
+    if(!add.error){
+      reset({
+        invoice_type:'income',
+        invoice_label:"",
+        supplier_name:"",
+        entry:"",
+        payment_status:"Pending",
+        total_amount:0,
+        receiver_id:  null,
+        invoice_date: undefined,
+        is_active:0,
+        delete_reason:"",
+        mp_id: 0 
+      }); 
+       
+      setMessage('payment Added Successfully') 
+      setOpen(true)
+    }
+    else{
+      setMessage('Unexpected error occured') 
+      setOpen(true)
+    }
   };
 
   return (
     <div>
-      <Breadcrumb pageName="Payment" />
+      <Breadcrumb pageName="Expense" />
       <div className="flex flex-col gap-9">
         <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
           <div className="border-b border-stroke py-4 px-6.5 dark:border-strokedark">
@@ -77,16 +113,39 @@ const AddExpense = () => {
              
 
               {/* Other Form Fields */}
+              <div className="mb-4.5">
+ 
+ <Autocomplete
+ disablePortal
+ options={[{name:'Income',value:"income" as const},{name:'Expense',value:"expense" as const} ]}
+ getOptionLabel={(option) => option?.name} // Specify how to display options
+ sx={{ width: '100%' }}
+ renderInput={(params) => (
+   <TextField
+     {...params}
+     label="Type"
+     placeholder="Enter Type"
+     variant="outlined"
+     error={!!errors.invoice_type}
+     helperText={errors.invoice_type?.message}
+     sx={textFieldStyle}
+   />
+ )}
+ onChange={(event, value) => {
+   setValue("invoice_type", (value?.value || "income") as "income" | "expense");  }}
+/>
+</div>
               <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
+             
   <div className="w-full xl:w-full border-none">
     <TextField
-      label="Expense name"
-      placeholder="Enter Expense name"
+      label="Expense Label"
+      placeholder="Enter Expense Label"
       variant="outlined"
       fullWidth
-      {...register("expenseName")}
-      error={!!errors.expenseName}
-      helperText={errors.expenseName?.message} 
+      {...register("invoice_label")}
+      error={!!errors.invoice_label}
+      helperText={errors.invoice_label?.message} 
       sx={textFieldStyle}
     />
   </div>
@@ -96,26 +155,59 @@ const AddExpense = () => {
  
 <div className="mb-4.5">
   <TextField
-    label="Label"
-    placeholder="Enter Label"
+    label="Supplier Name"
+    placeholder="Enter Supplier Name"
     variant="outlined"
     fullWidth
-    {...register("label")}
-    error={!!errors.label}
-    helperText={errors.label?.message}
-   sx={textFieldStyle}
+    {...register("supplier_name")}
+    error={!!errors.supplier_name}
+    helperText={errors.supplier_name?.message}
+    sx={textFieldStyle}
   />
 </div>
-
+<div className="mb-4.5">
+ 
+ <Autocomplete
+ disablePortal
+ options={[{name:'Paid',value: "Paid" as const},{name:'Unpaid',value:"Unpaid" as const},{name:'Pending',value:"Pending" as const} ]}
+ getOptionLabel={(option) => option?.name} // Specify how to display options
+ sx={{ width: '100%' }}
+ renderInput={(params) => (
+   <TextField
+     {...params}
+     label="Payment Status"
+     placeholder="Enter Payment Status"
+     variant="outlined"
+     error={!!errors.payment_status}
+     helperText={errors.payment_status?.message}
+     sx={textFieldStyle}
+   />
+ )}
+ onChange={(event, value) => {
+   setValue("payment_status",(value?.value || "Unpaid") as "Paid" | "Unpaid" | "Pending") }}
+/>
+</div>
 <div className="mb-4.5">
   <TextField
     label="Expense Amount"
     placeholder="Enter Expense Amount"
     variant="outlined"
     fullWidth
-    {...register("amount")}
-    error={!!errors.amount}
-    helperText={errors.amount?.message}
+    {...register("total_amount")}
+    error={!!errors.total_amount}
+    helperText={errors.total_amount?.message}
+    sx={textFieldStyle}
+  />
+</div>
+<div className="mb-4.5">
+  <TextField
+    label="Expense Reciever Id"
+    placeholder="Enter Reciever Id"
+    variant="outlined"
+    fullWidth
+    {...register("receiver_id")}
+    error={!!errors.receiver_id}
+    helperText={errors.receiver_id?.message}
     sx={textFieldStyle}
   />
 </div>
@@ -124,9 +216,9 @@ const AddExpense = () => {
       <LocalizationProvider 
       dateAdapter={AdapterDayjs}>
         <Controller
-          name="paymentDate"
+          name="invoice_date"
           control={control}
-          defaultValue={null}
+          defaultValue={""}
           render={({ field: { onChange, value } }) => (
             <DatePicker
               className="w-full"
@@ -140,10 +232,33 @@ const AddExpense = () => {
         />
       </LocalizationProvider>
       </ThemeProvider>
-      {errors.paymentDate && (
-        <p className="text-red-500">{errors.paymentDate.message}</p>
+      {errors.invoice_date && (
+        <p className="text-red-500">{errors.invoice_date.message}</p>
       )}
     </div>
+    <div className="mb-4.5">
+ 
+ <Autocomplete
+ disablePortal
+ options={[{name:'False',value: 0 as const},{name:'True',value:1 as const}  ]}
+ getOptionLabel={(option) => option?.name} // Specify how to display options
+ sx={{ width: '100%' }}
+ renderInput={(params) => (
+   <TextField
+     {...params}
+     label="Is Active"
+     placeholder="Is Active"
+     variant="outlined"
+     error={!!errors.is_active}
+     helperText={errors.is_active?.message}
+     sx={textFieldStyle}
+   />
+ )}
+ onChange={(event, value) => {
+   setValue("is_active",(value?.value || 0) as 0 |1 ) }}
+/>
+</div>
+
               <div className=" ">
               <button
               
@@ -152,7 +267,7 @@ const AddExpense = () => {
             </button>
               </div>
             </div>
-          <SnackbarComp open={open} setOpen={setOpen} message="Expense Added"/>
+          <SnackbarComp open={open} setOpen={setOpen} message={message}/>
                       
            
           </form>

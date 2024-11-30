@@ -1,14 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Route, Routes, useLocation } from 'react-router-dom';
+import { Route, Router, Routes, useLocation } from 'react-router-dom';
+import { AuthProvider } from "./utilities/AuthProvider";
 
 import Loader from './common/Loader';
 import PageTitle from './components/PageTitle';
 import SignIn from './pages/Authentication/SignIn';
-import SignUp from './pages/Authentication/SignUp';
-import Calendar from './pages/Calendar';
+import SignUp from './pages/Authentication/SignUp'; 
 import Chart from './pages/Chart';
-import Dashboard from './pages/Dashboard/Dashboard';
-import FormElements from './pages/Form/FormElements';
+import Dashboard from './pages/Dashboard/Dashboard'; 
 import FormLayout from './pages/Form/FormLayout';
 import Profile from './pages/Profile';
 import Settings from './pages/Settings';
@@ -27,8 +26,18 @@ import AllExpense from './pages/Expenses/AllExpenses';
 import AddExpense from './pages/Expenses/AddExpense';
 import Report from './pages/Report/Report';
 import CalendarComponent from './pages/Calendar/Calendar';
+import PrivateRoutes from './components/PrivateRoutes/PrivateRoutes';
 
 function App() {
+   
+
+  return ( 
+      <AuthProvider>
+        <Content />
+      </AuthProvider> 
+  );
+}
+function Content() {
   const [loading, setLoading] = useState<boolean>(true);
   const { pathname } = useLocation();
 
@@ -65,7 +74,7 @@ function App() {
           }
         />
  
-        <Route  >
+        <Route  element={<PrivateRoutes userRole={"admin"} multiple={false} />} >
           <Route
             path="/dashboard/view"
             element={
@@ -222,18 +231,7 @@ function App() {
               </>
             }
           />
-          <Route
-            path="/forms/form-elements"
-            element={
-              <>
-              <DefaultLayout>
-                <PageTitle title="Form Elements | FFG - More than a Gym" />
-                <FormElements />
-              </DefaultLayout>
-
-              </>
-            }
-          />
+           
           <Route
             path="/forms/form-layout"
             element={

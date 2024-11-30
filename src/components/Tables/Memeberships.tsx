@@ -24,39 +24,79 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
 import Image from '../Image/Image';
-import { Button, TextField, textFieldClasses } from '@mui/material'; 
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, styled, TextField, textFieldClasses } from '@mui/material'; 
 import EditMember from '../../pages/Members/EditMember';
 import EditMembership from '../../pages/Memberships/EditMembership';
-import { textFieldStyle } from '../../../constants/constants';
+import { checkBoxStyle, textFieldStyle } from '../../../constants/constants';
+import {deleteMembership, fetchMemberships } from '../../services/memberships.services';
+import SnackbarComp from '../SnackBar/Snackbar';
+import Loader from '../../common/Loader';
+import LoaderComp from '../Loader/Loader';
    
- 
+    
+const BootstrapDialog = styled(Dialog)(({ theme }) => ({
+  '& .MuiDialogContent-root': {
+    padding: theme.spacing(2),
+  },
+  '& .MuiDialogActions-root': {
+    padding: theme.spacing(1),
+  },
+}));
 interface Data {
   id: number;
-  name: string;
-  durationDays: number;
-  fee:number;
-  registrationFee:number | null;
-  createdAt:Date;
-   
-   
+  membership_label: string;
+  membership_cat_id: number;
+  membership_length: number;
+  membership_class_limit: string | null;
+  limit_days: number;
+  limitation: string | null;
+  install_plan_id: number;
+  membership_amount: number;
+  membership_class: string | null;
+  installment_amount: number;
+  signup_fee: number;
+  gmgt_membershipimage: string;
+  created_date: string; // Use string if the date is not automatically parsed
+  created_by_id: number;
+  membership_description: string | null;
 }
 
 function createData(
-    id: number,
-    name: string,
-    durationDays: number,
-    fee:number,
-    registrationFee:number  | null,
-    createdAt:Date
+  id: number,
+  membership_label: string,
+  membership_cat_id: number,
+  membership_length: number,
+  membership_class_limit: string | null,
+  limit_days: number,
+  limitation: string | null,
+  install_plan_id: number,
+  membership_amount: number,
+  membership_class: string | null,
+  installment_amount: number,
+  signup_fee: number,
+  gmgt_membershipimage: string,
+  created_date: string, // Use string if the date is not automatically parsed
+  created_by_id: number,
+  membership_description: string | null,
      
 ): Data {
   return {
-    id ,
-    name ,
-    durationDays ,
-    fee ,
-    registrationFee ,
-    createdAt 
+    id,
+    membership_label,
+    membership_cat_id,
+    membership_length,
+    membership_class_limit,
+    limit_days,
+    limitation,
+    install_plan_id,
+    membership_amount,
+    membership_class,
+    installment_amount,
+    signup_fee,
+    gmgt_membershipimage,
+    created_date, // Use string if the date is not automatically parsed
+    created_by_id,
+    membership_description,
   };
 }
 
@@ -105,7 +145,7 @@ const headCells: readonly HeadCell[] = [
     label: 'Name',
   },
   {
-    id: 'durationDays',
+    id: 'duration_days',
     numeric: true,
     disablePadding: false,
     label: 'Duration',
@@ -118,7 +158,7 @@ const headCells: readonly HeadCell[] = [
   },
   
   {
-    id: 'registrationFee',
+    id: 'registration_fee',
     numeric: true,
     disablePadding: false,
     label: 'Registration Charges',
@@ -137,6 +177,7 @@ interface EnhancedTableProps {
 }
 
 function EnhancedTableHead(props: EnhancedTableProps) {
+ 
   const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } =
     props;
   const createSortHandler =
@@ -158,11 +199,8 @@ function EnhancedTableHead(props: EnhancedTableProps) {
                          inputProps={{
                            'aria-label': 'select all desserts',
                          }}
-                        sx={{ 
-                          '&.Mui-checked': {
-                            color: 'gray', // color when checked
-                          },
-                        }}
+                         sx={checkBoxStyle}
+
                       />
         </TableCell>
         {headCells.map((headCell) => (
@@ -262,23 +300,79 @@ export default function Memberships() {
   const [order, setOrder] = React.useState<Order>('asc');
   const [orderBy, setOrderBy] = React.useState<keyof Data>('id');
   const [selected, setSelected] = React.useState<readonly number[]>([]);
-  const [page, setPage] = React.useState(0); 
+  const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [searchTerm, setSearchTerm] = React.useState<string>('');
   const [openEditDialog, setOpenEditDialog] = React.useState(false);
   const [selectedRow, setSelectedRow] = React.useState<Data | null>(null);
+  const [memberships, setMemberships] = React.useState<Data[]>([]);
+  const [openSnackBar, setOpenSnackBar] = React.useState<boolean>(false);
+  const [loading, setLoading] = React.useState<boolean>(true);
+  const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
+  const [newEntriesloading, setNewEntriesLoading] = React.useState<boolean>(false); 
+  const [nextUrl, setNextUrl] = React.useState<string>("");
+  const [previousUrl, setPreviousUrl] = React.useState<string>("");
+  const [totalEntries,setTotalEntries]  = React.useState<number>(0)
+
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
   };
 
-  const filteredRows = rows.filter((row) =>
-    row.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  React.useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true)
+      const members:{results:Data[],count:number,next:string,previous:string,error?:string} = await fetchMemberships("");
+      setLoading(false)
+      if (!members.error) {
+        setNextUrl(members.next)
+        setPreviousUrl(members.previous)
+        setTotalEntries(members.count);
 
- 
+        setMemberships(members.results);
+      }
+    };
+    fetchData();
+    
+  }, []);
+
+  const updateMembership = (updatedMembership: Data) => {
+    setMemberships((prevMemberships) =>
+      prevMemberships.map((membership) =>
+        membership.id == updatedMembership.id ? updatedMembership : membership
+      )
+    );
+  };
+  let filteredRows:Data[];
+  filteredRows = memberships.filter((row) =>
+    row.membership_label.toLowerCase().includes(searchTerm.toLowerCase())
+); 
+const handleChangePage = async(event: unknown, newPage: number) => {
+  const isNext = newPage > page;
+  const isPrevious = newPage < page;
+   setPage(newPage);
+  const urlToFetch = isNext ? nextUrl : previousUrl;
+  setNewEntriesLoading(true)
+  if (urlToFetch) {
+    const members:{results:Data[],count:number,next:string,previous:string,error?:string} = await fetchMemberships(urlToFetch);
+    setNewEntriesLoading(false);
+
+    if (!members.error) {
+       setNextUrl(members.next);
+      setPreviousUrl(members.previous);
+      setTotalEntries(members.count);
+      setMemberships(members.results);
+      filteredRows = members.results.filter((row) =>
+        row.membership_label.toLowerCase().includes(searchTerm.toLowerCase()) 
+      ); 
+    }
+  } else {
+    setLoading(false);
+    console.error('No URL available for fetching members.');
+  }
+};
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
-    property: keyof Data,
+    property: keyof Data
   ) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
@@ -287,7 +381,7 @@ export default function Memberships() {
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
-      const newSelected = rows.map((n) => n.id);
+      const newSelected = memberships.map((n) => n.id);
       setSelected(newSelected);
       return;
     }
@@ -307,27 +401,16 @@ export default function Memberships() {
     } else if (selectedIndex > 0) {
       newSelected = newSelected.concat(
         selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1),
+        selected.slice(selectedIndex + 1)
       );
     }
     setSelected(newSelected);
   };
 
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage);
-  };
+  
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
-
-   
-
-  // Avoid a layout jump when reaching the last page with empty rows.
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
-
+  
+ 
   const visibleRows = React.useMemo(
     () =>
       [...filteredRows]
@@ -337,186 +420,182 @@ export default function Memberships() {
   );
 
   return (
-    <Box
-    className='w-full mb-2 bg-white dark:bg-[#1A222C] text-[#1A222C]'
-    
-    // sx={{ width: '100%',backgroundColor:'rgb(26 34 44)',color:'white' }}
-    
-    >
-      <div className='flex flex-col items-center w-full relative'>
-      {!openEditDialog && <Paper 
-      
-      className='w-full mb-2 bg-white dark:bg-[#1A222C]'
-      // sx={{ width: '100%', mb: 2,backgroundColor:'white' }}
-      >
-        <EnhancedTableToolbar numSelected={selected.length} />
-        <Box sx={{ padding: '16px' }}>
-          <TextField
-            variant="outlined"
-            placeholder="Search by name"
-            value={searchTerm}
-            onChange={handleSearchChange}
-            fullWidth
-            size='small'
-            sx={textFieldStyle}
-          />
-        </Box>
-        <TableContainer>
-          <Table
-            sx={{ minWidth: 750  }}
-            aria-labelledby="tableTitle"
-            size={ 'medium'}
-          >
-            <EnhancedTableHead
-              numSelected={selected.length}
-              order={order}
-              orderBy={orderBy}
-              onSelectAllClick={handleSelectAllClick}
-              onRequestSort={handleRequestSort}
-              rowCount={rows.length}
-            />
-             <TableBody
-     className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white' >
-              {visibleRows.map((row, index) => {
-                const isItemSelected = selected.includes(row.id);
-                const labelId = `enhanced-table-checkbox-${index}`;
+    <Box className="w-full mb-2 bg-white dark:bg-[#1A222C] text-[#1A222C]">
+     {loading?<LoaderComp />:
+     visibleRows.length >0 ?
+     <div className="flex flex-col items-center w-full relative">
+     {!openEditDialog && (
+       <Paper className="w-full mb-2 bg-white dark:bg-[#1A222C]">
+         <EnhancedTableToolbar numSelected={selected.length} />
+         <Box sx={{ padding: '16px' }}>
+           <TextField
+             variant="outlined"
+             placeholder="Search by name"
+             value={searchTerm}
+             onChange={handleSearchChange}
+             fullWidth
+             size="small"
+             sx={textFieldStyle}
+           />
+         </Box>
+         <TableContainer>
+           <Table sx={{ minWidth: 750 }} aria-labelledby="tableTitle" size="medium">
+             <EnhancedTableHead
+               numSelected={selected.length}
+               order={order}
+               orderBy={orderBy}
+               onSelectAllClick={handleSelectAllClick}
+               onRequestSort={handleRequestSort}
+               rowCount={memberships.length}
+             />
+             <TableBody className="dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white">
+               {visibleRows.map((row, index) => {
+                 const isItemSelected = selected.includes(row.id);
+                 const labelId = `enhanced-table-checkbox-${index}`;
 
-                return (
-                  <TableRow
-                    hover
-                    onClick={(event) => handleClick(event, row.id)}
-                    role="checkbox"
-                    aria-checked={isItemSelected}
-                    tabIndex={-1}
-                    key={row.id}
-                    selected={isItemSelected}
-                    // sx={{ cursor: 'pointer',color:'white' }}
-                  >
+                 return (
+                   <TableRow
+                     hover
+                     onClick={(event) => handleClick(event, row.id)}
+                     role="checkbox"
+                     aria-checked={isItemSelected}
+                     tabIndex={-1}
+                     key={row.id}
+                     selected={isItemSelected}
+                   >
+                     <TableCell padding="checkbox">
+                       <Checkbox
+                         checked={isItemSelected}
+                         inputProps={{ 'aria-labelledby': labelId }}
+                         sx={checkBoxStyle}
+                       />
+                     </TableCell>
+                     <TableCell
+                       align="center"
+                       component="th"
+                       id={labelId}
+                       scope="row"
+                       padding="none"
+                       className="dark:text-white"
+                     >
+                       {row.membership_label || '-'}
+                     </TableCell>
+                     <TableCell align="center" className="dark:text-white">
+                       {row.membership_length}
+                     </TableCell>
+                     <TableCell align="center" className="dark:text-white">
+                       {row.membership_amount}
+                     </TableCell>
+                     <TableCell align="center" className="dark:text-white">
+                     {row.signup_fee}
 
-                    <TableCell padding="checkbox">
-               <Checkbox 
-                        checked={isItemSelected}
-                        inputProps={{
-                          'aria-labelledby': labelId,
-                        }}
-                        sx={{
-                          
-                          '&.Mui-checked': {
-                            color: 'gray', // color when checked
-                          },
-                        }}
-                      />
-                    </TableCell>
-                   
-                    <TableCell
-                    align="center"
-                      component="th"
-                      id={labelId}
-                      scope="row"
-                      padding="none"
-                      className='dark:text-white'
+                     </TableCell>
+                     <TableCell align="center">
+                       <IconButton
+                         onClick={() => {
+                           setSelectedRow(row);
+                           setOpenEditDialog(true);
+                         }}
+                       >
+                         <EditIcon className="dark:text-white" />
+                       </IconButton>
+                       <IconButton
+                        onClick={() => {
+                         setSelectedRow(row);
+                         setOpenDeleteDialog(true);
+                       }}
+                       >
+                         <DeleteIcon className="dark:text-white" />
+                       </IconButton>
+                     </TableCell>
+                   </TableRow>
+                 );
+               })}
+               {/* {emptyRows > 0 && (
+                 <TableRow style={{ height: 53 * emptyRows }}>
+                   <TableCell colSpan={6} />
+                 </TableRow>
+               )} */}
+             </TableBody>
+           </Table>
+         </TableContainer>
+         <TablePagination
+           className="dark:text-white"
+           rowsPerPageOptions={[10]}
+           component="div"
+           count={totalEntries}
+           rowsPerPage={rowsPerPage}
+           page={page}
+           onPageChange={handleChangePage}
+         />
+       </Paper>
+     )}
+     {openEditDialog && selectedRow && (
+       <div
+         className="w-full dark:bg-boxdark bg-white p-4 rounded"
+         onClick={(e) => e.stopPropagation()}
+       >
+         <div className="flex flex-row items-center justify-end w-full mt-2">
+           <Button onClick={() => setOpenEditDialog(false)}>
+             <CloseIcon className="dark:text-white text-boxdark mb-4" />
+           </Button>
+         </div>
+         <EditMembership
+           member={selectedRow}
+           setOpenEditDialog={setOpenEditDialog}
+           onUpdateMembership={updateMembership}
+         />
+         
+       </div>
+     )}
 
-                    >
-                      {`${row.name?row.name:'-'}`}
-                    </TableCell>
-                   
-                    <TableCell 
-                    align="center"
-                                            className='dark:text-white'
+<BootstrapDialog
+     onClose={()=>{setOpenDeleteDialog(false)}}
+     aria-labelledby="customized-dialog-title"
+     open={openDeleteDialog}
+   >
+     <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
+       Warning
+     </DialogTitle>
+     <IconButton
+       aria-label="close"
+       onClick={()=>{setOpenDeleteDialog(false)}}
+       sx={(theme) => ({
+         position: 'absolute',
+         right: 8,
+         top: 8,
+         color: theme.palette.grey[500],
+       })}
+     >
+       <CloseIcon />
+     </IconButton>
+     <DialogContent dividers>
+       <Typography gutterBottom>
+        Are you sure you want to delete this member? If yes then click on continue
+       </Typography>
+       
+     </DialogContent>
+     <DialogActions>
+       <Button autoFocus onClick={async()=>{
+         const deleteEntry = await deleteMembership(selectedRow?.id || 0);
+         if(deleteEntry.status == 204){
+           setOpenDeleteDialog(false)
+           setMemberships((prevMemberships) => prevMemberships.filter((membership) => membership.id !== selectedRow?.id));
+           setOpenSnackBar(true)
+           setTotalEntries(totalEntries-1)
+         }
+         console.log(deleteEntry.status)
 
-                    
-                    >{row.durationDays}</TableCell>
-                    <TableCell 
-                    align="center"
-                                           className='dark:text-white'
+       }}>
+         Continue
+       </Button>
+     </DialogActions>
+   </BootstrapDialog>
+   </div>:
+   
+   <p className='dark:text-white text-graydark p-4'>No memberships to show</p>}
+      <SnackbarComp open={openSnackBar} setOpen={setOpenSnackBar} message={"Deleted Succesfully"}/>
 
-                    
-                    >{row.fee}</TableCell>
-                       <TableCell 
-                    align="center"
-                                           className='dark:text-white'
-
-                    >{row.registrationFee}</TableCell>
-                      <TableCell align="center">
-                      <IconButton onClick={() => {
-                        setSelectedRow(row);
-                        console.log(row)
-                        setOpenEditDialog(true);
-                      }}>
-                        <EditIcon                       className='dark:text-white'
- />
-                      </IconButton>
-                      <IconButton onClick={() => {
-                        // setSelectedRow(row);
-                        // setOpenEditDialog(true);
-                      }}>
-                        <DeleteIcon                       className='dark:text-white'
- />
-                      </IconButton>
-                    </TableCell>
-                  </TableRow>
-                  
-                );
-              })}
-              {emptyRows > 0 && (
-                <TableRow
-                  style={{
-                    height: (  53) * emptyRows,
-                  }}
-                >
-                  <TableCell colSpan={6} />
-                  
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TablePagination
-                              className='dark:text-white'
-
-          rowsPerPageOptions={[10]}
-          component="div"
-          count={rows.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage} 
-        />
-      </Paper>}
-      {/* {openEditDialog && (
-        <div
-          className={`scrollbar-thin fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[600]`} 
-          onClick={() => setOpenEditDialog(false)} // Close on backdrop click
-        >
-          <div
-            className='h-[80vh] bg-boxdark p-4 rounded overflow-y-auto'
-            onClick={(e) => e.stopPropagation()} // Prevent click from bubbling up
-          >
-            
-            <div className='flex flex-row items-center justify-end w-full mt-4'>
-            <Button onClick={() => setOpenEditDialog(false)}>
-              <CloseIcon className='text-white mb-4'/>
-            </Button>
-              </div>
-            <EditMembership member={selectedRow} setOpenEditDialog={setOpenEditDialog}/>
-          </div>
-        </div>
-      )} */}
-       {openEditDialog && (
-        
-          <div
-            className=' w-full bg-boxdark p-4 rounded '
-            onClick={(e) => e.stopPropagation()} // Prevent click from bubbling up
-          >
-            
-            <div className='flex flex-row items-center justify-end w-full mt-2'>
-            <Button onClick={() => setOpenEditDialog(false)}>
-              <CloseIcon className='text-white mb-4'/>
-            </Button>
-              </div>
-            <EditMembership member={selectedRow} setOpenEditDialog={setOpenEditDialog}/>
-          </div> 
-      )}
-      </div>
     </Box>
   );
 }

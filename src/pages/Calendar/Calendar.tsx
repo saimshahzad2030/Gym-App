@@ -12,8 +12,9 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import interactionPlugin from '@fullcalendar/interaction';
 import TextField from '@mui/material/TextField';
-import { TablePagination } from '@mui/material';
+import { FormControl, MenuItem, Select, TablePagination } from '@mui/material';
 import SnackbarComp from '../../components/SnackBar/Snackbar';
+import { optionStyle, selectFieldStyle, textFieldStyle } from '../../../constants/constants';
 
 const sampleUsers = [
   { id: 1, firstName: 'John', lastName: 'Doe', image: '/pp-1.jpg', isPresent: false },
@@ -26,6 +27,8 @@ const sampleUsers = [
 ];
 
 export default function CalendarComponent() {
+  const [selectedOption, setSelectedOption] = useState<string>("all");
+
   const [showCalendar, setShowCalendar] = useState(true);
   const [openSnackBar, setOpenSnackBar] = useState(false);
   const [selectedDate, setSelectedDate] = useState('');
@@ -49,9 +52,12 @@ setOpenSnackBar(true)
   };
  
   const filteredUsers = users.filter(
-    (user) =>
-      user.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.lastName.toLowerCase().includes(searchTerm.toLowerCase())
+    (user) => 
+        (user.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+          user.lastName.toLowerCase().includes(searchTerm.toLowerCase())) &&
+        (selectedOption === 'all' ||
+          (selectedOption === 'present' && user.isPresent) ||
+          (selectedOption === 'absent' && !user.isPresent))
   );
  
   const paginatedUsers = filteredUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
@@ -76,45 +82,73 @@ setOpenSnackBar(true)
         <div>
           <h2>Attendance for {selectedDate}</h2>
  
-          <TextField
+         <div className='flex flex-col md:flex-row items-center justify-between w-full mt-10  '>
+        <div className='flex flex-row items-center justify-start w-full md:w-7/12'>
+        <TextField
             label="Search by Name"
             variant="outlined"
             fullWidth
             margin="normal"
             value={searchTerm}
-            sx={{
-                marginBottom:'40px',
-        
-                '& .MuiOutlinedInput-root': {
-                  '& fieldset': {
-                    borderColor: 'white',  
-                  },
-                  '&:hover fieldset': {
-                    borderColor: 'white',  
-                  },
-                  '&.Mui-focused fieldset': {
-                    borderColor: 'white',  
-                  },
-                }, 
-                '& .MuiInputBase-input': {
-                color: 'white',  
-              },
-              '& .MuiInputLabel-root': {
-                color: 'white', 
-              },
-              '& .MuiInputLabel-root.Mui-focused': {
-                color: 'white', 
-              },
-              '& .MuiOutlinedInput-notchedOutline': {
-                borderColor: 'white', 
-              },
-              '& .MuiInputBase-input::placeholder': {
-                color: 'white', 
-              },
-              }}
+            // className='mt-10'
+            sx={textFieldStyle}
             onChange={(e) => setSearchTerm(e.target.value)}
-          />
- 
+          /></div>
+          <div className='flex flex-row items-center justify-start my-2 md:my-0 w-full md:w-3/12'>
+          <FormControl
+  fullWidth
+   
+  sx={ selectFieldStyle}
+
+>
+  <Select
+    labelId="membership-label" 
+    value={selectedOption}
+    onChange={(e) => {
+      setSelectedOption(e.target.value); 
+    }}
+    displayEmpty
+    sx={ selectFieldStyle}
+
+  >
+    <MenuItem 
+        value=""
+        disabled  
+        sx={optionStyle}
+
+      >
+        Filter Members
+      </MenuItem>
+      <MenuItem 
+        value="all"  
+        sx={optionStyle}
+
+      >
+        All
+      </MenuItem>
+      <MenuItem 
+        value="present" 
+        sx={optionStyle}
+
+      >
+        Present
+      </MenuItem>
+      <MenuItem 
+        value="absent" 
+        sx={{
+          backgroundColor: 'white', // Light mode background
+          color: 'black', // Light mode text color
+          
+        }}
+      >
+        Absent
+      </MenuItem>
+      
+    </Select>
+      </FormControl>
+       </div>
+         </div>
+  
           <TableContainer component={Paper}>
             <Table
                sx={{ minWidth: 750 }}
