@@ -12,8 +12,7 @@
     "name": "TailAdmin",
     "email": "hello@tailadmin.com",
     "url": "https://tailadmin.com"
-  },
-  "proxy": "https://3.111.221.228/",
+  }, 
   "dependencies": {
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
