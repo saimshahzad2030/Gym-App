@@ -2,7 +2,7 @@ import axios from 'axios'
 import { config } from '../config/config';
 import Cookies from 'js-cookie';
 interface Data {
-    invoice_type: 'expense'; // Specifies the type of invoice (e.g., 'expense')
+    invoice_type: 'income'; // Specifies the type of invoice (e.g., 'expense')
     invoice_label: string | null; // Optional label for the invoice
     supplier_name: string; // Name of the supplier
     entry: string; // JSON string representing an array of entries
@@ -34,9 +34,9 @@ interface editData {
 }
 
 
-export const fetchExpenses = async (url: string) => {
+export const fetchIncomes = async (url: string) => {
     try {
-        const response = await axios.get(url ? url : `${config.url}api/income-expense/?query=invoice-type-expense`, {
+        const response = await axios.get(url ? url : `${config.url}api/income-expense/?query=invoice-type-income`, {
             headers: {
                 'Authorization': `Bearer ${Cookies.get('token')}`
             }
@@ -49,9 +49,9 @@ export const fetchExpenses = async (url: string) => {
     }
 
 }
-export const fetchExpensesUsingSearch = async (searchQuery: string) => {
+export const fetchIncomesUsingSearch = async (searchQuery: string) => {
     try {
-        const response = await axios.get(`${config.url}api/income-expense/?global_search=${searchQuery}&invoice_type=invoice-type-expense`, {
+        const response = await axios.get(`${config.url}api/income-expense/?global_search=${searchQuery}&invoice_type=income`, {
             headers: {
                 'Authorization': `Bearer ${Cookies.get('token')}`
             }
@@ -64,13 +64,13 @@ export const fetchExpensesUsingSearch = async (searchQuery: string) => {
     }
 
 }
-export const addExpense = async (data: Data) => {
+export const addIncome = async (data: Data) => {
     try {
-        const response = await axios.post(`${config.url}api/income-expense/?query=invoice-type-expense
+        const response = await axios.post(`${config.url}api/income-expense/?query=invoice-type-income
 `,
             {
                 ...data,
-                invoice_type: 'expense',
+                invoice_type: 'income',
                 invoice_date: new Date(data.invoice_date).toISOString().split('T')[0], // Ensure YYYY-MM-DD format
 
             },
@@ -87,9 +87,10 @@ export const addExpense = async (data: Data) => {
 
 }
 
-export const editExpense = async (id: number, data: editData) => {
+export const editIncome = async (id: number, data: editData) => {
     try {
-        const response = await axios.patch(`${config.url}api/income-expense/${id}/`,
+        const response = await axios.patch(`${config.url}api/income-expense/${id}/
+`,
             {
                 ...data,
                 invoice_date: new Date(data.invoice_date).toISOString().split('T')[0], // Ensure YYYY-MM-DD format
@@ -109,7 +110,7 @@ export const editExpense = async (id: number, data: editData) => {
 }
 
 
-export const deleteExpense = async (id: number) => {
+export const deleteIncome = async (id: number) => {
     try {
         const response = await axios.delete(`${config.url}api/income-expense/${id}/`,
 

@@ -290,9 +290,11 @@ const EditMember:React.FC<FormData2Type  & {
       setValue("membership_valid_to", new Date(user?.membership_valid_to));
       setValue("birth_date", new Date(user?.birth_date));
       setValue("image",user?.image); 
+      setValue("role_name", user?.role_name); 
 
     }
   }, [user, setValue]);
+  console.log('member:',user)
   return (
     <div>
       <div className="flex flex-col gap-9">
@@ -378,30 +380,54 @@ const EditMember:React.FC<FormData2Type  & {
   />
 </div>
 <div className="mb-4.5">
- 
-  <Autocomplete
-  disablePortal
-  options={[{name:'Male',value:'male'},{name:'Female',value:'female'}]}
-  getOptionLabel={(option) => option.name} // Specify how to display options
-  sx={{ width: '100%' }}
-  renderInput={(params) => (
-    <TextField
-      {...params}
-      label="Gender"
-      placeholder="Enter Gender"
-      variant="outlined"
-      error={!!errors.gender}
-      helperText={errors.gender?.message}
-      sx={textFieldStyle}
-    />
-  )}
-  onChange={(event, value) => {
-    setValue("gender", value?.value || "male");  }}
-/>
+<FormControl fullWidth error={!!errors.gender} 
+    sx={ selectFieldStyle}
+    
+    >
+     <Select
+      labelId="membership-label"
+      {...register("gender")}
+      defaultValue={user?.gender || ''}
+      onChange={(e) => setValue("gender", e.target.value)}
+      displayEmpty
+      sx={ selectFieldStyle}
+
+    >
+      <MenuItem value={''} disabled className="text-black">
+        Select Member's Gender
+      </MenuItem>
+      <MenuItem value={'male'}  className="text-black">Male</MenuItem>
+      <MenuItem value={'female'}  className="text-black">Female</MenuItem>
+       
+    </Select>
+    {errors.gender && <FormHelperText>{errors.gender.message}</FormHelperText>}
+  </FormControl>
+  
 </div>
 <div className="mb-4.5">
- 
-  <Autocomplete
+<FormControl fullWidth error={!!errors.role_name} 
+    sx={ selectFieldStyle}
+    
+    >
+     <Select
+      labelId="membership-label"
+      {...register("role_name")}
+      defaultValue={user?.role_name || 'admin'}
+      onChange={(e) => setValue("role_name", e.target.value)}
+      displayEmpty
+      sx={ selectFieldStyle}
+
+    >
+      <MenuItem value={""} disabled className="text-black">
+        Select membership duration
+      </MenuItem>
+      <MenuItem value={'admin'}  className="text-black">Admin</MenuItem>
+      <MenuItem value={'member'}  className="text-black">Member</MenuItem>
+      <MenuItem value={'staff_member'}  className="text-black">Staff Member</MenuItem> 
+    </Select>
+    {errors.role_name && <FormHelperText>{errors.role_name.message}</FormHelperText>}
+  </FormControl>
+  {/* <Autocomplete
   disablePortal
   options={[{name:'Admin',value:'admin'},{name:'Member',value:'member'},{name:'Staff Member',value:'staff_member'}]}
   getOptionLabel={(option) => option.name} // Specify how to display options
@@ -410,6 +436,7 @@ const EditMember:React.FC<FormData2Type  & {
     <TextField
       {...params}
       label="Type"
+      defaultValue={user?.role_name}
       placeholder="Enter Type"
       variant="outlined"
       error={!!errors.role_name}
@@ -419,7 +446,7 @@ const EditMember:React.FC<FormData2Type  & {
   )}
   onChange={(event, value) => {
     setValue("role_name", value?.value || "member");  }}
-/>
+/> */}
 </div>
 <div className="mb-4.5">
   <TextField
@@ -437,7 +464,30 @@ const EditMember:React.FC<FormData2Type  & {
 </div>
 
 <div className="mb-4.5">
-<Autocomplete
+<FormControl fullWidth error={!!errors.selected_membership} 
+    sx={ selectFieldStyle}
+    
+    >
+     <Select
+      labelId="membership-label"
+      {...register("selected_membership")}
+      defaultValue={Number(user?.selected_membership) >4?"":user?.selected_membership || ''}
+      onChange={(e) => setValue("selected_membership", e.target.value)}
+      displayEmpty
+      sx={ selectFieldStyle}
+
+    >
+      <MenuItem value={""} disabled className="text-black">
+        Select membership 
+      </MenuItem>
+      <MenuItem value={'1'}  className="text-black">Regular Monthly</MenuItem>
+      <MenuItem value={'2'}  className="text-black">Cardio Monthly</MenuItem>
+      <MenuItem value={'3'}  className="text-black">3 Months Gym</MenuItem> 
+      <MenuItem value={'4'}  className="text-black">3 Months Cardio</MenuItem> 
+    </Select>
+    {errors.selected_membership && <FormHelperText>{errors.selected_membership.message}</FormHelperText>}
+  </FormControl>
+{/* <Autocomplete
   disablePortal
   options={memberships}
   getOptionLabel={(option) => option.membership_label} // Specify how to display options
@@ -455,7 +505,7 @@ const EditMember:React.FC<FormData2Type  & {
   )}
   onChange={(event, value) => {
     setValue("selected_membership", value?.membership_label || 'sdas' );  }}
-/>
+/> */}
 </div>
               <div className="mb-4.5 flex flex-col items-center w-full ">
       <ThemeProvider theme={theme}>

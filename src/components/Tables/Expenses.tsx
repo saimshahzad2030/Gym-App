@@ -29,9 +29,10 @@ import EditMember from '../../pages/Members/EditMember';
 import EditPayment from '../../pages/Payments/EditPayment';
 import EditExpense from '../../pages/Expenses/EditExpense';
 import { checkBoxStyle, textFieldStyle } from '../../../constants/constants';
-import { deleteExpense, fetchExpenses } from '../../services/expenses.services';
+import { deleteExpense, fetchExpenses, fetchExpensesUsingSearch } from '../../services/expenses.services';
 import LoaderComp from '../Loader/Loader';
 import SnackbarComp from '../SnackBar/Snackbar';
+import { fetchIncomes, fetchIncomesUsingSearch } from '../../services/incomes.services';
    
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -285,59 +286,51 @@ export default function Expenses() {
   const [order, setOrder] = React.useState<Order>('asc');
   const [orderBy, setOrderBy] = React.useState<keyof Data>('id');
   const [selected, setSelected] = React.useState<readonly number[]>([]);
-  const [page, setPage] = React.useState(0); 
+  const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [searchTerm, setSearchTerm] = React.useState<string>('');
   const [openEditDialog, setOpenEditDialog] = React.useState(false);
-  const [openDeleteDialog, setOpenDeleteDialog] = React.useState<boolean>(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
+  const [totalEntries,setTotalEntries]  = React.useState<number>(0)
   const [selectedRow, setSelectedRow] = React.useState<Data | null>(null);
   const [expenses, setExpenses] = React.useState<Data[]>([]);
-  const [openSnackBar, setOpenSnackBar] = React.useState<boolean>(false);
   const [loading, setLoading] = React.useState<boolean>(true);
-  const [totalEntries,setTotalEntries]  = React.useState<number>(0) 
-  const [newEntriesloading, setNewEntriesLoading] = React.useState<boolean>(false); 
+  const [newEntriesloading, setNewEntriesLoading] = React.useState<boolean>(false);
+  const [openSnackBar, setOpenSnackBar] = React.useState<boolean>(false);
   const [nextUrl, setNextUrl] = React.useState<string>("");
   const [previousUrl, setPreviousUrl] = React.useState<string>("");
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    // const members:{results:Data[],count:number,next:string,previous:string,error?:string} = await fetchMembersUsingSearch(event.target.value);
-    // setLoading(false)
-    // console.log(members)
-    // if (!members.error) {
-    //   setNextUrl(members.next)
-    //   setPreviousUrl(members.previous)
-    //   setTotalEntries(members.count);
 
-    //   setExpenses(members.results);
-    // }
+  const handleSearchChange = async(event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(event.target.value);
+    setPage(1)
+    const members:{results:Data[],count:number,next:string,previous:string,error?:string} = await fetchExpensesUsingSearch(event.target.value);
+    setLoading(false)
+    console.log(members)
+    if (!members.error) {
+      setNextUrl(members.next)
+      setPreviousUrl(members.previous)
+      setTotalEntries(members.count);
+
+      setExpenses(members.results);
+    }
   };
- React.useEffect(() => {
-    const fetchData = async () => {
-      const fetchedData:{results:Data[],count:number,next:string,previous:string,error?:string} = await fetchExpenses('');
-      setLoading(false)
-      if (!fetchedData.error) {
-        setNextUrl(fetchedData.next)
-        setPreviousUrl(fetchedData.previous)
-        setTotalEntries(fetchedData.count);
 
-        setExpenses(fetchedData.results);
+  React.useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true)
+      const members:{results:Data[],count:number,next:string,previous:string,error?:string} = await fetchExpenses("");
+      setLoading(false)
+      if (!members.error) {
+        setNextUrl(members.next)
+        setPreviousUrl(members.previous)
+        setTotalEntries(members.count);
+
+        setExpenses(members.results);
       }
     };
     fetchData();
   }, []);
-
-  const updateExpense = (updatedExpense: Data) => {
-    setExpenses((prevExpense) =>
-      prevExpense.map((expense) =>
-        expense.id == updatedExpense.id ? updatedExpense : expense
-      )
-    );
-  };
-
-  let filteredRows:Data[];
-  filteredRows = expenses.filter((row) =>
-    row?.invoice_label?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
- 
+  
   const handleChangePage = async(event: unknown, newPage: number) => {
     const isNext = newPage > page;
     const isPrevious = newPage < page;
@@ -345,28 +338,34 @@ export default function Expenses() {
     const urlToFetch = isNext ? nextUrl : previousUrl;
     setNewEntriesLoading(true)
     if (urlToFetch) {
-      const fetchedData:{results:Data[],count:number,next:string,previous:string,error?:string} = await fetchExpenses(urlToFetch);
+      const members:{results:Data[],count:number,next:string,previous:string,error?:string} = await fetchExpenses(urlToFetch);
       setNewEntriesLoading(false);
   
-      if (!fetchedData.error) {
-         setNextUrl(fetchedData.next);
-        setPreviousUrl(fetchedData.previous);
-        setTotalEntries(fetchedData.count);
-        setExpenses(fetchedData.results);
-        filteredRows = fetchedData.results.filter((row) =>
-          row?.invoice_label?.toLowerCase().includes(searchTerm.toLowerCase())
-
-        ); 
+      if (!members.error) {
+         setNextUrl(members.next);
+        setPreviousUrl(members.previous);
+        setTotalEntries(members.count);
+        setExpenses(members.results);
+         
       }
     } else {
       setLoading(false);
       console.error('No URL available for fetching members.');
     }
   };
+  const updateMember = (updatedMember: Data) => {
+    setExpenses((prevMembers) =>
+      prevMembers.map((member) =>
+        member.id == updatedMember.id ? updatedMember : member
+      )
+    );
+  };
+
  
+
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
-    property: keyof Data,
+    property: keyof Data
   ) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
@@ -375,7 +374,7 @@ export default function Expenses() {
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
-      const newSelected = visibleRows.map((n) => n.id);
+      const newSelected = expenses.map((n) => n.id);
       setSelected(newSelected);
       return;
     }
@@ -395,41 +394,37 @@ export default function Expenses() {
     } else if (selectedIndex > 0) {
       newSelected = newSelected.concat(
         selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1),
+        selected.slice(selectedIndex + 1)
       );
     }
     setSelected(newSelected);
   };
 
-  
-
-   
+ 
 
  
+
+  // const emptyRows =
+  //   page > 0 ? Math.max(0, (1 + page) * rowsPerPage - filteredRows.length) : 0;
+
   const visibleRows = React.useMemo(
     () =>
-      [...filteredRows]
-        .sort(getComparator(order, orderBy))
-        .slice(0, page * rowsPerPage + rowsPerPage),
-
-    [order, orderBy, page, rowsPerPage, filteredRows]
-  );
-  const emptyRows =
-  page > 0 ? Math.max(0, (1 + page) * rowsPerPage - visibleRows.length) : 0;
-
+      [...expenses]
+    .sort(getComparator(order, orderBy))
+    .slice(0, page * rowsPerPage + rowsPerPage),
+    [order, orderBy, page, rowsPerPage, expenses]
+  ); 
   return (
     <Box
     className='w-full mb-2 bg-white dark:bg-[#1A222C] text-[#1A222C]'
     
    
     >
-      {loading?<LoaderComp/>:
-      expenses.length>0?
-      <div className='flex flex-col items-center w-full relative'>
+       <div className='flex flex-col items-center w-full relative'>
       {!openEditDialog && <Paper 
       
-      className='w-full mb-2 bg-white dark:bg-[#1A222C]'
-        >
+      className='w-full mb-2 bg-white dark:bg-[#1A222C]'  
+      >
         <EnhancedTableToolbar numSelected={selected.length} />
         <Box sx={{ padding: '16px' }}>
           <TextField
@@ -442,24 +437,25 @@ export default function Expenses() {
            sx={textFieldStyle}
           />
         </Box>
-        <TableContainer>
-          <Table
-            sx={{ minWidth: 750,backgroundColor:'#1A222C' }}
-            aria-labelledby="tableTitle"
-            size={ 'medium'}
-          >
-            <EnhancedTableHead
-              numSelected={selected.length}
-              order={order}
-              orderBy={orderBy}
-              onSelectAllClick={handleSelectAllClick}
-              onRequestSort={handleRequestSort}
-              rowCount={expenses.length}
-            />
-            <TableBody
-     className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white' 
-            
-            >
+   {loading?<LoaderComp />:
+   visibleRows.length>0?    <> <TableContainer>
+   <Table
+     sx={{ minWidth: 750,backgroundColor:'rgb(26 34 44)' }}
+     aria-labelledby="tableTitle"
+     size={ 'medium'}
+   >
+     <EnhancedTableHead
+       numSelected={selected.length}
+       order={order}
+       orderBy={orderBy}
+       onSelectAllClick={handleSelectAllClick}
+       onRequestSort={handleRequestSort}
+       rowCount={expenses.length}
+     />
+     <TableBody
+className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white' 
+     
+     >
               {visibleRows.map((row, index) => {
                 const isItemSelected = selected.includes(row.id);
                 const labelId = `enhanced-table-checkbox-${index}`;
@@ -542,19 +538,22 @@ export default function Expenses() {
                 );
               })}
                
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TablePagination
-                      className='dark:text-white'  
-          rowsPerPageOptions={[10]}
-          component="div"
-          count={filteredRows.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onPageChange={handleChangePage} 
-        />
+               </TableBody>
+   </Table>
+ </TableContainer>
+ <TablePagination
+ className='dark:text-white' 
+   rowsPerPageOptions={[10]}
+   component="div"
+   count={totalEntries}
+   rowsPerPage={rowsPerPage}
+   page={page}
+   onPageChange={handleChangePage} 
+ /></>
+ :
+ <p className='dark:text-white text-graydark p-4'>No Data to show</p>}
       </Paper>}
+
        {openEditDialog && (
         
         <div
@@ -595,7 +594,7 @@ export default function Expenses() {
       </IconButton>
       <DialogContent dividers>
         <Typography gutterBottom>
-         Are you sure you want to delete this member? If yes then click on continue
+         Are you sure you want to delete this expense? If yes then click on continue
         </Typography>
         
       </DialogContent>
@@ -615,8 +614,7 @@ export default function Expenses() {
       </DialogActions>
     </BootstrapDialog>
       </div>:
-      visibleRows && <p className='dark:text-white text-graydark p-4'>No expenses to show</p>}
-         <SnackbarComp open={openSnackBar} setOpen={setOpenSnackBar} message={  "Deleted Succesfully"}/>
+          <SnackbarComp open={openSnackBar} setOpen={setOpenSnackBar} message={  "Deleted Succesfully"}/>
 
     </Box>
   );

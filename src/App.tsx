@@ -27,6 +27,8 @@ import AddExpense from './pages/Expenses/AddExpense';
 import Report from './pages/Report/Report';
 import CalendarComponent from './pages/Calendar/Calendar';
 import PrivateRoutes from './components/PrivateRoutes/PrivateRoutes';
+import AddIncome from './pages/Incomes/AddIncome';
+import AllIncomes from './pages/Incomes/AllIncomes';
 
 function App() {
    
@@ -148,24 +150,24 @@ function Content() {
             }
           />
           <Route
-            path="/payment/view"
+            path="/income/view"
             element={
               <>
               <DefaultLayout>
-                <PageTitle title="Payment | All Payments" />
-                <AllPayments />
+                <PageTitle title="Income | All Payments" />
+                <AllIncomes />
               </DefaultLayout>
 
               </>
             }
           />
           <Route
-            path="/payment/add"
+            path="/income/add"
             element={
               <>
               <DefaultLayout>
-                <PageTitle title="Payment | Add a new Payment" />
-                <AddPayment />
+                <PageTitle title="Income | Add a new Income Receiept" />
+                <AddIncome />
               </DefaultLayout>
 
               </>

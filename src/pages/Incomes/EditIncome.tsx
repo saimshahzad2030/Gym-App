@@ -13,6 +13,7 @@ import dayjs from "dayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { selectFieldStyle, textFieldStyle } from "../../../constants/constants";
 import { editExpense } from "../../services/expenses.services";
+import { editIncome } from "../../services/incomes.services";
  
 type FormDataType = {
   id:number;
@@ -54,16 +55,12 @@ const schema = yup.object().shape({
   payment_status:  yup.string().required(" Payment Status is required"),
   total_amount:  yup.number().required(" Total Amount is required"),
   receiver_id:  yup.number().required(" Reciever id is required"),
-  invoice_date: yup.date().required(" Date is required"),
-  is_active: yup.number().required('Required'),
-  // delete_reason:yup.string() ,
-  // mp_id: yup.number() ,
-   
-  // entry:  yup.string() ,
+  invoice_date: yup.date().required(" label is required"),
+  is_active: yup.number().required('Required'), 
   
 });
 
-const EditExpense:React.FC<FormDataType2  & { setOpenEditDialog: React.Dispatch<React.SetStateAction<boolean>>,
+const EditIncome:React.FC<FormDataType2  & { setOpenEditDialog: React.Dispatch<React.SetStateAction<boolean>>,
   onUpdateExpense: (updatedExpense: FormDataType) => void;
 
  }> = ({ expense, setOpenEditDialog ,onUpdateExpense}) => {
@@ -103,7 +100,7 @@ const EditExpense:React.FC<FormDataType2  & { setOpenEditDialog: React.Dispatch<
   const onSubmit = async(data: FormDataType) => {
     console.log('first')
     setLoading(true)
-    const edit = await editExpense(expense?.id || 0,data) 
+    const edit = await editIncome(expense?.id || 0,data) 
     setLoading(false)
     if(!edit.error){
      
@@ -287,7 +284,7 @@ const EditExpense:React.FC<FormDataType2  & { setOpenEditDialog: React.Dispatch<
               <button
              
               type="submit" className="flex w-full justify-center rounded bg-primary p-3 font-medium text-gray hover:bg-opacity-90">
-              Edit Expense
+              Edit Income
             </button>
               </div>
             </div>
@@ -300,4 +297,4 @@ const EditExpense:React.FC<FormDataType2  & { setOpenEditDialog: React.Dispatch<
     </div>
   );
 };
-export default EditExpense;
+export default EditIncome;

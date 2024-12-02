@@ -13,6 +13,7 @@ import dayjs from "dayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import { textFieldStyle } from "../../../constants/constants";
 import { addExpense } from "../../services/expenses.services";
+import { addIncome } from "../../services/incomes.services";
  
 type FormDataType = {
   invoice_type: 'expense' | 'income';  
@@ -44,7 +45,7 @@ const schema = yup.object().shape({
  
 });
 
-const AddExpense = () => {
+const AddIncome = () => {
   const [selectedOption, setSelectedOption] = React.useState<string >('none');
    const [open,setOpen] = React.useState<boolean>(false) 
    const [message,setMessage] = React.useState<string>("") 
@@ -74,7 +75,7 @@ const AddExpense = () => {
  
   // Handle form submission
   const onSubmit = async(data: FormDataType) => {
-    const add = await addExpense(data) 
+    const add = await addIncome(data) 
     if(!add.error){
       reset({ 
         invoice_label:"",
@@ -253,4 +254,4 @@ const AddExpense = () => {
     </div>
   );
 };
-export default AddExpense;
+export default AddIncome;

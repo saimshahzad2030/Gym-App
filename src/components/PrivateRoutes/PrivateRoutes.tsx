@@ -11,7 +11,7 @@ const PrivateRoutes = ({ userRole, multiple }:{userRole:string;multiple:boolean}
   useEffect(() => {
     const userAuth = async () => {
       setLoading(true)
-      const response = await authGuard();
+      const response:{data:{message:string},status:number} = await authGuard();
       setLoading(false)
       console.log(response)
       // const response = {status:200,data:{role:'admin'}}
@@ -19,7 +19,7 @@ const PrivateRoutes = ({ userRole, multiple }:{userRole:string;multiple:boolean}
  
          
           if (
-            response.message == "You are authenticated!" 
+            response.data.message == "You are authenticated!" 
           ) {
             setIsAuthenticated(true);
          

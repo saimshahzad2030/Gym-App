@@ -10,7 +10,7 @@ export const authGuard = async () => {
                     'Authorization': `Bearer ${Cookies.get('token')}`
                 }
             });
-        return response.data;
+        return { status: response.status, data: response.data };
     } catch (error) {
         console.error('Login failed:', error.response?.data || error.message);
         return { error: error.response?.data.detail }

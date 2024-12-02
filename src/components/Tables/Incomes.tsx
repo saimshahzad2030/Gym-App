@@ -2,10 +2,6 @@ import * as React from 'react';
 import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
-import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
-import DialogContent from '@mui/material/DialogContent';
-import DialogActions from '@mui/material/DialogActions'; 
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell'; 
 import EditIcon from '@mui/icons-material/Edit'
@@ -28,12 +24,16 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
 import Image from '../Image/Image';
-import { Button, styled, TextField } from '@mui/material'; 
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, styled, TextField, textFieldClasses } from '@mui/material'; 
 import EditMember from '../../pages/Members/EditMember';
+import EditPayment from '../../pages/Payments/EditPayment';
+import EditExpense from '../../pages/Expenses/EditExpense';
 import { checkBoxStyle, textFieldStyle } from '../../../constants/constants';
-import { deleteMember, fetchMembers, fetchMembersUsingSearch } from '../../services/members.services';
-import SnackbarComp from '../SnackBar/Snackbar';
+import { deleteExpense, fetchExpenses } from '../../services/expenses.services';
 import LoaderComp from '../Loader/Loader';
+import SnackbarComp from '../SnackBar/Snackbar';
+import EditIncome from '../../pages/Incomes/EditIncome';
+import { deleteIncome, fetchIncomes, fetchIncomesUsingSearch } from '../../services/incomes.services';
    
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -43,169 +43,57 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     padding: theme.spacing(1),
   },
 }));
+ 
 interface Data {
-  id: number;
-  activated: number;
-  role_name: string;
-  member_id: string;
-  token: string;
-  is_exist: number;
-  first_name: string;
-  middle_name: string;
-  last_name: string;
-  member_type: string;
-  role: number;
-  s_specialization: string;
-  gender: string;
-  birth_date: string; // Format: YYYY-MM-DD
-  assign_class: number;
-  assign_group: string;
-  address: string;
-  city: string;
-  state: string;
-  zipcode: string;
-  mobile: number;
-  phone: string;
-  email: string;
-  weight: string;
-  height: string;
-  chest: string;
-  waist: string;
-  thing: string;
-  arms: string;
-  fat: string;
-  username: string;
-  password: string;
-  image: string;
-  assign_staff_mem: number;
-  intrested_area: number;
-  g_source: number;
-  referrer_by: number;
-  inquiry_date: string; // Format: YYYY-MM-DD
-  trial_end_date: string; // Format: YYYY-MM-DD
-  selected_membership: string;
-  membership_status: string;
-  membership_valid_from: string; // Format: YYYY-MM-DD
-  membership_valid_to: string; // Format: YYYY-MM-DD
-  first_pay_date: string; // Format: YYYY-MM-DD
-  created_by: number;
-  created_date: string; // Format: YYYY-MM-DD
-  alert_sent: number;
-  admin_alert: number;
-  alert_send_date: string; // Format: YYYY-MM-DD
-  members_reg_number: string;
-  fingerprint: string;
+  id: number; // Unique identifier for the invoice
+  invoice_type: 'expense' | 'income'; // Specifies the type of invoice (e.g., 'expense')
+  invoice_label: string | null; // Optional label for the invoice
+  supplier_name: string; // Name of the supplier
+  entry: string; // JSON string representing an array of entries
+  payment_status: 'Paid' | 'Unpaid' | 'Pending'; // Status of the payment
+  total_amount: number; // Total amount for the invoice
+  receiver_id: number | null; // ID of the receiver (nullable)
+  invoice_date: string; // Date of the invoice in ISO format (e.g., "YYYY-MM-DD")
+  is_active: 0 | 1; // Indicates if the invoice is active (1 = active, 0 = inactive)
+  delete_reason: string | null; // Reason for deletion (nullable)
+  mp_id: number | null; // Additional field for mapping purposes (nullable)
    
 }
 
 function createData(
   id: number,
-  activated: number,
-  role_name: string,
-  member_id: string,
-  token: string,
-  is_exist: number,
-  first_name: string,
-  middle_name: string,
-  last_name: string,
-  member_type: string,
-  role: number,
-  s_specialization: string,
-  gender: string,
-  birth_date: string, // Format: YYYY-MM-DD
-  assign_class: number,
-  assign_group: string,
-  address: string,
-  city: string,
-  state: string,
-  zipcode: string,
-  mobile: number,
-  phone: string,
-  email: string,
-  weight: string,
-  height: string,
-  chest: string,
-  waist: string,
-  thing: string,
-  arms: string,
-  fat: string,
-  username: string,
-  password: string,
-  image: string,
-  assign_staff_mem: number,
-  intrested_area: number,
-  g_source: number,
-  referrer_by: number,
-  inquiry_date: string, // Format: YYYY-MM-DD
-  trial_end_date: string, // Format: YYYY-MM-DD
-  selected_membership: string,
-  membership_status: string,
-  membership_valid_from: string, // Format: YYYY-MM-DD
-  membership_valid_to: string, // Format: YYYY-MM-DD
-  first_pay_date: string, // Format: YYYY-MM-DD
-  created_by: number,
-  created_date: string, // Format: YYYY-MM-DD
-  alert_sent: number,
-  admin_alert: number,
-  alert_send_date: string, // Format: YYYY-MM-DD
-  members_reg_number: string,
-  fingerprint: string,
+  invoice_type: 'expense' | 'income',
+  invoice_label: string | null,
+  supplier_name: string,
+  entry: string,
+  payment_status: 'Paid' | 'Unpaid' | 'Pending',
+  total_amount: number,
+  receiver_id: number | null,
+  invoice_date: string,
+  is_active: 0 | 1,
+  delete_reason: string | null,
+  mp_id: number | null,
+    
+    
+     
 ): Data {
   return {
     id,
-    activated,
-    role_name,
-    member_id,
-    token,
-    is_exist,
-    first_name,
-    middle_name,
-    last_name,
-    member_type,
-    role,
-    s_specialization,
-    gender,
-    birth_date, // Format: YYYY-MM-DD
-    assign_class,
-    assign_group,
-    address,
-    city,
-    state,
-    zipcode,
-    mobile,
-    phone,
-    email,
-    weight,
-    height,
-    chest,
-    waist,
-    thing,
-    arms,
-    fat,
-    username,
-    password,
-    image,
-    assign_staff_mem,
-    intrested_area,
-    g_source,
-    referrer_by,
-    inquiry_date, // Format: YYYY-MM-DD
-    trial_end_date, // Format: YYYY-MM-DD
-    selected_membership,
-    membership_status,
-    membership_valid_from, // Format: YYYY-MM-DD
-    membership_valid_to, // Format: YYYY-MM-DD
-    first_pay_date, // Format: YYYY-MM-DD
-    created_by,
-    created_date, // Format: YYYY-MM-DD
-    alert_sent,
-    admin_alert,
-    alert_send_date, // Format: YYYY-MM-DD
-    members_reg_number,
-    fingerprint,
+  invoice_type,
+  invoice_label,
+  supplier_name,
+  entry,
+  payment_status,
+  total_amount,
+  receiver_id,
+  invoice_date,
+  is_active,
+  delete_reason,
+  mp_id
   };
 }
  
+
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
     return -1;
@@ -220,8 +108,8 @@ type Order = 'asc' | 'desc';
 
 const getComparator = (order: 'asc' | 'desc', orderBy: keyof Data) => {
   return (a: Data, b: Data) => {
-    const valueA = orderBy === 'membership_valid_to' ? +new Date(a[orderBy]) : a[orderBy];
-    const valueB = orderBy === 'membership_valid_to' ? +new Date(b[orderBy]) : b[orderBy];
+    const valueA = orderBy === 'invoice_date' ? +new Date(a[orderBy]) : a[orderBy];
+    const valueB = orderBy === 'invoice_date' ? +new Date(b[orderBy]) : b[orderBy];
     if (valueA < valueB) return order === 'asc' ? -1 : 1;
     if (valueA > valueB) return order === 'asc' ? 1 : -1;
     return 0;
@@ -237,30 +125,33 @@ interface HeadCell {
 
 const headCells: readonly HeadCell[] = [
   {
-    id: 'image',
+    id: 'supplier_name',
     numeric: true,
     disablePadding: false,
-    label: 'Pic',
+    label: 'Expense',
   },
   {
-    id: 'first_name',
+    id: 'invoice_label',
+    numeric: true,
+    disablePadding: false,
+    label: 'Label',
+  },
+  {
+    id: 'total_amount',
     numeric: false,
     disablePadding: true,
-    label: 'Name',
+    label: 'Amount Required',
   },
+  {
+    id: 'invoice_date',
+    numeric: true,
+    disablePadding: false,
+    label: 'Date Of Payment',
+  },
+
   
-  {
-    id: 'phone',
-    numeric: true,
-    disablePadding: false,
-    label: 'Mobile',
-  },
-  {
-    id: 'membership_valid_to',
-    numeric: true,
-    disablePadding: false,
-    label: 'Member till',
-  },
+  
+  
    
 ];
 
@@ -296,6 +187,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
                            'aria-label': 'select all desserts',
                          }}
                          sx={checkBoxStyle}
+
                       />
         </TableCell>
         {headCells.map((headCell) => (
@@ -391,7 +283,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
     </Toolbar>
   );
 }
-export default function EnhancedTable() {
+export default function Incomes() {
   const [order, setOrder] = React.useState<Order>('asc');
   const [orderBy, setOrderBy] = React.useState<keyof Data>('id');
   const [selected, setSelected] = React.useState<readonly number[]>([]);
@@ -402,7 +294,7 @@ export default function EnhancedTable() {
   const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
   const [totalEntries,setTotalEntries]  = React.useState<number>(0)
   const [selectedRow, setSelectedRow] = React.useState<Data | null>(null);
-  const [members, setMembers] = React.useState<Data[]>([]);
+  const [expenses, setExpenses] = React.useState<Data[]>([]);
   const [loading, setLoading] = React.useState<boolean>(true);
   const [newEntriesloading, setNewEntriesLoading] = React.useState<boolean>(false);
   const [openSnackBar, setOpenSnackBar] = React.useState<boolean>(false);
@@ -411,7 +303,8 @@ export default function EnhancedTable() {
 
   const handleSearchChange = async(event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
-    const members:{results:Data[],count:number,next:string,previous:string,error?:string} = await fetchMembersUsingSearch(event.target.value);
+    setPage(1)
+    const members:{results:Data[],count:number,next:string,previous:string,error?:string} = await fetchIncomesUsingSearch(event.target.value);
     setLoading(false)
     console.log(members)
     if (!members.error) {
@@ -419,30 +312,26 @@ export default function EnhancedTable() {
       setPreviousUrl(members.previous)
       setTotalEntries(members.count);
 
-      setMembers(members.results);
+      setExpenses(members.results);
     }
   };
 
   React.useEffect(() => {
     const fetchData = async () => {
       setLoading(true)
-      const members:{results:Data[],count:number,next:string,previous:string,error?:string} = await fetchMembers("");
+      const members:{results:Data[],count:number,next:string,previous:string,error?:string} = await fetchIncomes("");
       setLoading(false)
       if (!members.error) {
         setNextUrl(members.next)
         setPreviousUrl(members.previous)
         setTotalEntries(members.count);
 
-        setMembers(members.results);
+        setExpenses(members.results);
       }
     };
     fetchData();
   }, []);
-  let filteredRows:Data[];
-  filteredRows = members.filter((row) =>
-    row.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  row.last_name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  
   const handleChangePage = async(event: unknown, newPage: number) => {
     const isNext = newPage > page;
     const isPrevious = newPage < page;
@@ -450,18 +339,15 @@ export default function EnhancedTable() {
     const urlToFetch = isNext ? nextUrl : previousUrl;
     setNewEntriesLoading(true)
     if (urlToFetch) {
-      const members:{results:Data[],count:number,next:string,previous:string,error?:string} = await fetchMembers(urlToFetch);
+      const members:{results:Data[],count:number,next:string,previous:string,error?:string} = await fetchIncomes(urlToFetch);
       setNewEntriesLoading(false);
   
       if (!members.error) {
          setNextUrl(members.next);
         setPreviousUrl(members.previous);
         setTotalEntries(members.count);
-        setMembers(members.results);
-        filteredRows = members.results.filter((row) =>
-          row.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        row.last_name.toLowerCase().includes(searchTerm.toLowerCase())
-        ); 
+        setExpenses(members.results);
+         
       }
     } else {
       setLoading(false);
@@ -469,7 +355,7 @@ export default function EnhancedTable() {
     }
   };
   const updateMember = (updatedMember: Data) => {
-    setMembers((prevMembers) =>
+    setExpenses((prevMembers) =>
       prevMembers.map((member) =>
         member.id == updatedMember.id ? updatedMember : member
       )
@@ -489,7 +375,7 @@ export default function EnhancedTable() {
 
   const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.checked) {
-      const newSelected = members.map((n) => n.id);
+      const newSelected = expenses.map((n) => n.id);
       setSelected(newSelected);
       return;
     }
@@ -524,17 +410,16 @@ export default function EnhancedTable() {
 
   const visibleRows = React.useMemo(
     () =>
-      [...filteredRows]
+      [...expenses]
     .sort(getComparator(order, orderBy))
     .slice(0, page * rowsPerPage + rowsPerPage),
-    [order, orderBy, page, rowsPerPage, filteredRows]
+    [order, orderBy, page, rowsPerPage, expenses]
   ); 
-
   return (
     <Box
     className='w-full mb-2 bg-white dark:bg-[#1A222C] text-[#1A222C]'
-     
     
+   
     >
        <div className='flex flex-col items-center w-full relative'>
       {!openEditDialog && <Paper 
@@ -566,102 +451,95 @@ export default function EnhancedTable() {
        orderBy={orderBy}
        onSelectAllClick={handleSelectAllClick}
        onRequestSort={handleRequestSort}
-       rowCount={members.length}
+       rowCount={expenses.length}
      />
      <TableBody
 className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white' 
      
      >
-       {visibleRows.map((row, index) => {
-         const isItemSelected = selected.includes(row.id);
-         const labelId = `enhanced-table-checkbox-${index}`;
+              {visibleRows.map((row, index) => {
+                const isItemSelected = selected.includes(row.id);
+                const labelId = `enhanced-table-checkbox-${index}`;
 
-         return (
-           <TableRow
-             hover
-             onClick={(event) => handleClick(event, row.id)}
-             role="checkbox"
-             aria-checked={isItemSelected}
-             tabIndex={-1}
-             key={row.id}
-             selected={isItemSelected} 
-           >
+                return (
+                  <TableRow
+                    hover
+                    onClick={(event) => handleClick(event, row.id)}
+                    role="checkbox"
+                    aria-checked={isItemSelected}
+                    tabIndex={-1}
+                    key={row.id}
+                    selected={isItemSelected} 
+                  >
 
-             <TableCell padding="checkbox">
-             <Checkbox 
-                 checked={isItemSelected}
-                 inputProps={{
-                   'aria-labelledby': labelId,
-                 }}
-                 sx={checkBoxStyle}
-               />
-             </TableCell>
-             <TableCell align="center"
-               className='dark:text-white'
-               >
-               <div className='w-12 h-12 rounded-full flex flex-col items-center justify-center overflow-hidden'>
-                 <Image className='w-14 h-14 ' image={{src:row.image,name:row.first_name}}/>
-               </div>
-               </TableCell> 
-             <TableCell
-             align="center"
-               component="th"
-               id={labelId}
-               scope="row"
-               padding="none"
-               className='dark:text-white'
+                    <TableCell padding="checkbox">
+                      <Checkbox 
+                        checked={isItemSelected}
+                        inputProps={{
+                          'aria-labelledby': labelId,
+                        }}
+                        sx={checkBoxStyle}
 
-             >
-               {`${row.first_name} `}
-             </TableCell>
-             <TableCell 
-             align="center"
-             className='dark:text-white'
+                      />
+                    </TableCell>
+                   
+                    <TableCell
+                    align="center"
+                      component="th"
+                      id={labelId}
+                      scope="row"
+                      padding="none"
+                      className='dark:text-white'
+                      // sx={{color:'white'}}
+                    >
+                      {`${row.supplier_name}`}
+                    </TableCell>
+                   
+                    <TableCell 
+                    align="center"
+                    className='dark:text-white'
 
-             
-             >{row.mobile}</TableCell>
-             <TableCell
-             align="center"                      className='dark:text-white'
+                      // sx={{color:'white'}}
+                    
+                    >{row.invoice_label}</TableCell>
+                    <TableCell 
+                      className='dark:text-white'
 
-             >
-{format(new Date(row.membership_valid_to), 'MM/dd/yyyy')} 
-</TableCell>
-            
-               <TableCell align="center"
-               className='dark:text-white'
-               >
-               <IconButton onClick={() => {
-                 setSelectedRow(row);
-             
-                 setOpenEditDialog(true);
-               }}>
-                 <EditIcon                       className='dark:text-white'
-                 />
-               </IconButton>
-               <IconButton  onClick={() => {
-                 setSelectedRow(row);
-                 
-                 setOpenDeleteDialog(true);
-               }}>
-                 <DeleteIcon                       className='dark:text-white'
-/>
-               </IconButton>
-             </TableCell>
-           </TableRow>
-           
-         );
-       })}
-       {/* {emptyRows > 0 && (
-         <TableRow
-           style={{
-             height: (  53) * emptyRows,
-           }}
-         >
-           <TableCell colSpan={6} />
-           
-         </TableRow>
-       )} */}
-     </TableBody>
+                    align="center"
+                      // sx={{color:'white'}}
+                    
+                    >{row.total_amount}</TableCell>
+                       <TableCell 
+                    align="center"
+                    className='dark:text-white'
+
+                      // sx={{color:'white'}}
+                    
+                    >
+                        {row.invoice_date ? format(new Date(row.invoice_date), 'yyyy-MM-dd') : 'N/A'}
+
+                    </TableCell>
+                      <TableCell align="center">
+                      <IconButton onClick={() => {
+                        setSelectedRow(row);
+                        console.log(row)
+                        setOpenEditDialog(true);
+                      }}>
+                        <EditIcon className='dark:text-white text-[#1A222C]' />
+                      </IconButton>
+                      <IconButton  onClick={() => {
+                        setSelectedRow(row); 
+                        setOpenDeleteDialog(true);
+                      }}>
+                        <DeleteIcon className='dark:text-white text-[#1A222C]' />
+                      </IconButton>
+                    </TableCell>
+                  </TableRow>
+                  
+                );
+              })}
+               
+               </TableBody>
    </Table>
  </TableContainer>
  <TablePagination
@@ -674,13 +552,14 @@ className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white'
    onPageChange={handleChangePage} 
  /></>
  :
- <p className='dark:text-white text-graydark p-4'>No members to show</p>}
+ <p className='dark:text-white text-graydark p-4'>No Data to show</p>}
       </Paper>}
-      {openEditDialog && (
+
+       {openEditDialog && (
         
-         <div
+        <div
           className=' w-full dark:bg-boxdark bg-white p-4 rounded '
-          onClick={(e) => e.stopPropagation()}  
+          onClick={(e) => e.stopPropagation()} 
         >
             
             <div className='flex flex-row items-center justify-end w-full mt-4'>
@@ -688,57 +567,54 @@ className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white'
               <CloseIcon className='dark:text-white text-boxdark mb-4'/>
             </Button>
               </div>
-            <EditMember
-             user={selectedRow} 
-             setOpenEditDialog={setOpenEditDialog}
-             onUpdateMember={updateMember}
-
-             />
+            <EditIncome
+          onUpdateExpense={updateExpense}
+            
+            expense={selectedRow} setOpenEditDialog={setOpenEditDialog}/>
           </div> 
       )}
        <BootstrapDialog
-        onClose={()=>{setOpenDeleteDialog(false)}}
-        aria-labelledby="customized-dialog-title"
-        open={openDeleteDialog}
+      onClose={()=>{setOpenDeleteDialog(false)}}
+      aria-labelledby="customized-dialog-title"
+      open={openDeleteDialog}
+    >
+      <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
+        Warning
+      </DialogTitle>
+      <IconButton
+        aria-label="close"
+        onClick={()=>{setOpenDeleteDialog(false)}}
+        sx={(theme) => ({
+          position: 'absolute',
+          right: 8,
+          top: 8,
+          color: theme.palette.grey[500],
+        })}
       >
-        <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
-          Warning
-        </DialogTitle>
-        <IconButton
-          aria-label="close"
-          onClick={()=>{setOpenDeleteDialog(false)}}
-          sx={(theme) => ({
-            position: 'absolute',
-            right: 8,
-            top: 8,
-            color: theme.palette.grey[500],
-          })}
-        >
-          <CloseIcon />
-        </IconButton>
-        <DialogContent dividers>
-          <Typography gutterBottom>
-           Are you sure you want to delete this member? If yes then click on continue
-          </Typography>
-          
-        </DialogContent>
-        <DialogActions>
-          <Button autoFocus onClick={async()=>{
-            const deleteEntry = await deleteMember(selectedRow?.id || 0);
-            if(deleteEntry.status == 204){
-              setOpenDeleteDialog(false)
-              setMembers((prevMembers) => prevMembers.filter((member) => member.id !== selectedRow?.id));
-              setOpenSnackBar(true)
-              setTotalEntries(totalEntries-1)
-            }
-            console.log(deleteEntry.status)
+        <CloseIcon />
+      </IconButton>
+      <DialogContent dividers>
+        <Typography gutterBottom>
+         Are you sure you want to delete this member? If yes then click on continue
+        </Typography>
+        
+      </DialogContent>
+      <DialogActions>
+        <Button autoFocus onClick={async()=>{
+          const deleteEntry = await deleteIncome(selectedRow?.id || 0);
+          if(deleteEntry.status == 204){
+            setOpenDeleteDialog(false)
+            setExpenses((prevExpenses) => prevExpenses.filter((expense) => expense.id !== selectedRow?.id));
+            setOpenSnackBar(true)
+          }
+          console.log(deleteEntry.status)
 
-          }}>
-            Continue
-          </Button>
-        </DialogActions>
-      </BootstrapDialog>
-      </div> 
+        }}>
+          Continue
+        </Button>
+      </DialogActions>
+    </BootstrapDialog>
+      </div>:
           <SnackbarComp open={openSnackBar} setOpen={setOpenSnackBar} message={  "Deleted Succesfully"}/>
 
     </Box>
