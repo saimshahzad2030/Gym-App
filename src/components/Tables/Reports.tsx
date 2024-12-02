@@ -26,52 +26,20 @@ import Image from '../Image/Image';
 import { Button, TextField } from '@mui/material'; 
 import EditMember from '../../pages/Members/EditMember';
 import { checkBoxStyle, textFieldStyle } from '../../../constants/constants';
+import { fetchProfitLossReport } from '../../services/reports.services';
+import LoaderComp from '../Loader/Loader';
    
  
 interface Data {
-    id:number;
-  from: Date;
-  to: Date;
-  income: number;
-  expense:number;
-  report:number;
+    year:number;
+  month: number;
+  profit: number;
+  total_revenue: number;
+  total_expenses:number; 
    
    
 }
-
-function createData( 
-    id:number,
-    from: Date,
-    to: Date,
-    income: number,
-    expense:number,
-    report:number
-): Data {
-  return { 
-    id ,
-
-    from,
-    to,
-    income,
-    expense,
-    report
-  };
-}
-
-const rows = [
-    createData(1, new Date('2023-01-01'), new Date('2023-01-31'), 12000, 5000, 7000),
-    createData(2, new Date('2023-02-01'), new Date('2023-02-28'), 15000, 6000, 9000),
-    createData(3, new Date('2023-03-01'), new Date('2023-03-31'), 20000, 8000, 12000),
-    createData(4, new Date('2023-04-01'), new Date('2023-04-30'), 18000, 7000, 11000),
-    createData(5, new Date('2023-05-01'), new Date('2023-05-31'), 17000, 7500, 9500),
-    createData(6, new Date('2023-06-01'), new Date('2023-06-30'), 22000, 9000, 13000),
-    createData(7, new Date('2023-07-01'), new Date('2023-07-31'), 25000, 10000, 15000),
-    createData(8, new Date('2023-08-01'), new Date('2023-08-31'), 23000, 9500, 13500),
-    createData(9, new Date('2023-09-01'), new Date('2023-09-30'), 19000, 8500, 10500),
-    createData(10, new Date('2023-10-01'), new Date('2023-10-31'), 21000, 11000, 10000),
-    createData(11, new Date('2023-11-01'), new Date('2023-11-30'), 24000, 11500, 12500),
-    createData(12, new Date('2023-12-01'), new Date('2023-12-31'), 26000, 12000, 14000),
-  ];
+ 
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -87,8 +55,8 @@ type Order = 'asc' | 'desc';
 
 const getComparator = (order: 'asc' | 'desc', orderBy: keyof Data) => {
   return (a: Data, b: Data) => {
-    const valueA = orderBy === 'income' ? +new Date(a[orderBy]) : a[orderBy];
-    const valueB = orderBy === 'income' ? +new Date(b[orderBy]) : b[orderBy];
+    const valueA = orderBy === 'year' ? +new Date(a[orderBy]) : a[orderBy];
+    const valueB = orderBy === 'year' ? +new Date(b[orderBy]) : b[orderBy];
     if (valueA < valueB) return order === 'asc' ? -1 : 1;
     if (valueA > valueB) return order === 'asc' ? 1 : -1;
     return 0;
@@ -101,35 +69,46 @@ interface HeadCell {
   label: string;
   numeric: boolean;
 }
-
+const months =  [31,
+  28,
+  31,
+  30,
+  31,
+  30,
+  31,
+  31,
+30,
+31,
+30,
+31]
 const headCells: readonly HeadCell[] = [
   {
-    id: 'from',
+    id: 'year',
     numeric: true,
     disablePadding: false,
     label: 'From',
   },
   {
-    id: 'to',
+    id: 'month',
     numeric: false,
     disablePadding: true,
     label: 'To',
   },
   
   {
-    id: 'income',
+    id: 'total_expenses',
     numeric: true,
     disablePadding: false,
     label: 'Income',
   },
   {
-    id: 'expense',
+    id: 'total_revenue',
     numeric: true,
     disablePadding: false,
     label: 'Expense',
   },
   {
-    id: 'report',
+    id: 'profit',
     numeric: true,
     disablePadding: false,
     label: 'Profit/Loss',
@@ -242,87 +221,80 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 }
 export default function Reports() {
   const [order, setOrder] = React.useState<Order>('asc');
-  const [orderBy, setOrderBy] = React.useState<keyof Data>('id');
+  const [orderBy, setOrderBy] = React.useState<keyof Data>('year');
   const [selected, setSelected] = React.useState<readonly number[]>([]);
   const [page, setPage] = React.useState(0); 
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [searchTerm, setSearchTerm] = React.useState<string>('');
   const [openEditDialog, setOpenEditDialog] = React.useState(false);
+
+ const [totalEntries,setTotalEntries]  = React.useState<number>(0)
   const [selectedRow, setSelectedRow] = React.useState<Data | null>(null);
+  const [reports, setReports] = React.useState<Data[]>([]);
+  const [loading, setLoading] = React.useState<boolean>(true);
+  const [newEntriesloading, setNewEntriesLoading] = React.useState<boolean>(false); 
+  const [nextUrl, setNextUrl] = React.useState<string>("");
+  const [previousUrl, setPreviousUrl] = React.useState<string>("");
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
   };
+  React.useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true)
+      const fetchedData:{results:{monthly_data:Data[]},count:number,next:string,previous:string,error?:string} = await fetchProfitLossReport("");
+      setLoading(false)
+      if (!fetchedData.error) {
+        console.log(fetchedData.results)
+        setNextUrl(fetchedData.next)
+        setPreviousUrl(fetchedData.previous)
+        setTotalEntries(fetchedData.count);
 
-  const filteredRows = rows.filter((row) => {
-    // Convert to strings for comparison and check for case-insensitive match
-    const searchTermLower = searchTerm.toLowerCase();
+        setReports(fetchedData.results.monthly_data);
+      }
+    };
+    fetchData();
+  }, []);
+ 
+ 
   
-    // You can customize which fields you want to filter by
-    return (
-      row.income.toString().toLowerCase().includes(searchTermLower) ||
-      row.expense.toString().toLowerCase().includes(searchTermLower) ||
-      row.report.toString().toLowerCase().includes(searchTermLower) ||
-      format(new Date(row.from), 'MM/dd/yyyy').includes(searchTermLower) ||
-      format(new Date(row.to), 'MM/dd/yyyy').includes(searchTermLower)
-    );
-  });
-
  
-  const handleRequestSort = (
-    event: React.MouseEvent<unknown>,
-    property: string
-  ) => { 
-  };
-
  
-const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
-  if (event.target.checked) {
-    const newSelected = rows.map((n) => n.id);
-    setSelected(newSelected);
-    return;
-  }
-  setSelected([]);
-};
-  const handleClick = (event: React.MouseEvent<unknown>, id: number) => {
-    const selectedIndex = selected.indexOf(id);
-    let newSelected: readonly number[] = [];
+  
 
-    if (selectedIndex === -1) {
-      newSelected = newSelected.concat(selected, id);
-    } else if (selectedIndex === 0) {
-      newSelected = newSelected.concat(selected.slice(1));
-    } else if (selectedIndex === selected.length - 1) {
-      newSelected = newSelected.concat(selected.slice(0, -1));
-    } else if (selectedIndex > 0) {
-      newSelected = newSelected.concat(
-        selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1),
-      );
+  
+
+  const handleChangePage = async(event: unknown, newPage: number) => {
+    const isNext = newPage > page;
+    const isPrevious = newPage < page;
+     setPage(newPage);
+    const urlToFetch = isNext ? nextUrl : previousUrl;
+    setNewEntriesLoading(true)
+    if (urlToFetch) {
+      const members:{results:{monthly_data:Data[]},count:number,next:string,previous:string,error?:string} = await fetchProfitLossReport(urlToFetch.replace('http://3.111.221.228:8080/','https://3.111.221.228/'));
+      setNewEntriesLoading(false);
+  
+      if (!members.error) {
+         setNextUrl(members.next);
+        setPreviousUrl(members.previous);
+        setTotalEntries(members.count);
+        setReports(members.results.monthly_data);
+        
+      }
+    } else {
+      setLoading(false);
+      console.error('No URL available for fetching members.');
     }
-    setSelected(newSelected);
-  };
-
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage);
-  };
-
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
   };
 
    
 
-  // Avoid a layout jump when reaching the last page with empty rows.
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
-
+   
   const visibleRows = React.useMemo(
     () =>
-      [...filteredRows]
+    [...reports]
         .sort(getComparator(order, orderBy))
-        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
-    [order, orderBy, page, rowsPerPage, filteredRows]
+        .slice(0, page * rowsPerPage + rowsPerPage),
+    [order, orderBy, page, rowsPerPage, reports]
   );
 
   return (
@@ -350,6 +322,9 @@ const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
             sx={textFieldStyle}
           />
         </Box>
+       {loading?<LoaderComp/>:
+        visibleRows.length>0?
+       <>
         <TableContainer>
           <Table
             sx={{ minWidth: 750  }}
@@ -360,24 +335,24 @@ const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
               numSelected={selected.length}
               order={order}
               orderBy={orderBy}
-              onSelectAllClick={handleSelectAllClick}
-              onRequestSort={handleRequestSort}
-              rowCount={rows.length}
+              onSelectAllClick={()=>{}}
+              onRequestSort={()=>{}}
+              rowCount={reports.length}
             />
              <TableBody
      className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white' >
               {visibleRows.map((row, index) => {
-                const isItemSelected = selected.includes(row.id);
+                const isItemSelected = selected.includes(row.year);
                 const labelId = `enhanced-table-checkbox-${index}`;
 
                 return (
                   <TableRow
                     hover
-                    onClick={(event) => handleClick(event, row.id)}
+                    onClick={(event) =>{}}
                     role="checkbox"
                     aria-checked={isItemSelected}
                     tabIndex={-1}
-                    key={row.id}
+                    key={index}
                     selected={isItemSelected} 
                   >
 
@@ -397,7 +372,7 @@ const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
 
                     
                     >
-  {format(new Date(row.from), 'MM/dd/yyyy')} 
+  {`1-${Number(row.month)}-${row.year}`} 
 </TableCell>
                    
                    
@@ -407,69 +382,47 @@ const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
 
                     
                     >
-  {format(new Date(row.to), 'MM/dd/yyyy')} 
+   {`${months[Number(row.month)-1]}-${Number(row.month)}-${row.year}`} 
+
 </TableCell>
                     <TableCell 
                     align="center"
                     className='dark:text-white'
 
                     
-                    >{row.income}</TableCell>
+                    >{row.total_revenue}</TableCell>
                        <TableCell 
                     align="center"
                     className='dark:text-white'
 
                     
-                    >{row.expense}</TableCell>
+                    >{row.total_expenses}</TableCell>
                     <TableCell 
                     align="center"
                     className='dark:text-white'
 
                     
-                    >{row.report}</TableCell>
+                    >{`${row.profit}`}</TableCell>
                   </TableRow>
                   
                 );
               })}
-              {emptyRows > 0 && (
-                <TableRow
-                  style={{
-                    height: (  53) * emptyRows,
-                  }}
-                >
-                  <TableCell colSpan={6} />
-                  
-                </TableRow>
-              )}
+            
             </TableBody>
           </Table>
         </TableContainer>
         <TablePagination
-                                                  className='dark:text-white'
-
+          className='dark:text-white'
           rowsPerPageOptions={[10]}
           component="div"
-          count={rows.length}
-          rowsPerPage={rowsPerPage}
+          count={totalEntries}
+          rowsPerPage={visibleRows.length}
           page={page}
           onPageChange={handleChangePage} 
-        />
+        /></>:
+        <p className='dark:text-white text-graydark p-4'>No Data to show</p>}
       </Paper>}
-      {openEditDialog && (
-        
-        <div
-        className=' w-full dark:bg-boxdark bg-white p-4 rounded '
-        onClick={(e) => e.stopPropagation()} // Prevent click from bubbling up
-      >
-        
-        <div className='flex flex-row items-center justify-end w-full mt-2'>
-        <Button onClick={() => setOpenEditDialog(false)}>
-          <CloseIcon className='dark:text-white text-boxdark mb-4'/>
-        </Button>
-              </div>
-            <EditMember user={selectedRow} setOpenEditDialog={setOpenEditDialog}/>
-          </div> 
-      )}
+     
       </div>
     </Box>
   );
