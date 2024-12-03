@@ -34,6 +34,8 @@ import { checkBoxStyle, textFieldStyle } from '../../../constants/constants';
 import { deleteMember, fetchMembers, fetchMembersUsingSearch } from '../../services/members.services';
 import SnackbarComp from '../SnackBar/Snackbar';
 import LoaderComp from '../Loader/Loader';
+import { FingerPrint } from '../../../constants/icons';
+import { addFingerprint, fetchFingerprint } from '../../services/fingerprint.services';
    
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -326,7 +328,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             padding={ 'normal'}
             sortDirection={  false} 
           >
-            Actions
+            Fingerprint Actions
           </TableCell>
       </TableRow>
     </TableHead>
@@ -368,7 +370,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
         <Typography
          className='dark:text-white text-#1A222C'
         >
-          Members
+          Fingerprints
         </Typography>
       )}
       {numSelected > 0 ? (
@@ -391,7 +393,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
     </Toolbar>
   );
 }
-export default function EnhancedTable() {
+export default function FingerPrints() {
   const [order, setOrder] = React.useState<Order>('asc');
   const [orderBy, setOrderBy] = React.useState<keyof Data>('id');
   const [selected, setSelected] = React.useState<readonly number[]>([]);
@@ -399,7 +401,7 @@ export default function EnhancedTable() {
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [searchTerm, setSearchTerm] = React.useState<string>('');
   const [openEditDialog, setOpenEditDialog] = React.useState(false);
-  const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
+  const [openFingerPrintConfirm, setOpenFingerPrintConfirm] = React.useState(false);
   const [totalEntries,setTotalEntries]  = React.useState<number>(0)
   const [selectedRow, setSelectedRow] = React.useState<Data | null>(null);
   const [members, setMembers] = React.useState<Data[]>([]);
@@ -408,6 +410,7 @@ export default function EnhancedTable() {
   const [openSnackBar, setOpenSnackBar] = React.useState<boolean>(false);
   const [nextUrl, setNextUrl] = React.useState<string>("");
   const [previousUrl, setPreviousUrl] = React.useState<string>("");
+  const [fingerAction, setFingerAction] = React.useState<string>("");
 
   const handleSearchChange = async(event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -627,40 +630,27 @@ className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white'
 {format(new Date(row.membership_valid_to), 'MM/dd/yyyy')} 
 </TableCell>
             
-               <TableCell align="center"
-               className='dark:text-white'
+               <TableCell align="center" 
                >
-               <IconButton onClick={() => {
+               <IconButton onClick={async() => {
                  setSelectedRow(row);
-             
-                 setOpenEditDialog(true);
+                 const fingerPrintMode = await fetchFingerprint();
+                 if(fingerPrintMode.status == 200){
+                   setFingerAction(fingerPrintMode.finger_mode=='update'?'update':'register')
+
+                 }
+                 setOpenFingerPrintConfirm(true);
                }}>
-                 <EditIcon                       className='dark:text-white'
+                 <FingerPrint  className={'dark:text-white text-graydark  '}
                  />
                </IconButton>
-               <IconButton  onClick={() => {
-                 setSelectedRow(row);
-                 
-                 setOpenDeleteDialog(true);
-               }}>
-                 <DeleteIcon                       className='dark:text-white'
-/>
-               </IconButton>
+               
              </TableCell>
            </TableRow>
            
          );
        })}
-       {/* {emptyRows > 0 && (
-         <TableRow
-           style={{
-             height: (  53) * emptyRows,
-           }}
-         >
-           <TableCell colSpan={6} />
-           
-         </TableRow>
-       )} */}
+       
      </TableBody>
    </Table>
  </TableContainer>
@@ -697,16 +687,18 @@ className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white'
           </div> 
       )}
        <BootstrapDialog
-        onClose={()=>{setOpenDeleteDialog(false)}}
+        onClose={()=>{setOpenFingerPrintConfirm(false)}}
         aria-labelledby="customized-dialog-title"
-        open={openDeleteDialog}
+        open={openFingerPrintConfirm}
       >
         <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
-          Warning
+         <div className='flex flex-row items-center'>
+         <p className='mr-2'>{fingerAction=='register'?'Register':'Update'} Fingerprint</p> <FingerPrint />
+         </div>
         </DialogTitle>
         <IconButton
           aria-label="close"
-          onClick={()=>{setOpenDeleteDialog(false)}}
+          onClick={()=>{setOpenFingerPrintConfirm(false)}}
           sx={(theme) => ({
             position: 'absolute',
             right: 8,
@@ -718,15 +710,15 @@ className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white'
         </IconButton>
         <DialogContent dividers>
           <Typography gutterBottom>
-           Are you sure you want to delete this member? If yes then click on continue
+           {`Are you sure you want to ${fingerAction} fingerprint of this member? If yes then click on continue`}
           </Typography>
           
         </DialogContent>
         <DialogActions>
           <Button autoFocus onClick={async()=>{
-            const deleteEntry = await deleteMember(selectedRow?.id || 0);
-            if(deleteEntry.status == 204){
-              setOpenDeleteDialog(false)
+            const deleteEntry = await addFingerprint({finger_mode:fingerAction.toLowerCase(),member_id:selectedRow?.id});
+            if(deleteEntry.status == 200 ){
+              setOpenFingerPrintConfirm(false)
               setMembers((prevMembers) => prevMembers.filter((member) => member.id !== selectedRow?.id));
               setOpenSnackBar(true)
               setTotalEntries(totalEntries-1)
@@ -739,7 +731,7 @@ className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white'
         </DialogActions>
       </BootstrapDialog>
       </div> 
-          <SnackbarComp open={openSnackBar} setOpen={setOpenSnackBar} message={  "Deleted Succesfully"}/>
+          <SnackbarComp open={openSnackBar} setOpen={setOpenSnackBar} message={  "Finger Print Updated Succesfully"}/>
 
     </Box>
   );
