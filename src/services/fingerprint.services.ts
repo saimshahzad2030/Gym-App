@@ -24,8 +24,7 @@ export const addFingerprint = async (data: Data) => {
         const response = await axios.post(`${config.url}api/finger-mode/`,
 
             {
-                ...data,
-                finger_mode: 'fingerprint'
+                ...data
 
             }
         );

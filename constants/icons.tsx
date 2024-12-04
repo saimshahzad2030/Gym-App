@@ -302,3 +302,41 @@ export const FingerPrint = ({ className }: { className?: string })=>{
   <path d="M12.871 15.4517C12.871 16.3226 13.3936 18.1517 15.4839 18.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
   </svg>
 }
+
+export const Add = ({ className }: { className?: string })=>{
+  return<svg width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <g id="Edit / Add_Plus">
+  <path id="Vector" d="M6 12H12M12 12H18M12 12V18M12 12V6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  </svg>
+}
+export const View = ({ className }: { className?: string })=>{
+  return<svg width="800px" height="800px" viewBox="0 0 16 16"  xmlns="http://www.w3.org/2000/svg" version="1.1" id="svg3049">
+ 
+  
+  <g transform="translate(-421.714 -531.79)" id="layer1">
+  
+  <g id="layer1-4" transform="translate(418.714 -501.571)">
+  
+  <g id="layer1-9" transform="matrix(-1 0 0 1 22 0)">
+  
+  <g transform="matrix(-1 0 0 1 22 0)" id="layer1-2">
+  
+  <path   style={{
+                  opacity: 1,
+                  fill: '#373737',
+                  fillOpacity: 1,
+                  stroke: 'none',
+                }}
+                 d="M4 1033.362v1h14v-1zm0 2v1h8v-1zm0 4v1h14v-1zm0 2v1h9v-1zm0 4v1h14v-1zm0 2v1h12v-1z" id="path4174"/>
+  
+  </g>
+  
+  </g>
+  
+  </g>
+  
+  </g>
+  
+  </svg>
+}
