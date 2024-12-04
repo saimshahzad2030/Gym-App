@@ -45,25 +45,24 @@ const ECommerce: React.FC = () => {
       
         
        
-        <h1 className='col-span-1 md:col-span-2  xl:col-span-4'>Memberships</h1>
+        
 {loading?<LoaderComp/>:
 <>
 <CardDataStats title="Memberships" total="4" rate="2.59%" levelUp>
         <Members/>
 
-        </CardDataStats></>}
-        <h1 className='col-span-1 md:col-span-2  xl:col-span-4'>Report</h1>
+        </CardDataStats></>} 
         {loading?<LoaderComp />
         
         :<>
-       <CardDataStats title="Total Revenue" total={`Rs ${String(totalRevenue)}`} rate="0.95%" levelUp>
+       <CardDataStats title="Total Revenue" total={`${String(totalRevenue)}`} rate="0.95%" levelUp>
           <Income/>
         </CardDataStats>
         </>}
         {loading?<LoaderComp />
           
           :<>
-          <CardDataStats title="Total Expense" total={`Rs ${String(totalExpense)}`} rate="0.95%" levelUp>
+          <CardDataStats title="Total Expense" total={`${String(totalExpense)}`} rate="0.95%" levelUp>
           <Expense/>
         </CardDataStats>
           </>}

@@ -69,7 +69,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
         <NavLink to="/dashboard/view">
        <div className='w-full flex flex-row items-center font-bold'>
        <Image className={'w-12 h-auto'} image={LOGO}/>
-       <span className=' ml-2'>Gym App</span>
+       <span className=' ml-2'>Fitness First</span>
        </div>
         </NavLink>
 

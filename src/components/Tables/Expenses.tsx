@@ -259,7 +259,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
         <Typography
          className='dark:text-white text-#1A222C'
         >
-          Memberships
+          Expenses
         </Typography>
       )}
       {numSelected > 0 ? (

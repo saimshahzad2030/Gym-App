@@ -1,6 +1,7 @@
 import { NavLink } from "react-router-dom"
 import { DropDownMenuType } from "../../types/DropDownMenu"
 import React from "react"
+import { Add, View } from "../../../constants/icons"
 
  
 const DropDownMenu:React.FC<DropDownMenuType> = ({viewsUrl,addUrl,open}) => {
@@ -19,6 +20,7 @@ const DropDownMenu:React.FC<DropDownMenuType> = ({viewsUrl,addUrl,open}) => {
                                 (isActive && '!text-white')
                               }
                             >
+                              <View/>
                               View
                             </NavLink>
                           </li>
@@ -31,6 +33,7 @@ const DropDownMenu:React.FC<DropDownMenuType> = ({viewsUrl,addUrl,open}) => {
                                 (isActive && '!text-white')
                               }
                             >
+                              <Add/>
                               Add
                             </NavLink>
                           </li>
