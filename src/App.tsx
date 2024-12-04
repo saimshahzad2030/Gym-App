@@ -29,7 +29,8 @@ import CalendarComponent from './pages/Calendar/Calendar';
 import PrivateRoutes from './components/PrivateRoutes/PrivateRoutes';
 import AddIncome from './pages/Incomes/AddIncome';
 import AllIncomes from './pages/Incomes/AllIncomes';
-import FingerPrints from './components/Tables/FingerPrints';
+import FingerPrints from './components/Tables/FingerPrints'; 
+import Attendance from './components/Tables/Attendance';
 
 function App() {
    
@@ -216,7 +217,7 @@ function Content() {
               <>
               <DefaultLayout>
                 <PageTitle title="Calendar | FFG - More than a Gym" />
-                <CalendarComponent />
+                <Attendance />
               </DefaultLayout>
 
               </>
