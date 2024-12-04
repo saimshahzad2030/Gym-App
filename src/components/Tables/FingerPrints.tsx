@@ -634,10 +634,14 @@ className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white'
                >
                <IconButton onClick={async() => {
                  setSelectedRow(row);
-                 const fingerPrintMode = await fetchFingerprint();
-                 if(fingerPrintMode.status == 200){
-                   setFingerAction(fingerPrintMode.finger_mode=='update'?'update':'register')
+                 const fingerPrintMode:{mode:'attendance' | 'register',status:number} = await fetchFingerprint();
+                 if(fingerPrintMode.status == 404){
+                   setFingerAction('register')
 
+                 }
+                 else{ 
+                    setFingerAction(fingerPrintMode.mode=='attendance'?'attendance':'register')
+  
                  }
                  setOpenFingerPrintConfirm(true);
                }}>
@@ -693,7 +697,7 @@ className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white'
       >
         <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
          <div className='flex flex-row items-center'>
-         <p className='mr-2'>{fingerAction=='register'?'Register':'Update'} Fingerprint</p> <FingerPrint />
+         <p className='mr-2'>{fingerAction=='register'?'Register':'Attendance'} Fingerprint</p> <FingerPrint />
          </div>
         </DialogTitle>
         <IconButton
@@ -716,7 +720,7 @@ className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white'
         </DialogContent>
         <DialogActions>
           <Button autoFocus onClick={async()=>{
-            const deleteEntry = await addFingerprint({finger_mode:fingerAction.toLowerCase(),member_id:selectedRow?.id});
+            const deleteEntry = await addFingerprint({mode:fingerAction.toLowerCase() as 'register' | 'attendance',member_id:selectedRow?.id || 0});
             if(deleteEntry.status == 200 ){
               setOpenFingerPrintConfirm(false)
               setMembers((prevMembers) => prevMembers.filter((member) => member.id !== selectedRow?.id));

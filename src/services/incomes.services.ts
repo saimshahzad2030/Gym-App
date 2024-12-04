@@ -127,3 +127,32 @@ export const deleteIncome = async (id: number) => {
     }
 
 }
+
+export const downloadPdfIncome = async (id: number) => {
+    try {
+        const response = await axios.get(`${config.url}api/income-expense/?query=download-receipt&income_id=${id}
+`,
+            {
+                headers: {
+                    'Authorization': `Bearer ${Cookies.get('token')}`
+                },
+                responseType: 'blob', // Indicates that the response will be a binary file
+            });
+        // Create a Blob object from the response
+        const blob = new Blob([response.data], { type: 'application/pdf' });
+
+        // Create a link element to trigger the download
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `income_report_${id}.pdf`); // Set the desired file name
+        document.body.appendChild(link);
+        link.click(); // Trigger the download
+        document.body.removeChild(link); // Clean up the link elemen
+        // return { data: response.data, status: response.status };
+    } catch (error) {
+        console.error('Login failed:', error.response?.data || error.message);
+        return { error: error.response?.data.detail }
+    }
+
+}

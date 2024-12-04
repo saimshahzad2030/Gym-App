@@ -15,6 +15,8 @@ import TableSortLabel from '@mui/material/TableSortLabel';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
+
+import DownloadIcon from '@mui/icons-material/Download';
 import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
@@ -33,7 +35,7 @@ import { deleteExpense, fetchExpenses } from '../../services/expenses.services';
 import LoaderComp from '../Loader/Loader';
 import SnackbarComp from '../SnackBar/Snackbar';
 import EditIncome from '../../pages/Incomes/EditIncome';
-import { deleteIncome, fetchIncomes, fetchIncomesUsingSearch } from '../../services/incomes.services';
+import { deleteIncome, downloadPdfIncome, fetchIncomes, fetchIncomesUsingSearch } from '../../services/incomes.services';
    
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -527,6 +529,12 @@ className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white'
                       }}>
                         <EditIcon className='dark:text-white text-[#1A222C]' />
                       </IconButton>
+                      <IconButton onClick={async()=>{
+                        const downloadPdf = await downloadPdfIncome(row.id);
+                        console.log(downloadPdf)
+                      }}>
+      <DownloadIcon className="dark:text-white text-[#1A222C]" />
+    </IconButton>
                       <IconButton  onClick={() => {
                         setSelectedRow(row); 
                         setOpenDeleteDialog(true);

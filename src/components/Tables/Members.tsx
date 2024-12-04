@@ -34,6 +34,7 @@ import { checkBoxStyle, textFieldStyle } from '../../../constants/constants';
 import { deleteMember, fetchMembers, fetchMembersUsingSearch } from '../../services/members.services';
 import SnackbarComp from '../SnackBar/Snackbar';
 import LoaderComp from '../Loader/Loader';
+import { useLocation, useNavigate } from 'react-router-dom';
    
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -392,12 +393,15 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
   );
 }
 export default function EnhancedTable() {
+  const router = useLocation();
+  const searchParams = new URLSearchParams(location.search); // Parse query string
+  const query = searchParams.get('query');
   const [order, setOrder] = React.useState<Order>('asc');
   const [orderBy, setOrderBy] = React.useState<keyof Data>('id');
   const [selected, setSelected] = React.useState<readonly number[]>([]);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
-  const [searchTerm, setSearchTerm] = React.useState<string>('');
+  const [searchTerm, setSearchTerm] = React.useState<string>(query?query:'');
   const [openEditDialog, setOpenEditDialog] = React.useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
   const [totalEntries,setTotalEntries]  = React.useState<number>(0)
@@ -426,7 +430,15 @@ export default function EnhancedTable() {
   React.useEffect(() => {
     const fetchData = async () => {
       setLoading(true)
-      const members:{results:Data[],count:number,next:string,previous:string,error?:string} = await fetchMembers("");
+      let members:{results:Data[],count:number,next:string,previous:string,error?:string};
+      if(query){
+        members =  await fetchMembersUsingSearch(query);
+      
+      }
+      else{
+        members = await fetchMembers("");
+
+      }
       setLoading(false)
       if (!members.error) {
         setNextUrl(members.next)

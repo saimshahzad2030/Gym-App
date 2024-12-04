@@ -2,7 +2,7 @@ import axios from 'axios'
 import { config } from '../config/config';
 import Cookies from 'js-cookie';
 interface Data {
-    finger_mode: string,
+    mode: 'attendance' | 'register',
     member_id: number
 
 

@@ -99,14 +99,7 @@ function createData(
     membership_description,
   };
 }
-
-const rows = [
-    createData(1, 'basic', 30, 1000, 1000, new Date('2023-04-18') ),
-  createData(2, 'gold', 30, 3000, 1000, new Date('2023-01-15') ),
-  createData(3, 'silver', 60, 6000, null, new Date('2023-02-10') ),
-  createData(4, 'premium', 90, 9000, null, new Date('2023-03-12') ),
-   
-];
+ 
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
