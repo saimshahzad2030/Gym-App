@@ -1,6 +1,6 @@
-import React from 'react'
- import Memberships from '../../components/Tables/Memeberships'
-import Payments from '../../components/Tables/Payments'
+ 
+import Incomes from '../../components/Tables/Incomes'
+import Payments from '../../components/Tables/Payments'; 
 
 const AllPayments  = () => {
   return (

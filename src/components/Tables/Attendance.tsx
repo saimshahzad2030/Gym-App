@@ -20,10 +20,18 @@ import {   TextField } from '@mui/material';
 import { fetchAttendance } from '../../services/attendance.services';
 import LoaderComp from '../Loader/Loader'; 
 import { checkBoxStyle, textFieldStyle } from '../../../constants/constants';
-   
+type MemberInfo = {
+  first_name: string;
+  last_name: string;
+  membership_valid_from: string; // ISO 8601 date string
+  membership_valid_to: string; // ISO 8601 date string
+  membership_status: string; // e.g., "Continue"
+  image: string; // URL to the member's image
+};
+ 
 interface Data {
   id: number;
-  member_id: number; // Assuming it's a string, as shown in the example
+  member_info: MemberInfo; // Assuming it's a string, as shown in the example
   in_time: string; // ISO 8601 format datetime as a string
   out_time: string; // ISO 8601 format datetime as a string
   member_reg_code: string;
@@ -60,26 +68,47 @@ interface HeadCell {
  
 const headCells: readonly HeadCell[] = [
   {
-    id: 'member_id',
+    id: 'out_time',
     numeric: true,
     disablePadding: false,
-    label: 'Member Id',
+    label: 'Member Name',
   },
   {
-    id: 'in_time',
+    id: 'out_time',
     numeric: true,
     disablePadding: false,
-    label: 'Joined',
+    label: 'Code',
   },
   
   {
     id: 'out_time',
     numeric: true,
     disablePadding: false,
-    label: 'Left',
+    label: 'Start Date',
   },
   
    
+  {
+    id: 'out_time',
+    numeric: true,
+    disablePadding: false,
+    label: 'End Date',
+  },  {
+    id: 'out_time',
+    numeric: true,
+    disablePadding: false,
+    label: 'Status',
+  },  {
+    id: 'out_time',
+    numeric: true,
+    disablePadding: false,
+    label: 'In Time',
+  },  {
+    id: 'out_time',
+    numeric: true,
+    disablePadding: false,
+    label: 'Out Time',
+  }
    
 ];
 
@@ -123,7 +152,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             align={ 'center'}
             padding={headCell.disablePadding ? 'none' : 'normal'}
             sortDirection={orderBy === headCell.id ? order : false} 
-            className='dark:text-white'
+            className={`dark:text-white } flex flex-col items-center justify-center `}
           >
             <TableSortLabel
               active={orderBy === headCell.id}
@@ -199,6 +228,14 @@ const formatDate = (date:string)=>{
   })
 }
  
+const formatDateOnly = (date: string) => {
+  const formattedDate = new Date(date);
+  return formattedDate.toLocaleString('en-US', {
+    year: 'numeric',
+    month: 'long', // e.g., "May"
+    day: 'numeric', // e.g., "20"
+  });
+};
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
   };
@@ -336,10 +373,48 @@ const formatDate = (date:string)=>{
 
                     
                     >
-  {row.member_id} 
+  {`${row.member_info.first_name} ${row.member_info.last_name}`} 
 </TableCell>
                    
-                   
+<TableCell
+                    align="center"
+                    className='dark:text-white'
+
+                    
+                    >
+  {`${row.member_reg_code}`} 
+</TableCell>
+<TableCell
+                    align="center"
+                    className='dark:text-white'
+
+                    
+                    >
+ {formatDateOnly(row.member_info.membership_valid_from)}
+
+
+</TableCell>
+<TableCell
+                    align="center"
+                    className='dark:text-white'
+
+                    
+                    >
+ {formatDateOnly(row.member_info.membership_valid_to)}
+
+
+
+</TableCell>
+<TableCell
+                    align="center"
+                    className={`dark:text-white ${row.member_info.membership_status == 'Continue'?'bg-green-800':'bg-red-800'}`}
+
+                    
+                    >
+ {row.member_info.membership_status == 'Continue'?'Valid':'Not Valid'}
+
+
+</TableCell>
 <TableCell
                     align="center"
                     className='dark:text-white'

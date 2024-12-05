@@ -197,7 +197,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
               </SidebarLinkGroup>
               <SidebarLinkGroup
                 activeCondition={
-                  pathname === '/income' || pathname.includes('income')
+                  pathname === '/payment' || pathname.includes('payment')
                 }
               >
                 {(handleClick, open) => {
@@ -206,9 +206,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                       <NavLink
                         to="#"
                         className={`group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                          (pathname === '/income/add' || pathname === '/income/edit' ||
-                            pathname === '/income/view' ||
-                            pathname.includes('income'))&&
+                          (pathname === '/payment/add' || pathname === '/payment/edit' ||
+                            pathname === '/payment/view' ||
+                            pathname.includes('payment'))&&
                           'bg-graydark dark:bg-meta-4'
                         }`}
                         onClick={(e) => {
@@ -219,15 +219,15 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                         }}
                       >
                       <Payments/>
-                        Income
+                      Payment
                         <DownArrow className={`absolute right-4 top-1/2 -translate-y-1/2 fill-current ${
     open && 'rotate-180'
   }`}/>
                       </NavLink>
                       <DropDownMenu 
                     open={open}
-                    viewsUrl={'/income/view'}
-                    addUrl={'/income/add'}
+                    viewsUrl={'/payment/view'}
+                    addUrl={'/payment/add'}
                     />
                       
                     </React.Fragment>

@@ -1,33 +1,25 @@
 import axios from 'axios'
 import { config } from '../config/config';
 import Cookies from 'js-cookie';
-import AddPayment from '../pages/Payments/AddPayment';
 interface Data {
-    membership_name: string;
-    name_of_member: string;
-    member_id: Number;
-    label: string;
-    amount: string;
-    payment_date: Date | null;
+    member_id: number,
+    membership_class: 'Regular Monthly' | '3 month Cardio' | 'Cardio Monthly' | '3 Month Gym' | 'none'
 
 
 }
 interface editData {
     id: number;
-    membership_name: string;
-    member_id: number;
-    name_of_member: string;
-    label: string;
-    amount: string;
-    payment_date: Date | null;
+    member_id: number,
+    membership_class: 'Regular Monthly' | '3 month Cardio' | 'Cardio Monthly' | '3 Month Gym'
+
 
 
 }
 
 
-export const fetchPayments = async () => {
+export const fetchPayments = async (url: string) => {
     try {
-        const response = await axios.get(`${config.url}api/payments`, {
+        const response = await axios.get(url ? url : `${config.url}api/membership-payment`, {
             headers: {
                 'Authorization': `Bearer ${Cookies.get('token')}`
             }
@@ -40,17 +32,27 @@ export const fetchPayments = async () => {
     }
 
 }
+export const fetchPaymentsUsingSearch = async (searchQuery: string) => {
+    try {
+        const response = await axios.get(`${config.url}api/membership-payment/?global_search=${searchQuery}&invoice_type=income`, {
+            headers: {
+                'Authorization': `Bearer ${Cookies.get('token')}`
+            }
+        }
+        );
+        return response.data;
+    } catch (error) {
+        console.error('Login failed:', error.response?.data || error.message);
+        return { error: error.response?.data.detail }
+    }
 
+}
 export const addPayment = async (data: Data) => {
     try {
-        const response = await axios.post(`${config.url}api/payments/`,
+        const response = await axios.post(`${config.url}api/membership-payment/?query=invoice-type-income
+`,
             {
-                membership_name: data.membership_name,
-                name_of_member: data.name_of_member,
-                member_id: data.member_id,
-                label: data.label,
-                amount: data.amount,
-                payment_date: data.payment_date,
+                ...data,
 
             },
             {
@@ -68,13 +70,10 @@ export const addPayment = async (data: Data) => {
 
 export const editPayment = async (id: number, data: editData) => {
     try {
-        const response = await axios.patch(`${config.url}api/payments/${id}/`,
+        const response = await axios.patch(`${config.url}api/membership-payment/${id}/
+`,
             {
-                membership_name: data.membership_name,
-                name_of_member: data.name_of_member,
-                label: data.label,
-                amount: data.amount,
-                payment_date: data.payment_date,
+                ...data
             },
             {
                 headers: {
@@ -92,7 +91,7 @@ export const editPayment = async (id: number, data: editData) => {
 
 export const deletePayment = async (id: number) => {
     try {
-        const response = await axios.delete(`${config.url}api/payments/${id}/`,
+        const response = await axios.delete(`${config.url}api/membership-payment/${id}/`,
 
             {
                 headers: {
@@ -101,6 +100,35 @@ export const deletePayment = async (id: number) => {
             });
         return { data: response.data, status: response.status };
 
+    } catch (error) {
+        console.error('Login failed:', error.response?.data || error.message);
+        return { error: error.response?.data.detail }
+    }
+
+}
+
+export const downloadPdfPayment = async (id: number) => {
+    try {
+        const response = await axios.get(`${config.url}api/membership-payment/?query=download-receipt&mp_id=${id}
+`,
+            {
+                headers: {
+                    'Authorization': `Bearer ${Cookies.get('token')}`
+                },
+                responseType: 'blob', // Indicates that the response will be a binary file
+            });
+        // Create a Blob object from the response
+        const blob = new Blob([response.data], { type: 'application/pdf' });
+
+        // Create a link element to trigger the download
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.setAttribute('download', `income_report_${id}.pdf`); // Set the desired file name
+        document.body.appendChild(link);
+        link.click(); // Trigger the download
+        document.body.removeChild(link); // Clean up the link elemen
+        // return { data: response.data, status: response.status };
     } catch (error) {
         console.error('Login failed:', error.response?.data || error.message);
         return { error: error.response?.data.detail }

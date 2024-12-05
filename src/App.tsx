@@ -175,6 +175,30 @@ function Content() {
               </>
             }
           />
+            <Route
+            path="/payment/view"
+            element={
+              <>
+              <DefaultLayout>
+                <PageTitle title="Income | All Payments" />
+                <AllPayments />
+              </DefaultLayout>
+
+              </>
+            }
+          />
+          <Route
+            path="/payment/add"
+            element={
+              <>
+              <DefaultLayout>
+                <PageTitle title="Income | Add a new Income Receiept" />
+                <AddPayment />
+              </DefaultLayout>
+
+              </>
+            }
+          />
           <Route
             path="/expense/view"
             element={

@@ -15,6 +15,8 @@ import TableSortLabel from '@mui/material/TableSortLabel';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
+
+import DownloadIcon from '@mui/icons-material/Download';
 import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
@@ -24,13 +26,17 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
 import Image from '../Image/Image';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, styled, TextField } from '@mui/material'; 
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, styled, TextField, textFieldClasses } from '@mui/material'; 
 import EditMember from '../../pages/Members/EditMember';
 import EditPayment from '../../pages/Payments/EditPayment';
+import EditExpense from '../../pages/Expenses/EditExpense';
 import { checkBoxStyle, textFieldStyle } from '../../../constants/constants';
-import { deletePayment, fetchPayments } from '../../services/payment.services';
+import { deleteExpense, fetchExpenses } from '../../services/expenses.services';
+import LoaderComp from '../Loader/Loader';
 import SnackbarComp from '../SnackBar/Snackbar';
-import Loader from '../../common/Loader';
+import EditIncome from '../../pages/Incomes/EditIncome';
+import { deleteIncome, downloadPdfIncome, fetchIncomes, fetchIncomesUsingSearch } from '../../services/incomes.services';
+import { downloadPdfPayment, fetchPayments, fetchPaymentsUsingSearch } from '../../services/payment.services';
    
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -40,48 +46,26 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     padding: theme.spacing(1),
   },
 }));
-interface Data {
-  id: number;
-  membership_name: string;
-  member_id: number;
-  name_of_member: string;
-  label: string;
-  amount: string;
-  payment_date: Date;
-
-   
-}
-
-function createData(
-  id: number,
-    membership_name: string,
-    member_id: number,
-    name_of_member: string,
-    label: string,
-    amount: string,
-    payment_date: Date,
-    
-    
-     
-): Data {
-  return {
-    id ,
-    membership_name,
-    name_of_member ,
-    member_id,
-    label,
-    amount,
-    payment_date,
+ 
+interface Data { 
+    mp_id: number;
+    member_id: number;
+    membership_id: number;
+    membership_amount: number;
+    paid_amount: number;
+    start_date: string; // ISO 8601 date string
+    end_date: string; // ISO 8601 date string
+    membership_status: string; // e.g., "Continue"
+    payment_status: string | null; // can be null
+    created_date: string; // ISO 8601 date string
+    created_by: number | null; // can be null
+    isprinted: string; // binary-like data as a string
+    signupfee: number;
+    is_active: boolean | null; // can be null
+    delete_reason: string | null; // can be null
   };
-}
-
-// const rows = [
-//     createData(1,'basic', 'John Doe',"Membership payment", 1000, new Date('2023-04-18') ),
-//   createData(2, 'gold','John Doe', "Membership payment", 1000, new Date('2023-01-15') ),
-//   createData(3, 'silver','John Doe', "Membership payment", 1000, new Date('2023-02-10') ),
-//   createData(4,'premium','John Doe',  "Membership payment", 1000, new Date('2023-03-12') ),
-   
-// ];
+ 
+ 
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -97,8 +81,8 @@ type Order = 'asc' | 'desc';
 
 const getComparator = (order: 'asc' | 'desc', orderBy: keyof Data) => {
   return (a: Data, b: Data) => {
-    const valueA = orderBy === 'payment_date' ? +new Date(a[orderBy]) : a[orderBy];
-    const valueB = orderBy === 'payment_date' ? +new Date(b[orderBy]) : b[orderBy];
+    const valueA = orderBy === 'created_date' ? +new Date(a[orderBy]) : a[orderBy];
+    const valueB = orderBy === 'created_date' ? +new Date(b[orderBy]) : b[orderBy];
     if (valueA < valueB) return order === 'asc' ? -1 : 1;
     if (valueA > valueB) return order === 'asc' ? 1 : -1;
     return 0;
@@ -114,31 +98,29 @@ interface HeadCell {
 
 const headCells: readonly HeadCell[] = [
   {
-    id: 'membership_name',
+    id: 'member_id',
     numeric: true,
     disablePadding: false,
-    label: 'MemberShipName',
+    label: 'MemberId',
   },
   {
-    id: 'name_of_member',
+    id: 'membership_amount',
     numeric: true,
     disablePadding: false,
-    label: 'Member Name',
-  },
-  {
-    id: 'amount',
-    numeric: false,
-    disablePadding: true,
-    label: 'Amount Paid',
-  },
-  {
-    id: 'payment_date',
+    label: 'Membership Payment',
+  },{
+    id: 'paid_amount',
     numeric: true,
     disablePadding: false,
-    label: 'Date Of Payment',
+    label: 'Paid Amount',
   },
-
-  
+  {
+    id: 'created_date',
+    numeric: true,
+    disablePadding: false,
+    label: 'Date',
+  },
+ 
   
   
    
@@ -249,7 +231,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
         <Typography
          className='dark:text-white text-#1A222C'
         >
-          Payment
+          Incomes
         </Typography>
       )}
       {numSelected > 0 ? (
@@ -274,54 +256,102 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
 }
 export default function Payments() {
   const [order, setOrder] = React.useState<Order>('asc');
-  const [orderBy, setOrderBy] = React.useState<keyof Data>('id');
+  const [orderBy, setOrderBy] = React.useState<keyof Data>('created_date');
   const [selected, setSelected] = React.useState<readonly number[]>([]);
-  const [page, setPage] = React.useState(0); 
+  const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [searchTerm, setSearchTerm] = React.useState<string>('');
   const [openEditDialog, setOpenEditDialog] = React.useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
+  const [totalEntries,setTotalEntries]  = React.useState<number>(0)
   const [selectedRow, setSelectedRow] = React.useState<Data | null>(null);
-  const [payments, setPayments] = React.useState<Data[]>([]);
-  const [openSnackBar, setOpenSnackBar] = React.useState<boolean>(false);
-  const [openDeleteDialog, setOpenDeleteDialog] = React.useState<boolean>(false);
+  const [expenses, setExpenses] = React.useState<Data[]>([]);
   const [loading, setLoading] = React.useState<boolean>(true);
+  const [newEntriesloading, setNewEntriesLoading] = React.useState<boolean>(false);
+  const [openSnackBar, setOpenSnackBar] = React.useState<boolean>(false);
+  const [nextUrl, setNextUrl] = React.useState<string>("");
+  const [previousUrl, setPreviousUrl] = React.useState<string>("");
 
-  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSearchChange = async(event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
-  };
-  React.useEffect(() => {
-    const fetchData = async () => { 
-      const fetchedData = await fetchPayments();
-      setLoading(false)
+    setPage(1)
+    const members:{results:Data[],count:number,next:string,previous:string,error?:string} = await fetchPaymentsUsingSearch(event.target.value);
+    setLoading(false)
+    console.log(members)
+    if (!members.error) {
+      setNextUrl(members.next)
+      setPreviousUrl(members.previous)
+      setTotalEntries(members.count);
 
-      if (!fetchedData.error) {
-        setPayments(fetchedData);
+      setExpenses(members.results);
+    }
+  };
+
+  React.useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true)
+      const members:{results:Data[],count:number,next:string,previous:string,error?:string} = await fetchPayments("");
+      setLoading(false)
+      if (!members.error) {
+        setNextUrl(members.next)
+        setPreviousUrl(members.previous)
+        setTotalEntries(members.count);
+
+        setExpenses(members.results);
       }
     };
     fetchData();
   }, []);
-
-  const updatePayment = (updatedPayment: Data) => {
-    setPayments((prevPayments) =>
-      prevPayments.map((payment) =>
-        payment.id == updatedPayment.id ? updatedPayment : payment
+  
+  const handleChangePage = async(event: unknown, newPage: number) => {
+    const isNext = newPage > page;
+    const isPrevious = newPage < page;
+     setPage(newPage);
+    const urlToFetch = isNext ? nextUrl : previousUrl;
+    setNewEntriesLoading(true)
+    if (urlToFetch) {
+      const members:{results:Data[],count:number,next:string,previous:string,error?:string} = await fetchPayments(urlToFetch);
+      setNewEntriesLoading(false);
+  
+      if (!members.error) {
+         setNextUrl(members.next);
+        setPreviousUrl(members.previous);
+        setTotalEntries(members.count);
+        setExpenses(members.results);
+         
+      }
+    } else {
+      setLoading(false);
+      console.error('No URL available for fetching members.');
+    }
+  };
+  const updateMember = (updatedMember: Data) => {
+    setExpenses((prevMembers) =>
+      prevMembers.map((member) =>
+        member.mp_id == updatedMember.mp_id ? updatedMember : member
       )
     );
   };
-  const filteredRows = payments.filter((row) =>
-    row.name_of_member.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
  
+
   const handleRequestSort = (
     event: React.MouseEvent<unknown>,
-    property: keyof Data,
+    property: keyof Data
   ) => {
     const isAsc = orderBy === property && order === 'asc';
     setOrder(isAsc ? 'desc' : 'asc');
     setOrderBy(property);
   };
 
+  const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.checked) {
+      const newSelected = expenses.map((n) => n.mp_id);
+      setSelected(newSelected);
+      return;
+    }
+    setSelected([]);
+  };
 
   const handleClick = (event: React.MouseEvent<unknown>, id: number) => {
     const selectedIndex = selected.indexOf(id);
@@ -336,208 +366,178 @@ export default function Payments() {
     } else if (selectedIndex > 0) {
       newSelected = newSelected.concat(
         selected.slice(0, selectedIndex),
-        selected.slice(selectedIndex + 1),
+        selected.slice(selectedIndex + 1)
       );
     }
     setSelected(newSelected);
   };
 
-  const handleChangePage = (event: unknown, newPage: number) => {
-    setPage(newPage);
-  };
+ 
 
-  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setRowsPerPage(parseInt(event.target.value, 10));
-    setPage(0);
-  };
+ 
 
-   
-
-  // Avoid a layout jump when reaching the last page with empty rows.
+  // const emptyRows =
+  //   page > 0 ? Math.max(0, (1 + page) * rowsPerPage - filteredRows.length) : 0;
 
   const visibleRows = React.useMemo(
     () =>
-      [...filteredRows]
-        .sort(getComparator(order, orderBy))
-        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage),
-    [order, orderBy, page, rowsPerPage, filteredRows]
-  );
-  const emptyRows =
-    page > 0 ? Math.max(0, (1 + page) * rowsPerPage - visibleRows.length) : 0;
-
-    const handleSelectAllClick = (event: React.ChangeEvent<HTMLInputElement>) => {
-      if (event.target.checked) {
-        const newSelected = visibleRows.map((n) => n.id);
-        setSelected(newSelected);
-        return;
-      }
-      setSelected([]);
-    };
+      [...expenses]
+    .sort(getComparator(order, orderBy))
+    .slice(0, page * rowsPerPage + rowsPerPage),
+    [order, orderBy, page, rowsPerPage, expenses]
+  ); 
   return (
     <Box
     className='w-full mb-2 bg-white dark:bg-[#1A222C] text-[#1A222C]'
-      
-    >
-    {loading?<Loader/>:
-    visibleRows.length > 0 ?
-    <div className='flex flex-col items-center w-full relative'>
-    {!openEditDialog && <Paper 
     
-    className='w-full mb-2 bg-white dark:bg-[#1A222C]'
-    // sx={{ width: '100%', mb: 2,backgroundColor:'white' }}
+   
     >
-      <EnhancedTableToolbar numSelected={selected.length} />
-      <Box sx={{ padding: '16px' }}>
-        <TextField
-          variant="outlined"
-          placeholder="Search by name"
-          value={searchTerm}
-          onChange={handleSearchChange}
-          fullWidth
-          size='small'
-          sx={textFieldStyle}
-        />
-      </Box>
-      <TableContainer>
-        <Table
-          sx={{ minWidth: 750  }}
-          aria-labelledby="tableTitle"
-          size={ 'medium'}
+       <div className='flex flex-col items-center w-full relative'>
+      {!openEditDialog && <Paper 
+      
+      className='w-full mb-2 bg-white dark:bg-[#1A222C]'  
+      >
+        <EnhancedTableToolbar numSelected={selected.length} />
+         
+   {loading?<LoaderComp />:
+   visibleRows.length>0?    <> <TableContainer>
+   <Table
+     sx={{ minWidth: 750,backgroundColor:'rgb(26 34 44)' }}
+     aria-labelledby="tableTitle"
+     size={ 'medium'}
+   >
+     <EnhancedTableHead
+       numSelected={selected.length}
+       order={order}
+       orderBy={orderBy}
+       onSelectAllClick={handleSelectAllClick}
+       onRequestSort={handleRequestSort}
+       rowCount={expenses.length}
+     />
+     <TableBody
+className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white' 
+     
+     >
+              {visibleRows.map((row, index) => {
+                const isItemSelected = selected.includes(row.mp_id);
+                const labelId = `enhanced-table-checkbox-${index}`;
+
+                return (
+                  <TableRow
+                    hover
+                    onClick={(event) => handleClick(event, row.mp_id)}
+                    role="checkbox"
+                    aria-checked={isItemSelected}
+                    tabIndex={-1}
+                    key={row.mp_id}
+                    selected={isItemSelected} 
+                  >
+
+                    <TableCell padding="checkbox">
+                      <Checkbox 
+                        checked={isItemSelected}
+                        inputProps={{
+                          'aria-labelledby': labelId,
+                        }}
+                        sx={checkBoxStyle}
+
+                      />
+                    </TableCell>
+                   
+                    <TableCell
+                    align="center"
+                      component="th"
+                      id={labelId}
+                      scope="row"
+                      padding="none"
+                      className='dark:text-white'
+                      // sx={{color:'white'}}
+                    >
+                      {`${row.member_id}`}
+                    </TableCell>
+                   
+                    <TableCell 
+                    align="center"
+                    className='dark:text-white'
+
+                      // sx={{color:'white'}}
+                    
+                    >{row.membership_amount}</TableCell>
+                     <TableCell 
+                    align="center"
+                    className='dark:text-white'
+
+                      // sx={{color:'white'}}
+                    
+                    >{row.paid_amount}</TableCell>
+                      <TableCell 
+                    align="center"
+                    className='dark:text-white'
+
+                      // sx={{color:'white'}}
+                    
+                    >{row.created_date}</TableCell>
+                      <TableCell align="center">
+                      {/* <IconButton onClick={() => {
+                        setSelectedRow(row);
+                        console.log(row)
+                        setOpenEditDialog(true);
+                      }}>
+                        <EditIcon className='dark:text-white text-[#1A222C]' />
+                      </IconButton> */}
+                      <IconButton onClick={async()=>{
+                        const downloadPdf = await downloadPdfPayment(row.mp_id);
+                        console.log(downloadPdf)
+                      }}>
+      <DownloadIcon className="dark:text-white text-[#1A222C]" />
+    </IconButton>
+                      {/* <IconButton  onClick={() => {
+                        setSelectedRow(row); 
+                        setOpenDeleteDialog(true);
+                      }}>
+                        <DeleteIcon className='dark:text-white text-[#1A222C]' />
+                      </IconButton> */}
+                    </TableCell>
+                  </TableRow>
+                  
+                );
+              })}
+               
+               </TableBody>
+   </Table>
+ </TableContainer>
+ <TablePagination
+ className='dark:text-white' 
+   rowsPerPageOptions={[10]}
+   component="div"
+   count={totalEntries}
+   rowsPerPage={rowsPerPage}
+   page={page}
+   onPageChange={handleChangePage} 
+ /></>
+ :
+ <p className='dark:text-white text-graydark p-4'>No Data to show</p>}
+      </Paper>}
+
+       {openEditDialog && (
+        
+        <div
+          className=' w-full dark:bg-boxdark bg-white p-4 rounded '
+          onClick={(e) => e.stopPropagation()} 
         >
-          <EnhancedTableHead
-            numSelected={selected.length}
-            order={order}
-            orderBy={orderBy}
-            onSelectAllClick={handleSelectAllClick}
-            onRequestSort={handleRequestSort}
-            rowCount={payments.length}
-          />
-           <TableBody
-   className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white' >
-            {visibleRows.map((row, index) => {
-              const isItemSelected = selected.includes(row.id);
-              const labelId = `enhanced-table-checkbox-${index}`;
-
-              return (
-              <TableRow
-                hover
-                onClick={(event) => handleClick(event, row.id)}
-                role="checkbox"
-                aria-checked={isItemSelected}
-                tabIndex={-1}
-                key={row.id}
-                selected={isItemSelected}
-                // sx={{ cursor: 'pointer',color:'white' }}
-              >
-
-                <TableCell padding="checkbox">
-                <Checkbox 
-                      checked={isItemSelected}
-                      inputProps={{
-                        'aria-labelledby': labelId,
-                      }}
-                      sx={checkBoxStyle}
-
-                    />
-                </TableCell>
-               
-                <TableCell
-                align="center"
-                  component="th"
-                  id={labelId}
-                  scope="row"
-                  padding="none"
-                  className='dark:text-white'
-
-                >
-                  {`${row.name_of_member}`}
-                </TableCell>
-               
-                <TableCell 
-                align="center"
-                className='dark:text-white'
-
-                
-                >{row.membership_name}</TableCell>
-                <TableCell 
-                align="center"
-                className='dark:text-white'
-
-                
-                >{row.amount}</TableCell>
-                   <TableCell 
-                align="center"
-                className='dark:text-white'
-
-                
-                >
-                    {row.payment_date ? format(new Date(row.payment_date), 'yyyy-MM-dd') : 'N/A'}
-
-                </TableCell>
-                  <TableCell align="center">
-                  <IconButton onClick={() => {
-                    setSelectedRow(row);
-                    console.log(row)
-                    setOpenEditDialog(true);
-                  }}>
-                    <EditIcon                       className='dark:text-white'
-                    />
-                  </IconButton>
-                  <IconButton onClick={() => {
-                    setSelectedRow(row);
-                    setOpenDeleteDialog(true);
-                  }}>
-                    <DeleteIcon                        className='dark:text-white'
-                    />
-                  </IconButton>
-                </TableCell>
-              </TableRow>
-              
-            );
-          })}
-          {emptyRows > 0 && (
-            <TableRow
-              style={{
-                height: (  53) * emptyRows,
-              }}
-            >
-              <TableCell colSpan={6} />
-              
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-    </TableContainer>
-    <TablePagination
-                          className='dark:text-white'
-
-      rowsPerPageOptions={[10]}
-      component="div"
-      count={filteredRows.length}
-      rowsPerPage={rowsPerPage}
-      page={page}
-      onPageChange={handleChangePage} 
-    />
-  </Paper>}
-  {openEditDialog && (
-      
-      <div
-      className=' w-full dark:bg-boxdark bg-white p-4 rounded '
-      onClick={(e) => e.stopPropagation()} // Prevent click from bubbling up
-    >
-      
-      <div className='flex flex-row items-center justify-end w-full mt-2'>
-      <Button onClick={() => setOpenEditDialog(false)}>
-        <CloseIcon className='dark:text-white text-boxdark mb-4'/>
-      </Button>
-            </div>
-          <EditPayment
-          onUpdatePayment={updatePayment}
-          payment={selectedRow} 
-          setOpenEditDialog={setOpenEditDialog}/>
-        </div> 
-    )}
-     <BootstrapDialog
+            
+            <div className='flex flex-row items-center justify-end w-full mt-4'>
+            <Button onClick={() => setOpenEditDialog(false)}>
+              <CloseIcon className='dark:text-white text-boxdark mb-4'/>
+            </Button>
+              </div>
+            <EditIncome
+          onUpdateExpense={updateExpense}
+            
+            expense={selectedRow} setOpenEditDialog={setOpenEditDialog}/>
+          </div> 
+      )}
+       <BootstrapDialog
       onClose={()=>{setOpenDeleteDialog(false)}}
       aria-labelledby="customized-dialog-title"
       open={openDeleteDialog}
@@ -565,10 +565,10 @@ export default function Payments() {
       </DialogContent>
       <DialogActions>
         <Button autoFocus onClick={async()=>{
-          const deleteEntry = await deletePayment(selectedRow?.id || 0);
+          const deleteEntry = await deleteIncome(selectedRow?.mp_id || 0);
           if(deleteEntry.status == 204){
             setOpenDeleteDialog(false)
-            setPayments((prevPayments) => prevPayments.filter((payment) => payment.id !== selectedRow?.id));
+            setExpenses((prevExpenses) => prevExpenses.filter((expense) => expense.mp_id !== selectedRow?.mp_id));
             setOpenSnackBar(true)
           }
           console.log(deleteEntry.status)
@@ -578,8 +578,7 @@ export default function Payments() {
         </Button>
       </DialogActions>
     </BootstrapDialog>
-    </div>:
-     visibleRows && <p className='dark:text-white text-graydark p-4'>No payments to show</p>}
+      </div>:
           <SnackbarComp open={openSnackBar} setOpen={setOpenSnackBar} message={  "Deleted Succesfully"}/>
 
     </Box>
