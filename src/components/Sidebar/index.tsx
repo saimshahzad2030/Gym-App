@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import SidebarLinkGroup from './SidebarLinkGroup'; 
-import { Attendance, Dashboard, DownArrow, Expense, Income, Members, Memberships, Payments, FingerPrint } from '../../../constants/icons';
+import { Attendance, Dashboard, DownArrow, Expense, Income, Members, Memberships, Payments, FingerPrint, AddMembersSvg, AddMembershipsSvg, Add } from '../../../constants/icons';
 import Image from '../Image/Image';
 import { LOGO } from '../../../constants/constants';
 import DropDownMenu from './DropDownMenu';
@@ -117,161 +117,103 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   Dashboard
                 </NavLink>
               </li>
-              
-              
-              <SidebarLinkGroup
-                activeCondition={
-                  pathname === '/members' || pathname.includes('members')
-                }
-              >
-                {(handleClick, open) => {
-                  return (
-                    <React.Fragment>
-                      <NavLink
-                        to="#"
-                        className={`group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                          (pathname === '/member/add' || pathname === '/member/edit' ||
-                            pathname === '/member/view' ) &&
-                          'bg-graydark dark:bg-meta-4'
-                        }`}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          sidebarExpanded
-                            ? handleClick()
-                            : setSidebarExpanded(true);
-                        }}
-                      >
-                        <Members />
-                        Members
-                        <DownArrow className={`absolute right-4 top-1/2 -translate-y-1/2 fill-current ${
-    open && 'rotate-180'
-  }`}/>
-                      </NavLink>
-                    <DropDownMenu 
-                    open={open}
-                    viewsUrl={'/member/view'}
-                    addUrl={'/member/add'}
-                    />
-                    </React.Fragment>
-                  );
-                }}
-              </SidebarLinkGroup>
-              <SidebarLinkGroup
-                activeCondition={
-                  pathname === '/memberships' || pathname.includes('memberships')
-                }
-              >
-                {(handleClick, open) => {
-                  return (
-                    <React.Fragment>
-                      <NavLink
-                        to="#"
-                        className={`group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                          (pathname === '/membership/add' || pathname === '/membership/edit' ||
-                            pathname === '/membership/view' ||
-                            pathname.includes('membership')) &&
-                          'bg-graydark dark:bg-meta-4'
-                        }`}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          sidebarExpanded
-                            ? handleClick()
-                            : setSidebarExpanded(true);
-                        }}
-                      >
-                       <Memberships/>
-                        Memberships
-                        <DownArrow className={`absolute right-4 top-1/2 -translate-y-1/2 fill-current ${
-    open && 'rotate-180'
-  }`}/>
-                      </NavLink>
-                      <DropDownMenu 
-                    open={open}
-                    viewsUrl={'/membership/view'}
-                    addUrl={'/membership/add'}
-                    />
-                     
-                    </React.Fragment>
-                  );
-                }}
-              </SidebarLinkGroup>
-              <SidebarLinkGroup
-                activeCondition={
-                  pathname === '/payment' || pathname.includes('payment')
-                }
-              >
-                {(handleClick, open) => {
-                  return (
-                    <React.Fragment>
-                      <NavLink
-                        to="#"
-                        className={`group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                          (pathname === '/payment/add' || pathname === '/payment/edit' ||
-                            pathname === '/payment/view' ||
-                            pathname.includes('payment'))&&
-                          'bg-graydark dark:bg-meta-4'
-                        }`}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          sidebarExpanded
-                            ? handleClick()
-                            : setSidebarExpanded(true);
-                        }}
-                      >
-                      <Payments/>
-                      Payment
-                        <DownArrow className={`absolute right-4 top-1/2 -translate-y-1/2 fill-current ${
-    open && 'rotate-180'
-  }`}/>
-                      </NavLink>
-                      <DropDownMenu 
-                    open={open}
-                    viewsUrl={'/payment/view'}
-                    addUrl={'/payment/add'}
-                    />
-                      
-                    </React.Fragment>
-                  );
-                }}
-              </SidebarLinkGroup> 
+              <li>
+                <NavLink
+                  to="/member/view"
+                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                    pathname.includes('member/view') && 'bg-graydark dark:bg-meta-4'
+                  }`}
+                >
+                                         <Members />
 
-              <SidebarLinkGroup
-                activeCondition={
-                  pathname === '/expense' || pathname.includes('expense')
-                }
-              >
-                {(handleClick, open) => {
-                  return (
-                    <React.Fragment>
-                      <NavLink
-                        to="#"
-                        className={`group relative flex items-center gap-2.5 rounded-sm px-4 py-2 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
-                          (pathname === '/expense' ||
-                            pathname.includes('expense')) &&
-                          'bg-graydark dark:bg-meta-4'
-                        }`}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          sidebarExpanded
-                            ? handleClick()
-                            : setSidebarExpanded(true);
-                        }}
-                      >
-                        <Expense/>
-                        Expense
-                        <DownArrow className={`absolute right-4 top-1/2 -translate-y-1/2 fill-current ${
-    open && 'rotate-180'
-  }`}/>
-                      </NavLink>
-                      <DropDownMenu 
-                    open={open}
-                    viewsUrl={'/expense/view'}
-                    addUrl={'/expense/add'}
-                    />
-                    </React.Fragment>
-                  );
-                }}
-              </SidebarLinkGroup> 
+                  View Members
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to="/member/add"
+                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                    pathname.includes('member/add') && 'bg-graydark dark:bg-meta-4'
+                  }`}
+                >
+                  <Add/>
+                  Add Member
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to="/membership/view"
+                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                    pathname.includes('membership/view') && 'bg-graydark dark:bg-meta-4'
+                  }`}
+                >
+                                                               <Memberships/>
+
+
+                  View Memberships
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to="/membership/add"
+                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                    pathname.includes('membership/add') && 'bg-graydark dark:bg-meta-4'
+                  }`}
+                >
+                  <Add/>
+                  Add Membership
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to="/payment/view"
+                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                    pathname.includes('payment/view') && 'bg-graydark dark:bg-meta-4'
+                  }`}
+                >
+                                                               <Memberships/>
+
+
+                  View Payments
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to="/payment/add"
+                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                    pathname.includes('payment/add') && 'bg-graydark dark:bg-meta-4'
+                  }`}
+                >
+                  <Add/>
+                  Add Payments
+                </NavLink>
+              </li>
+              
+              <li>
+                <NavLink
+                  to="/expense/view"
+                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                    pathname.includes('expense/view') && 'bg-graydark dark:bg-meta-4'
+                  }`}
+                >
+                                                               <Memberships/>
+
+
+                  View Expenses
+                </NavLink>
+              </li>
+              <li>
+                <NavLink
+                  to="/expense/add"
+                  className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
+                    pathname.includes('expense/add') && 'bg-graydark dark:bg-meta-4'
+                  }`}
+                >
+                  <Add/>
+                  Add Expense
+                </NavLink>
+              </li>
+            
               <li>
                 <NavLink
                   to="/report/view"
