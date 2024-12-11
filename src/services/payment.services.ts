@@ -5,6 +5,11 @@ interface Data {
     member_id: number,
     membership_class: 'Regular Monthly' | '3 month Cardio' | 'Cardio Monthly' | '3 Month Gym' | 'none'
 
+    membership_amount: number,
+    paid_amount: number,
+    start_date: string,
+    end_date: string,
+
 
 }
 interface editData {

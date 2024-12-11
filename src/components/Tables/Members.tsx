@@ -5,6 +5,7 @@ import Table from '@mui/material/Table';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import DialogActions from '@mui/material/DialogActions'; 
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell'; 
@@ -35,6 +36,7 @@ import { deleteMember, fetchMembers, fetchMembersUsingSearch } from '../../servi
 import SnackbarComp from '../SnackBar/Snackbar';
 import LoaderComp from '../Loader/Loader';
 import { useLocation, useNavigate } from 'react-router-dom';
+import AddMemberPayment from '../../pages/Members/AddMemberPayment';
    
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -403,6 +405,7 @@ export default function EnhancedTable() {
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [searchTerm, setSearchTerm] = React.useState<string>(query?query:'');
   const [openEditDialog, setOpenEditDialog] = React.useState(false);
+  const [openPaymentDialog, setOpenPaymentDialog] = React.useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
   const [totalEntries,setTotalEntries]  = React.useState<number>(0)
   const [selectedRow, setSelectedRow] = React.useState<Data | null>(null);
@@ -549,7 +552,7 @@ export default function EnhancedTable() {
     
     >
        <div className='flex flex-col items-center w-full relative'>
-      {!openEditDialog && <Paper 
+      {!openEditDialog && !openPaymentDialog && <Paper 
       
       className='w-full mb-2 bg-white dark:bg-[#1A222C]'  
       >
@@ -650,6 +653,14 @@ className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white'
                  <EditIcon                       className='dark:text-white'
                  />
                </IconButton>
+               <IconButton onClick={() => {
+                 setSelectedRow(row);
+             
+                 setOpenPaymentDialog(true);
+               }}>
+                 <AttachMoneyIcon                       className='dark:text-white'
+                 />
+               </IconButton>
                <IconButton  onClick={() => {
                  setSelectedRow(row);
                  
@@ -708,6 +719,25 @@ className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white'
              />
           </div> 
       )}
+      {openPaymentDialog && 
+       <div
+       className=' w-full dark:bg-boxdark bg-white p-4 rounded '
+       onClick={(e) => e.stopPropagation()}  
+     >
+         
+         <div className='flex flex-row items-center justify-end w-full mt-4'>
+         <Button onClick={() => setOpenPaymentDialog(false)}>
+           <CloseIcon className='dark:text-white text-boxdark mb-4'/>
+         </Button>
+           </div>
+         <AddMemberPayment
+          user={selectedRow} 
+          setOpenPaymentDialog={setOpenPaymentDialog}
+          onUpdateMember={updateMember}
+
+          />
+       </div> 
+      }
        <BootstrapDialog
         onClose={()=>{setOpenDeleteDialog(false)}}
         aria-labelledby="customized-dialog-title"

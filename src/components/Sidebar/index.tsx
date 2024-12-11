@@ -177,7 +177,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   View Payments
                 </NavLink>
               </li>
-              <li>
+              {/* <li>
                 <NavLink
                   to="/payment/add"
                   className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
@@ -187,9 +187,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   <Add/>
                   Add Payments
                 </NavLink>
-              </li>
+              </li> */}
               
-              <li>
+              {/* <li>
                 <NavLink
                   to="/expense/view"
                   className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
@@ -212,9 +212,9 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
                   <Add/>
                   Add Expense
                 </NavLink>
-              </li>
+              </li> */}
             
-              <li>
+              {/* <li>
                 <NavLink
                   to="/report/view"
                   className={`group relative flex items-center gap-2.5 rounded-sm py-2 px-4 font-medium text-bodydark1 duration-300 ease-in-out hover:bg-graydark dark:hover:bg-meta-4 ${
@@ -246,7 +246,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
 </svg>
                   Reports
                 </NavLink>
-              </li>
+              </li> */}
           
           
               <li>
