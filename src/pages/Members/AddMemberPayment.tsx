@@ -319,16 +319,16 @@ console.log(user)
       {...register("selected_membership")}
       defaultValue={  ''}
       onChange={(e) => {
-        
+        console.log(e.target.value,"e.target.value")
         setValue("selected_membership", e.target.value)
-        console.log(      memberships[Number(e.target.value)].signup_fee  || 0 +  (memberships[Number(e.target.value)].membership_amount || 0)  )
-        setAmountDue(   memberships[Number(e.target.value)].signup_fee  || 0 +  (memberships[Number(e.target.value)].membership_amount || 0) )
-        setAmountPaid(  memberships[Number(e.target.value)].signup_fee  || 0 +  (memberships[Number(e.target.value)].membership_amount || 0) )
+        console.log(      memberships[Number(e.target.value)-1].signup_fee  || 0 +  (memberships[Number(e.target.value)-1].membership_amount || 0)  )
+        setAmountDue(   memberships[Number(e.target.value)-1].signup_fee  || 0 +  (memberships[Number(e.target.value)-1].membership_amount || 0) )
+        setAmountPaid(  memberships[Number(e.target.value)-1].signup_fee  || 0 +  (memberships[Number(e.target.value)-1].membership_amount || 0) )
         const today = new Date();
 
         // Calculate the "membership_valid_to" date
         const validToDate = new Date();
-        validToDate.setDate(today.getDate() + (memberships[Number(e.target.value)].membership_length || 0));
+        validToDate.setDate(today.getDate() + (memberships[Number(e.target.value)-1].membership_length || 0));
   
         // Update the "membership_valid_from" and "membership_valid_to" fields
         setValue("membership_valid_from", today.toISOString());
