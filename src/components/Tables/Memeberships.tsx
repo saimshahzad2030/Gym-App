@@ -181,21 +181,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   return (
     <TableHead className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white font-bold'>
       <TableRow>
-        <TableCell padding="checkbox"
         
-        className='dark:text-white'>
-          
-           <Checkbox 
-                         indeterminate={numSelected > 0 && numSelected < rowCount}
-                         checked={rowCount > 0 && numSelected === rowCount}
-                         onChange={onSelectAllClick}
-                         inputProps={{
-                           'aria-label': 'select all desserts',
-                         }}
-                         sx={checkBoxStyle}
-
-                      />
-        </TableCell>
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
@@ -233,62 +219,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 interface EnhancedTableToolbarProps {
   numSelected: number;
 }
-function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
-  const { numSelected } = props;
-  return (
-    <Toolbar
-    className='dark:bg-[#1A222C] bg-white sm:pl-2'
-    // sx={[
-    //   {
-    //     pl: { sm: 2 },
-    //     pr: { xs: 1, sm: 1 },
-    //   },
-    //   numSelected > 0 && {
-    //     bgcolor:  'white'
-    //   },
-    //   {
-    //     // Add dark mode styles using Tailwind's dark class
-    //     '.dark &': {
-    //       pl: { sm: 2 }, // Example padding; adjust based on your needs
-    //       pr: { xs: 1, sm: 1 },
-    //       bgcolor: '#30f172a'
-    //     },
-    //   },
-    // ]}
-  >
-      {numSelected > 0 ? (
-        <p
-           className='dark:text-white text-[#1A222C]'
-        >
-          {numSelected} selected
-        </p>
-      ) : (
-        <Typography
-         className='dark:text-white text-#1A222C'
-        >
-          Memberships
-        </Typography>
-      )}
-      {numSelected > 0 ? (
-        <>
-        <Tooltip title="Delete">
-        <IconButton onClick={()=>{console.log('first')}}>
-
-            <DeleteIcon  className='dark:text-white text-[#1A222C]'/>
-          </IconButton>
-        </Tooltip>
-     
-        </>
-      ) : (
-        <Tooltip title="Filter list">
-          <IconButton>
-            <FilterListIcon />
-          </IconButton>
-        </Tooltip>
-      )}
-    </Toolbar>
-  );
-}
+ 
 export default function Memberships() {
   const [order, setOrder] = React.useState<Order>('asc');
   const [orderBy, setOrderBy] = React.useState<keyof Data>('id');
@@ -419,7 +350,6 @@ const handleChangePage = async(event: unknown, newPage: number) => {
      <div className="flex flex-col items-center w-full relative">
      {!openEditDialog && (
        <Paper className="w-full mb-2 bg-white dark:bg-[#1A222C]">
-         <EnhancedTableToolbar numSelected={selected.length} />
          <Box sx={{ padding: '16px' }}>
            <TextField
              variant="outlined"
@@ -450,19 +380,11 @@ const handleChangePage = async(event: unknown, newPage: number) => {
                    <TableRow
                      hover
                      onClick={(event) => handleClick(event, row.id)}
-                     role="checkbox"
-                     aria-checked={isItemSelected}
+                     role="checkbox" 
                      tabIndex={-1}
-                     key={row.id}
-                     selected={isItemSelected}
+                     key={row.id} 
                    >
-                     <TableCell padding="checkbox">
-                       <Checkbox
-                         checked={isItemSelected}
-                         inputProps={{ 'aria-labelledby': labelId }}
-                         sx={checkBoxStyle}
-                       />
-                     </TableCell>
+                  
                      <TableCell
                        align="center"
                        component="th"

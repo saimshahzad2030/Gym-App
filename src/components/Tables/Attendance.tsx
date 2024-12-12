@@ -131,21 +131,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   return (
     <TableHead className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white font-bold'>
       <TableRow>
-        <TableCell padding="checkbox"
         
-        className='dark:text-white'>
-          
-           <Checkbox 
-                         indeterminate={numSelected > 0 && numSelected < rowCount}
-                         checked={rowCount > 0 && numSelected === rowCount}
-                         onChange={onSelectAllClick}
-                         inputProps={{
-                           'aria-label': 'select all desserts',
-                         }}
-                         sx={checkBoxStyle}
-
-                      />
-        </TableCell>
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
@@ -176,29 +162,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 interface EnhancedTableToolbarProps {
   numSelected: number;
 }
-function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
-  const { numSelected } = props;
-  return (
-    <Toolbar
-   
-  >
-      {numSelected > 0 ? (
-        <p
-           className='dark:text-white text-[#1A222C]'
-        >
-          {numSelected} selected
-        </p>
-      ) : (
-        <Typography
-         className='dark:text-white text-#1A222C'
-        >
-          Monthly Report
-        </Typography>
-      )}
-     
-    </Toolbar>
-  );
-}
+ 
 export default function Attendance() {
   const [order, setOrder] = React.useState<Order>('asc');
   const [orderBy, setOrderBy] = React.useState<keyof Data>('in_time');
@@ -311,7 +275,6 @@ const formatDateOnly = (date: string) => {
       className='w-full mb-2 bg-white dark:bg-[#1A222C]'
       // sx={{ width: '100%', mb: 2,backgroundColor:'white' }}
       >
-        <EnhancedTableToolbar numSelected={selected.length} />
         <Box sx={{ padding: '16px' }}>
           <TextField
             variant="outlined"
@@ -350,23 +313,12 @@ const formatDateOnly = (date: string) => {
                   <TableRow
                     hover
                     onClick={(event) =>{}}
-                    role="checkbox"
-                    aria-checked={isItemSelected}
+                    role="checkbox"  
                     tabIndex={-1}
-                    key={index}
-                    selected={isItemSelected} 
+                    key={index} 
                   >
 
-                    <TableCell padding="checkbox">
-                    <Checkbox 
-                        checked={isItemSelected}
-                        inputProps={{
-                          'aria-labelledby': labelId,
-                        }}
-                        sx={checkBoxStyle}
-
-                      />
-                    </TableCell>
+                 
                     <TableCell
                     align="center"
                     className='dark:text-white'

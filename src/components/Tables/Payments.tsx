@@ -79,15 +79,7 @@ function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
 
 type Order = 'asc' | 'desc';
 
-const getComparator = (order: 'asc' | 'desc', orderBy: keyof Data) => {
-  return (a: Data, b: Data) => {
-    const valueA = orderBy === 'created_date' ? +new Date(a[orderBy]) : a[orderBy];
-    const valueB = orderBy === 'created_date' ? +new Date(b[orderBy]) : b[orderBy];
-    if (valueA < valueB) return order === 'asc' ? -1 : 1;
-    if (valueA > valueB) return order === 'asc' ? 1 : -1;
-    return 0;
-  };
-};
+ 
 
 interface HeadCell {
   disablePadding: boolean;
@@ -146,21 +138,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   return (
     <TableHead className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white font-bold'>
       <TableRow>
-        <TableCell padding="checkbox"
         
-        className='dark:text-white'>
-          
-           <Checkbox 
-                         indeterminate={numSelected > 0 && numSelected < rowCount}
-                         checked={rowCount > 0 && numSelected === rowCount}
-                         onChange={onSelectAllClick}
-                         inputProps={{
-                           'aria-label': 'select all desserts',
-                         }}
-                         sx={checkBoxStyle}
-
-                      />
-        </TableCell>
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
@@ -198,65 +176,10 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 interface EnhancedTableToolbarProps {
   numSelected: number;
 }
-function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
-  const { numSelected } = props;
-  return (
-    <Toolbar
-    className='dark:bg-[#1A222C] bg-white sm:pl-2'
-    // sx={[
-    //   {
-    //     pl: { sm: 2 },
-    //     pr: { xs: 1, sm: 1 },
-    //   },
-    //   numSelected > 0 && {
-    //     bgcolor:  'white'
-    //   },
-    //   {
-    //     // Add dark mode styles using Tailwind's dark class
-    //     '.dark &': {
-    //       pl: { sm: 2 }, // Example padding; adjust based on your needs
-    //       pr: { xs: 1, sm: 1 },
-    //       bgcolor: '#30f172a'
-    //     },
-    //   },
-    // ]}
-  >
-      {numSelected > 0 ? (
-        <p
-           className='dark:text-white text-[#1A222C]'
-        >
-          {numSelected} selected
-        </p>
-      ) : (
-        <Typography
-         className='dark:text-white text-#1A222C'
-        >
-          Incomes
-        </Typography>
-      )}
-      {numSelected > 0 ? (
-        <>
-        <Tooltip title="Delete">
-        <IconButton onClick={()=>{console.log('first')}}>
-
-            <DeleteIcon  className='dark:text-white text-[#1A222C]'/>
-          </IconButton>
-        </Tooltip>
-     
-        </>
-      ) : (
-        <Tooltip title="Filter list">
-          <IconButton>
-            <FilterListIcon />
-          </IconButton>
-        </Tooltip>
-      )}
-    </Toolbar>
-  );
-}
+ 
 export default function Payments() {
   const [order, setOrder] = React.useState<Order>('asc');
-  const [orderBy, setOrderBy] = React.useState<keyof Data>('created_date');
+  const [orderBy, setOrderBy] = React.useState<keyof Data>('');
   const [selected, setSelected] = React.useState<readonly number[]>([]);
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
@@ -382,7 +305,7 @@ export default function Payments() {
   const visibleRows = React.useMemo(
     () =>
       [...expenses]
-    .sort(getComparator(order, orderBy))
+     
     .slice(0, page * rowsPerPage + rowsPerPage),
     [order, orderBy, page, rowsPerPage, expenses]
   ); 
@@ -397,8 +320,7 @@ export default function Payments() {
       
       className='w-full mb-2 bg-white dark:bg-[#1A222C]'  
       >
-        <EnhancedTableToolbar numSelected={selected.length} />
-         
+          
    {loading?<LoaderComp />:
    visibleRows.length>0?    <> <TableContainer>
    <Table
@@ -426,24 +348,12 @@ className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white'
                   <TableRow
                     hover
                     onClick={(event) => handleClick(event, row.mp_id)}
-                    role="checkbox"
-                    aria-checked={isItemSelected}
+                    role="checkbox" 
                     tabIndex={-1}
-                    key={row.mp_id}
-                    selected={isItemSelected} 
+                    key={row.mp_id} 
                   >
 
-                    <TableCell padding="checkbox">
-                      <Checkbox 
-                        checked={isItemSelected}
-                        inputProps={{
-                          'aria-labelledby': labelId,
-                        }}
-                        sx={checkBoxStyle}
-
-                      />
-                    </TableCell>
-                   
+                 
                     <TableCell
                     align="center"
                       component="th"
