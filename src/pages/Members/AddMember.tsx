@@ -136,6 +136,12 @@ const AddMember = () => {
     resolver: yupResolver(schema),
   });
   const theme = createTheme({
+    palette: {
+      mode: 'light', // or 'dark', dynamically set this based on your app
+      primary: {
+        main: '#1976d2', // Example color
+      },
+    },
     components: {
       MuiTextField: {
         styleOverrides: {
@@ -376,7 +382,18 @@ const AddMember = () => {
               value={value ? dayjs(value) : null}
               onChange={(date) => onChange(date ? date.toDate() : null)}
               sx={textFieldStyle}
-
+              slotProps={{
+                textField: {
+                  InputProps: {
+                    sx: {
+                      svg: {
+                        color: (theme) =>
+                          theme.palette.mode === 'dark' ? 'white' : 'gray',
+                      },
+                    },
+                  },
+                },
+              }}
             />
           )}
         />
@@ -425,7 +442,18 @@ const AddMember = () => {
               value={value ? dayjs(value) : null}
               onChange={(date) => onChange(date ? date.toDate() : null)}
               sx={textFieldStyle}
-
+              slotProps={{
+                textField: {
+                  InputProps: {
+                    sx: {
+                      svg: {
+                        color: (theme) =>
+                          theme.palette.mode === 'dark' ? 'white' : 'gray',
+                      },
+                    },
+                  },
+                },
+              }}
               InputProps={{ 
                 startAdornment: (
                   <InputAdornment position="start">
@@ -457,7 +485,18 @@ const AddMember = () => {
               value={value ? dayjs(value) : null}
               onChange={(date) => onChange(date ? date.toDate() : null)}
               sx={textFieldStyle}
-
+              slotProps={{
+                textField: {
+                  InputProps: {
+                    sx: {
+                      svg: {
+                        color: (theme) =>
+                          theme.palette.mode === 'dark' ? 'white' : 'gray',
+                      },
+                    },
+                  },
+                },
+              }}
             />
           )}
         />

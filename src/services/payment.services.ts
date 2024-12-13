@@ -2,13 +2,13 @@ import axios from 'axios'
 import { config } from '../config/config';
 import Cookies from 'js-cookie';
 interface Data {
-    member_id: number,
+    member_id: number | string,
     membership_class: 'Regular Monthly' | '3 month Cardio' | 'Cardio Monthly' | '3 Month Gym' | 'none'
 
-    membership_amount: number,
-    paid_amount: number,
-    start_date: string,
-    end_date: string,
+    // membership_amount: number,
+    // paid_amount: number,
+    // start_date: string,
+    // end_date: string,
 
 
 }
@@ -54,7 +54,9 @@ export const fetchPaymentsUsingSearch = async (searchQuery: string) => {
 }
 export const addPayment = async (data: Data) => {
     try {
-        const response = await axios.post(`${config.url}api/membership-payment/?query=invoice-type-income
+        // const response = await axios.post(`${config.url}api/membership-payment/?query=invoice-type-income
+        const response = await axios.post(`${config.url}api/accept-payment/
+
 `,
             {
                 ...data,
@@ -67,8 +69,8 @@ export const addPayment = async (data: Data) => {
             });
         return response.data;
     } catch (error) {
-        console.error('Login failed:', error.response?.data || error.message);
-        return { error: error.response?.data.detail }
+        console.error('failed:', error.response?.data || error.message);
+        return { error: error.response?.data.error }
     }
 
 }

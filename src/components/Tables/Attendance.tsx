@@ -216,6 +216,12 @@ const formatDateOnly = (date: string) => {
 
         setAttendance(fetchedData.results);
       }
+      else{
+        setAttendance([])
+        setNextUrl('')
+        setPreviousUrl('')
+        setTotalEntries(3)
+      }
     };
     fetchData();
   }, []);

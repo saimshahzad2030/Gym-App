@@ -161,20 +161,37 @@ const AddMemberPayment:React.FC<FormData2Type  & {
   onUpdateMember: (updatedMember: FormDataType) => void;
   setOpenPaymentDialog: React.Dispatch<React.SetStateAction<boolean>> }> = ({ user,onUpdateMember , setOpenPaymentDialog }) => {
   const [loading,setLoading] = React.useState(false)
-  const [selectedOption, setSelectedOption] = React.useState<string>("");
+  const [selectedOption, setSelectedOption] = React.useState<string>(user?.selected_membership == 'Regular Monthly'?"1":
+    user?.selected_membership == '3 month Cardio'?"2":
+    user?.selected_membership == 'Cardio Monthly'?"3":
+    user?.selected_membership == '3 Month Gym'?"4":"");
   const [imagePreview, setImagePreview] = React.useState<string | null>(user?.image || null);
   const [open,setOpen] = React.useState<boolean>(false) 
-  const [amountPaid,setAmountPaid] = React.useState<number>(0) 
-  const [amountDue,setAmountDue] = React.useState<number>(0) 
-console.log(user)
+  const [messaage,setMessage] = React.useState<string>('') 
+  const [amountPaid,setAmountPaid] = React.useState<number>(user?.selected_membership == 'Regular Monthly'?3000:
+    user?.selected_membership == '3 month Cardio'?6000:
+    user?.selected_membership == 'Cardio Monthly'?6000:
+    user?.selected_membership == '3 Month Gym'?15000:0) 
+  const [amountDue,setAmountDue] = React.useState<number>(0)  
   const { register, handleSubmit, formState: { errors }, setValue ,control } = useForm<FormDataType>({
     resolver: yupResolver(schema),
     defaultValues: {
       first_name:user?.first_name,
-  last_name: user?.last_name 
+  last_name: user?.last_name ,
+  selected_membership: user?.selected_membership == 'Regular Monthly'?"1":
+    user?.selected_membership == '3 month Cardio'?"2":
+    user?.selected_membership == 'Cardio Monthly'?"3":
+    user?.selected_membership == '3 Month Gym'?"4":"" 
+
     },
   });
   const theme = createTheme({
+    palette: {
+      mode: 'light', // or 'dark', dynamically set this based on your app
+      primary: {
+        main: '#1976d2', // Example color
+      },
+    },
     components: {
       MuiTextField: {
         styleOverrides: {
@@ -197,11 +214,7 @@ console.log(user)
   
 
   const onSubmit = async(data: FormDataType) => { 
-    console.log(data)
-    const transformedData = {
-      ...data,
-      phone: Number(data.phone), // Ensure phone is sent as a number
-    };
+    
     setLoading(true)
     let mem = ['Regular Monthly' , '3 month Cardio' , 'Cardio Monthly' , '3 Month Gym']
     const formatDateToYYYYMMDD = (date) => {
@@ -211,16 +224,16 @@ console.log(user)
       const day = String(d.getDate()).padStart(2, '0');
       return `${year}-${month}-${day}`;
     };
+   
     const edit = await addPayment({
-      member_id: user?.id || 0,
-    membership_class: mem[Number(selectedOption)] as 'Regular Monthly' | '3 month Cardio' |'Cardio Monthly' | '3 Month Gym',
+      member_id: user?.member_id || 0,
+    membership_class: mem[Number(selectedOption)-1] as 'Regular Monthly' | '3 month Cardio' |'Cardio Monthly' | '3 Month Gym',
      
-    membership_amount:memberships[Number(selectedOption)].membership_amount || 0 , 
-    paid_amount:amountPaid, 
-    start_date: formatDateToYYYYMMDD(data.membership_valid_from) || "",
-    end_date: formatDateToYYYYMMDD(data.membership_valid_to) || "",
-    });
-    console.log(edit)
+    // membership_amount:memberships[Number(selectedOption)].membership_amount || 0 , 
+    // paid_amount:amountPaid, 
+    // start_date: formatDateToYYYYMMDD(data.membership_valid_from) || "",
+    // end_date: formatDateToYYYYMMDD(data.membership_valid_to) || "",
+    }); 
     setLoading(false)
     if(!edit.error){
       
@@ -228,46 +241,51 @@ console.log(user)
         id:user?.id || 0,
         first_name:data?.first_name,
         last_name: data?.last_name,
-        address:user?.address,
-        mobile:user?.mobile,
+        address:user?.address, 
         selected_membership:user?.selected_membership,
-        role_name:user?.role_name,
-        gender: user?.gender,
-        image: user?.image,
+        role_name:user?.role_name,  
           birth_date:user?.birth_date,
           membership_valid_from:data?.membership_valid_from,
           membership_valid_to: data?.membership_valid_to
       })
+      setMessage('Added Successfully')
       setOpen(true);
       setTimeout(()=>{
         setOpenPaymentDialog(false)
         },1000)
     }
     
+    else{
+      setOpen(true)
+      setMessage('Error occcurred Try again later')
+
+    }
   };
   const [memberships,setMemberships] = React.useState<MembershipData[]>([])
   React.useEffect(() => {
     const fetchData = async () => {
       const fetchedData = await fetchMemberships("");
-      if (!fetchedData.error) {
-        console.log(fetchedData)
+      if (!fetchedData.error) { 
         setMemberships(fetchedData.results);
       }
     };
     fetchData();
   }, []);
   React.useEffect(() => {
-    if (user && user.selected_membership) {
-      setSelectedOption(user.selected_membership);
+    if (user ) {
+      console.log( user?.selected_membership == '3 month Cardio')
+    
+      setSelectedOption(user?.selected_membership == 'Regular Monthly'?"1":
+        user?.selected_membership == '3 month Cardio'?"2":
+        user?.selected_membership == 'Cardio Monthly'?"3":
+        user?.selected_membership == '3 Month Gym'?"4":""
+      );
+      // setAmountPaid(user?.selected_membership?)
       setValue("membership_valid_from", new Date(user?.membership_valid_from)); // Set the starting date
-      setValue("membership_valid_to", new Date(user?.membership_valid_to));
-      setValue("birth_date", new Date(user?.birth_date));
-      setValue("image",user?.image); 
-      setValue("role_name", user?.role_name); 
-
+      setValue("membership_valid_to", new Date(user?.membership_valid_to)); 
+     
     }
-  }, [user, setValue]);
-  console.log('member:',user)
+  }, [user, setValue]); 
   return (
     <div>
       <div className="flex flex-col gap-9">
@@ -317,13 +335,13 @@ console.log(user)
      <Select
       labelId="membership-label"
       {...register("selected_membership")}
-      defaultValue={  ''}
-      onChange={(e) => {
-        console.log(e.target.value,"e.target.value")
+      defaultValue={selectedOption}
+      onChange={(e) => { 
         setValue("selected_membership", e.target.value)
-        console.log(      memberships[Number(e.target.value)-1].signup_fee  || 0 +  (memberships[Number(e.target.value)-1].membership_amount || 0)  )
-        setAmountDue(   memberships[Number(e.target.value)-1].signup_fee  || 0 +  (memberships[Number(e.target.value)-1].membership_amount || 0) )
-        setAmountPaid(  memberships[Number(e.target.value)-1].signup_fee  || 0 +  (memberships[Number(e.target.value)-1].membership_amount || 0) )
+        setSelectedOption( e.target.value)
+        setAmountDue(0)
+        setAmountPaid(   memberships[Number(e.target.value)-1].signup_fee  || 0 +  (memberships[Number(e.target.value)-1].membership_amount || 0) )
+        // setAmountPaid(  memberships[Number(e.target.value)-1].signup_fee  || 0 +  (memberships[Number(e.target.value)-1].membership_amount || 0) )
         const today = new Date();
 
         // Calculate the "membership_valid_to" date
@@ -355,6 +373,7 @@ console.log(user)
     label="Amount Paid"
     placeholder="Enter Amount Paid"
     variant="outlined" 
+    
     value={amountPaid}
     fullWidth 
     error={!!errors.mobile}
@@ -369,7 +388,7 @@ console.log(user)
     placeholder="Enter Due Amount"
     variant="outlined" 
     value={amountDue}
-
+      onChange={(e)=>{setAmountDue(Number(e.target.value))}}
     fullWidth 
     error={!!errors.mobile}
     helperText={errors.mobile?.message}
@@ -396,7 +415,18 @@ console.log(user)
               value={value ? dayjs(value) : null}
               onChange={(date) => onChange(date ? date.toDate() : null)}
               sx={textFieldStyle}
-
+              slotProps={{
+                textField: {
+                  InputProps: {
+                    sx: {
+                      svg: {
+                        color: (theme) =>
+                          theme.palette.mode === 'dark' ? 'white' : 'gray',
+                      },
+                    },
+                  },
+                },
+              }}
                
             />
           )}
@@ -422,7 +452,18 @@ console.log(user)
               value={value ? dayjs(value) : null}
               onChange={(date) => onChange(date ? date.toDate() : null)}
               sx={textFieldStyle}
-
+              slotProps={{
+                textField: {
+                  InputProps: {
+                    sx: {
+                      svg: {
+                        color: (theme) =>
+                          theme.palette.mode === 'dark' ? 'white' : 'gray',
+                      },
+                    },
+                  },
+                },
+              }}
             />
           )}
         />
@@ -440,7 +481,7 @@ console.log(user)
               </button>
               </div>
             </div>
-          <SnackbarComp open={open} setOpen={setOpen} message="Edited Succesfully"/>
+          <SnackbarComp open={open} setOpen={setOpen} message={messaage}/>
       </form>
         </div>
       </div>

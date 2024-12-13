@@ -522,7 +522,18 @@ const EditMember:React.FC<FormData2Type  & {
               value={value ? dayjs(value) : null}
               onChange={(date) => onChange(date ? date.toDate() : null)}
               sx={textFieldStyle}
-
+              slotProps={{
+                textField: {
+                  InputProps: {
+                    sx: {
+                      svg: {
+                        color: (theme) =>
+                          theme.palette.mode === 'dark' ? 'white' : 'gray',
+                      },
+                    },
+                  },
+                },
+              }}
                
             />
           )}
@@ -548,7 +559,18 @@ const EditMember:React.FC<FormData2Type  & {
               value={value ? dayjs(value) : null}
               onChange={(date) => onChange(date ? date.toDate() : null)}
               sx={textFieldStyle}
-
+              slotProps={{
+                textField: {
+                  InputProps: {
+                    sx: {
+                      svg: {
+                        color: (theme) =>
+                          theme.palette.mode === 'dark' ? 'white' : 'gray',
+                      },
+                    },
+                  },
+                },
+              }}
             />
           )}
         />
@@ -573,7 +595,18 @@ const EditMember:React.FC<FormData2Type  & {
               value={value ? dayjs(value) : null}
               onChange={(date) => onChange(date ? date.toDate() : null)}
               sx={textFieldStyle}
-
+              slotProps={{
+                textField: {
+                  InputProps: {
+                    sx: {
+                      svg: {
+                        color: (theme) =>
+                          theme.palette.mode === 'dark' ? 'white' : 'gray',
+                      },
+                    },
+                  },
+                },
+              }}
             />
           )}
         />
