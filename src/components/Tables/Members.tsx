@@ -37,6 +37,7 @@ import SnackbarComp from '../SnackBar/Snackbar';
 import LoaderComp from '../Loader/Loader';
 import { useLocation, useNavigate } from 'react-router-dom';
 import AddMemberPayment from '../../pages/Members/AddMemberPayment';
+import { DefaultUserImage } from '../../../constants/icons';
    
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -537,7 +538,12 @@ className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white'
                className='dark:text-white'
                >
                <div className='w-12 h-12 rounded-full flex flex-col items-center justify-center overflow-hidden'>
+                 {row.image.includes('https://fitnessfirst.s3.amazonaws.com/members/')?
                  <Image className='w-14 h-14 ' image={{src:row.image,name:row.first_name}}/>
+                 :
+                 <Image className='w-14 h-14 ' image={{src:'/default-user.svg',name:row.first_name}}/>
+                }
+                 
                </div>
                </TableCell> 
              <TableCell

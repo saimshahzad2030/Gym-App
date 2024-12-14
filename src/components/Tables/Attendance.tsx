@@ -331,7 +331,7 @@ const formatDateOnly = (date: string) => {
 
                     
                     >
-  {`${row.member_info.first_name} ${row.member_info.last_name}`} 
+  {`${row.member_info.first_name==null || row.member_info.last_name ==null?` member ${index+1}`:`${row.member_info.first_name} ${row.member_info.last_name}`}`} 
 </TableCell>
                    
 <TableCell
