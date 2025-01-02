@@ -99,16 +99,11 @@ const headCells: readonly HeadCell[] = [
     disablePadding: false,
     label: 'Status',
   },  {
-    id: 'out_time',
+    id: 'in_time',
     numeric: true,
     disablePadding: false,
     label: 'In Time',
-  },  {
-    id: 'out_time',
-    numeric: true,
-    disablePadding: false,
-    label: 'Out Time',
-  }
+  } 
    
 ];
 
@@ -396,13 +391,7 @@ const formatDateOnly = (date: string) => {
 
 
 </TableCell>
-                    <TableCell 
-                    align="center"
-                    className='dark:text-white'
-
-                    
-                    >  {formatDate(row.out_time)} 
-</TableCell>
+                  
                        
                      
                   </TableRow>

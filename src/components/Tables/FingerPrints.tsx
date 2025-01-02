@@ -221,9 +221,8 @@ interface EnhancedTableToolbarProps {
 }
 function EnhancedTableToolbar(props: EnhancedTableToolbarProps) { 
 
-  const handleToggle = () => {
-      props.setIsRegister(!props.isRegister);
-  };
+  
+   
   return (
     <Toolbar
     className='dark:bg-[#1A222C] bg-white sm:pl-2 w-full flex-row items-center justify-between'
@@ -241,7 +240,7 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
     alignItems="center"
     gap={2} 
 >
-<p className={`${props.isRegister ? "opacity-75": "dark:text-white text-black font-bold" }`}>
+{/* <p className={`${props.isRegister ? "opacity-75": "dark:text-white text-black font-bold" }`}>
 
     { "Attendance Mode"}
     </p>
@@ -254,7 +253,17 @@ function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
     `}>  
     { "Register Mode" }
 
-    </p>
+    </p> */}
+    {!props.isRegister && <button
+    onClick={async()=>{
+      const updateFingerprint = await addFingerprint({mode:'attendance' as 'register' | 'attendance',member_id:  0});
+      if(updateFingerprint.status == 200 ){
+         
+        props.setIsRegister(!props.isRegister)
+      } 
+
+    }}
+    className='text-black dark:text-white border dark:border-white border-black p-2 rounded-md'>Switch to Attendance</button>}
 </Box>
     </Toolbar>
   );
@@ -280,7 +289,26 @@ export default function FingerPrints() {
   const [previousUrl, setPreviousUrl] = React.useState<string>("");
   const [fingerAction, setFingerAction] = React.useState<string>("");
 
-  const [isRegister, setIsRegister] = React.useState(true);
+  const [isRegister, setIsRegister] = React.useState(false);
+  React.useEffect(() => {
+    const fetchFingerPrintFunction = async () => {
+        try {
+            const fingerPrintMode: { data:{mode: string}; status: number } = await fetchFingerprint();
+            if (fingerPrintMode.status === 404) {
+                setIsRegister(true);
+            } else { 
+                setIsRegister(fingerPrintMode?.data.mode == 'attendance' ? true : false);
+            }
+        } catch (error) {
+            console.error("Failed to fetch fingerprint:", error);
+        }
+    };
+
+    fetchFingerPrintFunction();
+
+    // Adding props.setIsRegister or fetchFingerprint as dependencies if necessary
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+}, []);
   const handleSearchChange = async(event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
     const members:{results:Data[],count:number,next:string,previous:string,error?:string} = await fetchMembersUsingSearch(event.target.value);
@@ -586,13 +614,16 @@ className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white'
         </DialogContent>
         <DialogActions>
           <Button autoFocus onClick={async()=>{
-            const updateFingerprint = await addFingerprint({mode:isRegister?'attendance':'register' as 'register' | 'attendance',member_id:selectedRow?.id || 0});
+            const updateFingerprint = await addFingerprint({mode:'register' as 'register' | 'attendance',member_id:selectedRow?.id || 0});
+
+            // const updateFingerprint = await addFingerprint({mode:isRegister?'attendance':'register' as 'register' | 'attendance',member_id:selectedRow?.id || 0});
             if(updateFingerprint.status == 200 ){
               setOpenFingerPrintConfirm(false)
               setMembers((prevMembers) => prevMembers.filter((member) => member.id !== selectedRow?.id));
               setMessage(updateFingerprint.data.message)
               setOpenSnackBar(true)
               setTotalEntries(totalEntries-1)
+              // setIsRegister(!isRegister)
             } 
 
           }}>
