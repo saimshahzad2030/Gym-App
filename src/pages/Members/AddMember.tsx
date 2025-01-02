@@ -3,7 +3,7 @@ import Breadcrumb from "../../components/Breadcrumbs/Breadcrumb";
 import { useForm ,Controller } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import EditIcon from '@mui/icons-material/Edit';
+import { useNavigate } from 'react-router-dom';
 import SnackbarComp from "../../components/SnackBar/Snackbar";
 import dayjs from "dayjs";
 import { parse,isDate } from "date-fns";
@@ -105,8 +105,7 @@ const schema = yup.object().shape({
   gender: yup.string().required("Please select gender of member"),
   image: yup
     .mixed<FileList>()
-    .nullable()
-    .required("Profile image is required"),
+    .nullable() ,
     birth_date: yup.date().transform((value, originalValue) => {
       if (isDate(originalValue)) return originalValue; // Already a valid Date
       return parse(originalValue, 'dd/MM/yyyy', new Date());
@@ -171,7 +170,9 @@ const AddMember = () => {
       setValue("image", null); // Set to null if no file is selected
     }
   };
+  const navigate = useNavigate();
 
+    
   // Handle form submission
   const onSubmit = async(data: FormDataType) => {
     const transformedData = {
@@ -212,6 +213,10 @@ const AddMember = () => {
       });
       setSelectedMembership("");
       setOpen(true);
+      setTimeout(()=>{
+        navigate('/member/view');
+      },2000)
+
     }
   };
   const [memberships,setMemberships] = React.useState<MembershipData[]>([])
@@ -236,7 +241,7 @@ const AddMember = () => {
           <form onSubmit={handleSubmit(onSubmit)} onError={(err)=>{console.log(err)}}>
             <div className="p-6.5">
               {/* Image Upload Section */}
-              <div className="mb-4.5 flex flex-col items-center">
+              {/* <div className="mb-4.5 flex flex-col items-center">
                 <label className="mb-2.5 block text-black dark:text-white">
                   Profile Image
                 </label>
@@ -265,7 +270,7 @@ const AddMember = () => {
                   </button>
                 </div>
                 {errors.image && <p className="text-red-500">{errors.image.message}</p>}
-              </div>
+              </div> */}
 
               {/* Other Form Fields */}
               <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">

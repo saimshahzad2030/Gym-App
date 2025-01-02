@@ -162,7 +162,20 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 interface EnhancedTableToolbarProps {
   numSelected: number;
 }
- 
+ const returnStatus=(member:Data)=>{
+  const inTime = new Date(member.in_time);
+const validTo = new Date(member.member_info.membership_valid_to);
+
+let status = "invalid";
+let color = "red";
+
+if (validTo >= inTime) {
+    return 'valid'
+}
+else   {
+  return 'Invalid'
+}
+ }
 export default function Attendance() {
   const [order, setOrder] = React.useState<Order>('asc');
   const [orderBy, setOrderBy] = React.useState<keyof Data>('in_time');
@@ -365,13 +378,13 @@ const formatDateOnly = (date: string) => {
 </TableCell>
 <TableCell
                     align="center"
-                    className={`dark:text-white ${row.member_info.membership_status == 'Continue'?'bg-green-800':'bg-red-800'}`}
+                    className={`dark:text-white ${returnStatus(row) == 'valid'?'bg-green-800':'bg-red-800'}`}
 
                     
                     >
- {row.member_info.membership_status == 'Continue'?'Valid':'Not Valid'}
+ {/* {row.member_info.membership_status == 'Continue'?'Valid':'Not Valid'} */}
 
-
+{returnStatus(row)}
 </TableCell>
 <TableCell
                     align="center"

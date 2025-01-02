@@ -388,8 +388,8 @@ export default function EnhancedTable() {
   }, []);
   let filteredRows:Data[];
   filteredRows = members.filter((row) =>
-    row.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  row.last_name.toLowerCase().includes(searchTerm.toLowerCase())
+    row?.first_name?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
+  row?.last_name?.toLowerCase()?.includes(searchTerm.toLowerCase())
   );
   const handleChangePage = async(event: unknown, newPage: number) => {
     const isNext = newPage > page;
@@ -407,8 +407,8 @@ export default function EnhancedTable() {
         setTotalEntries(members.count);
         setMembers(members.results);
         filteredRows = members.results.filter((row) =>
-          row.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        row.last_name.toLowerCase().includes(searchTerm.toLowerCase())
+          row?.first_name?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
+        row?.last_name?.toLowerCase()?.includes(searchTerm.toLowerCase())
         ); 
       }
     } else {
@@ -538,10 +538,10 @@ className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white'
                className='dark:text-white'
                >
                <div className='w-12 h-12 rounded-full flex flex-col items-center justify-center overflow-hidden'>
-                 {row.image.includes('https://fitnessfirst.s3.amazonaws.com/members/')?
-                 <Image className='w-14 h-14 ' image={{src:row.image,name:row.first_name}}/>
+                 {row.image && row?.image?.includes('https://fitnessfirst.s3.amazonaws.com/members/')?
+                 <Image className='w-14 h-14  ' image={{src:row.image,name:row.first_name}}/>
                  :
-                 <Image className='w-14 h-14 ' image={{src:'/default-user.svg',name:row.first_name}}/>
+                 <Image className='w-14 h-14  ' image={{src:'/default-user.svg',name:row.first_name}}/>
                 }
                  
                </div>

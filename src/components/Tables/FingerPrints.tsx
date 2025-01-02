@@ -1,9 +1,10 @@
 import * as React from 'react';
-import { alpha } from '@mui/material/styles';
-import Box from '@mui/material/Box';
+import { alpha } from '@mui/material/styles'; 
 import Table from '@mui/material/Table';
 import Dialog from '@mui/material/Dialog';
 import DialogTitle from '@mui/material/DialogTitle';
+
+import { Switch, Box } from "@mui/material";
 import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions'; 
 import TableBody from '@mui/material/TableBody';
@@ -22,8 +23,7 @@ import Paper from '@mui/material/Paper';
 import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel'; 
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
@@ -34,7 +34,7 @@ import { checkBoxStyle, textFieldStyle } from '../../../constants/constants';
 import { deleteMember, fetchMembers, fetchMembersUsingSearch } from '../../services/members.services';
 import SnackbarComp from '../SnackBar/Snackbar';
 import LoaderComp from '../Loader/Loader';
-import { FingerPrint } from '../../../constants/icons';
+import { FingerPrint, FingerPrintOutline } from '../../../constants/icons';
 import { addFingerprint, fetchFingerprint } from '../../services/fingerprint.services';
    
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
@@ -100,113 +100,7 @@ interface Data {
    
 }
 
-function createData(
-  id: number,
-  activated: number,
-  role_name: string,
-  member_id: string,
-  token: string,
-  is_exist: number,
-  first_name: string,
-  middle_name: string,
-  last_name: string,
-  member_type: string,
-  role: number,
-  s_specialization: string,
-  gender: string,
-  birth_date: string, // Format: YYYY-MM-DD
-  assign_class: number,
-  assign_group: string,
-  address: string,
-  city: string,
-  state: string,
-  zipcode: string,
-  mobile: number,
-  phone: string,
-  email: string,
-  weight: string,
-  height: string,
-  chest: string,
-  waist: string,
-  thing: string,
-  arms: string,
-  fat: string,
-  username: string,
-  password: string,
-  image: string,
-  assign_staff_mem: number,
-  intrested_area: number,
-  g_source: number,
-  referrer_by: number,
-  inquiry_date: string, // Format: YYYY-MM-DD
-  trial_end_date: string, // Format: YYYY-MM-DD
-  selected_membership: string,
-  membership_status: string,
-  membership_valid_from: string, // Format: YYYY-MM-DD
-  membership_valid_to: string, // Format: YYYY-MM-DD
-  first_pay_date: string, // Format: YYYY-MM-DD
-  created_by: number,
-  created_date: string, // Format: YYYY-MM-DD
-  alert_sent: number,
-  admin_alert: number,
-  alert_send_date: string, // Format: YYYY-MM-DD
-  members_reg_number: string,
-  fingerprint: string,
-): Data {
-  return {
-    id,
-    activated,
-    role_name,
-    member_id,
-    token,
-    is_exist,
-    first_name,
-    middle_name,
-    last_name,
-    member_type,
-    role,
-    s_specialization,
-    gender,
-    birth_date, // Format: YYYY-MM-DD
-    assign_class,
-    assign_group,
-    address,
-    city,
-    state,
-    zipcode,
-    mobile,
-    phone,
-    email,
-    weight,
-    height,
-    chest,
-    waist,
-    thing,
-    arms,
-    fat,
-    username,
-    password,
-    image,
-    assign_staff_mem,
-    intrested_area,
-    g_source,
-    referrer_by,
-    inquiry_date, // Format: YYYY-MM-DD
-    trial_end_date, // Format: YYYY-MM-DD
-    selected_membership,
-    membership_status,
-    membership_valid_from, // Format: YYYY-MM-DD
-    membership_valid_to, // Format: YYYY-MM-DD
-    first_pay_date, // Format: YYYY-MM-DD
-    created_by,
-    created_date, // Format: YYYY-MM-DD
-    alert_sent,
-    admin_alert,
-    alert_send_date, // Format: YYYY-MM-DD
-    members_reg_number,
-    fingerprint,
-  };
-}
+ 
  
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -286,20 +180,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   return (
     <TableHead className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white font-bold'>
       <TableRow>
-        <TableCell padding="checkbox"
         
-        className='dark:text-white'>
-          
-           <Checkbox 
-                         indeterminate={numSelected > 0 && numSelected < rowCount}
-                         checked={rowCount > 0 && numSelected === rowCount}
-                         onChange={onSelectAllClick}
-                         inputProps={{
-                           'aria-label': 'select all desserts',
-                         }}
-                         sx={checkBoxStyle}
-                      />
-        </TableCell>
         {headCells.map((headCell) => (
           <TableCell
             key={headCell.id}
@@ -334,62 +215,47 @@ function EnhancedTableHead(props: EnhancedTableProps) {
     </TableHead>
   );
 }
-interface EnhancedTableToolbarProps {
-  numSelected: number;
+interface EnhancedTableToolbarProps { 
+  isRegister:boolean;
+  setIsRegister:React.Dispatch<React.SetStateAction<boolean>> 
 }
-function EnhancedTableToolbar(props: EnhancedTableToolbarProps) {
-  const { numSelected } = props;
+function EnhancedTableToolbar(props: EnhancedTableToolbarProps) { 
+
+  const handleToggle = () => {
+      props.setIsRegister(!props.isRegister);
+  };
   return (
     <Toolbar
-    className='dark:bg-[#1A222C] bg-white sm:pl-2'
-    // sx={[
-    //   {
-    //     pl: { sm: 2 },
-    //     pr: { xs: 1, sm: 1 },
-    //   },
-    //   numSelected > 0 && {
-    //     bgcolor:  'white'
-    //   },
-    //   {
-    //     // Add dark mode styles using Tailwind's dark class
-    //     '.dark &': {
-    //       pl: { sm: 2 }, // Example padding; adjust based on your needs
-    //       pr: { xs: 1, sm: 1 },
-    //       bgcolor: '#30f172a'
-    //     },
-    //   },
-    // ]}
+    className='dark:bg-[#1A222C] bg-white sm:pl-2 w-full flex-row items-center justify-between'
+     
   >
-      {numSelected > 0 ? (
-        <p
-           className='dark:text-white text-[#1A222C]'
-        >
-          {numSelected} selected
-        </p>
-      ) : (
+      
         <Typography
          className='dark:text-white text-#1A222C'
         >
           Fingerprints
         </Typography>
-      )}
-      {numSelected > 0 ? (
-        <>
-        <Tooltip title="Delete">
-        <IconButton onClick={()=>{console.log('first')}}>
+      
+        <Box
+    display="flex"
+    alignItems="center"
+    gap={2} 
+>
+<p className={`${props.isRegister ? "opacity-75": "dark:text-white text-black font-bold" }`}>
 
-            <DeleteIcon  className='dark:text-white text-[#1A222C]'/>
-          </IconButton>
-        </Tooltip>
-     
-        </>
-      ) : (
-        <Tooltip title="Filter list">
-          <IconButton>
-            <FilterListIcon />
-          </IconButton>
-        </Tooltip>
-      )}
+    { "Attendance Mode"}
+    </p>
+    <Switch
+        checked={props.isRegister}
+        onChange={handleToggle}
+        color="primary"
+    /> 
+    <p className={`${props.isRegister ? "dark:text-white text-black font-bold" : "opacity-75 "}
+    `}>  
+    { "Register Mode" }
+
+    </p>
+</Box>
     </Toolbar>
   );
 }
@@ -400,10 +266,12 @@ export default function FingerPrints() {
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [searchTerm, setSearchTerm] = React.useState<string>('');
+  const [message, setMessage] = React.useState<string>('');
   const [openEditDialog, setOpenEditDialog] = React.useState(false);
   const [openFingerPrintConfirm, setOpenFingerPrintConfirm] = React.useState(false);
   const [totalEntries,setTotalEntries]  = React.useState<number>(0)
   const [selectedRow, setSelectedRow] = React.useState<Data | null>(null);
+  
   const [members, setMembers] = React.useState<Data[]>([]);
   const [loading, setLoading] = React.useState<boolean>(true);
   const [newEntriesloading, setNewEntriesLoading] = React.useState<boolean>(false);
@@ -412,6 +280,7 @@ export default function FingerPrints() {
   const [previousUrl, setPreviousUrl] = React.useState<string>("");
   const [fingerAction, setFingerAction] = React.useState<string>("");
 
+  const [isRegister, setIsRegister] = React.useState(true);
   const handleSearchChange = async(event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
     const members:{results:Data[],count:number,next:string,previous:string,error?:string} = await fetchMembersUsingSearch(event.target.value);
@@ -544,7 +413,7 @@ export default function FingerPrints() {
       
       className='w-full mb-2 bg-white dark:bg-[#1A222C]'  
       >
-        <EnhancedTableToolbar numSelected={selected.length} />
+        <EnhancedTableToolbar isRegister={isRegister} setIsRegister={setIsRegister}/>
         <Box sx={{ padding: '16px' }}>
           <TextField
             variant="outlined"
@@ -590,20 +459,16 @@ className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white'
              selected={isItemSelected} 
            >
 
-             <TableCell padding="checkbox">
-             <Checkbox 
-                 checked={isItemSelected}
-                 inputProps={{
-                   'aria-labelledby': labelId,
-                 }}
-                 sx={checkBoxStyle}
-               />
-             </TableCell>
+           
              <TableCell align="center"
                className='dark:text-white'
                >
                <div className='w-12 h-12 rounded-full flex flex-col items-center justify-center overflow-hidden'>
+                  {row.image && row?.image?.includes('https://fitnessfirst.s3.amazonaws.com/members/')?
                  <Image className='w-14 h-14 ' image={{src:row.image,name:row.first_name}}/>
+                 :
+                 <Image className='w-14 h-14 ' image={{src:'/default-user.svg',name:row.first_name}}/>
+                }
                </div>
                </TableCell> 
              <TableCell
@@ -696,8 +561,9 @@ className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white'
         open={openFingerPrintConfirm}
       >
         <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
-         <div className='flex flex-row items-center'>
-         <p className='mr-2'>{fingerAction=='register'?'Register':'Attendance'} Fingerprint</p> <FingerPrint />
+         <div className='flex flex-col items-center w-full py-4'>
+          <FingerPrintOutline className='w-30 h-30 text-green-700'/>
+          <p className='mt-4 font-bold'>{fingerAction=='register'?'Register':'Attendance'} Fingerprint</p>
          </div>
         </DialogTitle>
         <IconButton
@@ -714,20 +580,20 @@ className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white'
         </IconButton>
         <DialogContent dividers>
           <Typography gutterBottom>
-           {`Are you sure you want to ${fingerAction} fingerprint of this member? If yes then click on continue`}
+           {`${isRegister?'Are you sure you want to register fingerprint of this member? If yes then click on continue':'Are you sure you want to Mark attendance of this member? If yes then click on continue'}`}
           </Typography>
           
         </DialogContent>
         <DialogActions>
           <Button autoFocus onClick={async()=>{
-            const deleteEntry = await addFingerprint({mode:fingerAction.toLowerCase() as 'register' | 'attendance',member_id:selectedRow?.id || 0});
-            if(deleteEntry.status == 200 ){
+            const updateFingerprint = await addFingerprint({mode:isRegister?'attendance':'register' as 'register' | 'attendance',member_id:selectedRow?.id || 0});
+            if(updateFingerprint.status == 200 ){
               setOpenFingerPrintConfirm(false)
               setMembers((prevMembers) => prevMembers.filter((member) => member.id !== selectedRow?.id));
+              setMessage(updateFingerprint.data.message)
               setOpenSnackBar(true)
               setTotalEntries(totalEntries-1)
-            }
-            console.log(deleteEntry.status)
+            } 
 
           }}>
             Continue
@@ -735,7 +601,7 @@ className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white'
         </DialogActions>
       </BootstrapDialog>
       </div> 
-          <SnackbarComp open={openSnackBar} setOpen={setOpenSnackBar} message={  "Finger Print Updated Succesfully"}/>
+          <SnackbarComp open={openSnackBar} setOpen={setOpenSnackBar} message={ message}/>
 
     </Box>
   );
