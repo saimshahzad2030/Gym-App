@@ -95,6 +95,8 @@ const headCells: readonly HeadCell[] = [
     disablePadding: false,
     label: 'MemberId',
   },
+ 
+ 
   {
     id: 'membership_amount',
     numeric: true,
@@ -105,6 +107,12 @@ const headCells: readonly HeadCell[] = [
     numeric: true,
     disablePadding: false,
     label: 'Paid Amount',
+  },
+  {
+    id: 'member_id',
+    numeric: true,
+    disablePadding: false,
+    label: 'Due Amount',
   },
   {
     id: 'created_date',
@@ -380,6 +388,13 @@ className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white'
                       // sx={{color:'white'}}
                     
                     >{row.paid_amount}</TableCell>
+                          <TableCell 
+                    align="center"
+                    className='dark:text-white'
+
+                      // sx={{color:'white'}}
+                    
+                    >{`${row.membership_amount - row.paid_amount}` }</TableCell>
                       <TableCell 
                     align="center"
                     className='dark:text-white'
