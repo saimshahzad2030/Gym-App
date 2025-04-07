@@ -50,6 +50,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
 interface Data { 
     mp_id: number;
     member_id: number;
+    member_info:any;
     membership_id: number;
     membership_amount: number;
     paid_amount: number;
@@ -93,8 +94,15 @@ const headCells: readonly HeadCell[] = [
     id: 'member_id',
     numeric: true,
     disablePadding: false,
-    label: 'MemberId',
+    label: 'First Name',
   },
+  {
+    id: 'member_id',
+    numeric: true,
+    disablePadding: false,
+    label: 'Last Name',
+  },
+ 
  
  
   {
@@ -371,7 +379,18 @@ className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white'
                       className='dark:text-white'
                       // sx={{color:'white'}}
                     >
-                      {`${row.member_id}`}
+                      {`${row?.member_info?.first_name?row?.member_info?.first_name:"not provided"}`}
+                    </TableCell>
+                    <TableCell
+                    align="center"
+                      component="th"
+                      id={labelId}
+                      scope="row"
+                      padding="none"
+                      className='dark:text-white'
+                      // sx={{color:'white'}}
+                    >
+                      {`${row?.member_info?.last_name?row?.member_info?.last_name:"not provided"}`}
                     </TableCell>
                    
                     <TableCell 
