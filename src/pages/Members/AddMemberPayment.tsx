@@ -168,11 +168,11 @@ const AddMemberPayment:React.FC<FormData2Type  & {
   const [imagePreview, setImagePreview] = React.useState<string | null>(user?.image || null);
   const [open,setOpen] = React.useState<boolean>(false) 
   const [messaage,setMessage] = React.useState<string>('') 
-  const [amountPaid,setAmountPaid] = React.useState<number>(user?.selected_membership == 'Regular Monthly'?3000:
-    user?.selected_membership == '3 month Cardio'?6000:
-    user?.selected_membership == 'Cardio Monthly'?6000:
-    user?.selected_membership == '3 Month Gym'?15000:0) 
-  const [amountDue,setAmountDue] = React.useState<number>(0)  
+  const [amountPaid,setAmountPaid] = React.useState<number>(0) 
+  const [amountDue,setAmountDue] = React.useState<number>(user?.selected_membership == 'Regular Monthly'?3000-amountPaid:
+    user?.selected_membership == '3 month Cardio'?6000-amountPaid:
+    user?.selected_membership == 'Cardio Monthly'?6000-amountPaid:
+    user?.selected_membership == '3 Month Gym'?15000-amountPaid:0)  
   const { register, handleSubmit, formState: { errors }, setValue ,control } = useForm<FormDataType>({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -228,7 +228,7 @@ const AddMemberPayment:React.FC<FormData2Type  & {
     const edit = await addPayment({
       member_id: user?.member_id || 0,
     membership_class: mem[Number(selectedOption)-1] as 'Regular Monthly' | '3 month Cardio' |'Cardio Monthly' | '3 Month Gym',
-     
+    paid_amount:amountPaid
     // membership_amount:memberships[Number(selectedOption)].membership_amount || 0 , 
     // paid_amount:amountPaid, 
     // start_date: formatDateToYYYYMMDD(data.membership_valid_from) || "",
@@ -272,8 +272,7 @@ const AddMemberPayment:React.FC<FormData2Type  & {
     fetchData();
   }, []);
   React.useEffect(() => {
-    if (user ) {
-      console.log( user?.selected_membership == '3 month Cardio')
+    if (user ) { 
     
       setSelectedOption(user?.selected_membership == 'Regular Monthly'?"1":
         user?.selected_membership == '3 month Cardio'?"2":
@@ -286,6 +285,9 @@ const AddMemberPayment:React.FC<FormData2Type  & {
      
     }
   }, [user, setValue]); 
+  console.log("user.members_reg_number",user?.members_reg_number);
+  console.log("user.member_id",user?.member_id);
+  
   return (
     <div>
       <div className="flex flex-col gap-9">
@@ -337,10 +339,11 @@ const AddMemberPayment:React.FC<FormData2Type  & {
       {...register("selected_membership")}
       defaultValue={selectedOption}
       onChange={(e) => { 
-        setValue("selected_membership", e.target.value)
+        setValue("selected_membership", e.target.value) 
+        
         setSelectedOption( e.target.value)
-        setAmountDue(0)
-        setAmountPaid(   memberships[Number(e.target.value)-1].signup_fee  || 0 +  (memberships[Number(e.target.value)-1].membership_amount || 0) )
+        // setAmountDue(0) 
+        setAmountDue(   memberships[Number(e.target.value)-1].signup_fee  || 0 +  (memberships[Number(e.target.value)-1].membership_amount || 0) )
         // setAmountPaid(  memberships[Number(e.target.value)-1].signup_fee  || 0 +  (memberships[Number(e.target.value)-1].membership_amount || 0) )
         const today = new Date();
 
@@ -375,6 +378,16 @@ const AddMemberPayment:React.FC<FormData2Type  & {
     variant="outlined" 
     
     value={amountPaid}
+    onChange={(e)=>{
+      const inputValue = Number(e.target.value);
+      setAmountPaid(inputValue);
+    
+      const membershipAmount = Number(memberships[Number(selectedOption) - 1].membership_amount);
+      const due = membershipAmount - inputValue;
+     
+      setAmountDue(due>0?due:0);
+    }}
+
     fullWidth 
     error={!!errors.mobile}
     helperText={errors.mobile?.message}
@@ -387,8 +400,7 @@ const AddMemberPayment:React.FC<FormData2Type  & {
     label="Due Amount"
     placeholder="Enter Due Amount"
     variant="outlined" 
-    value={amountDue}
-      onChange={(e)=>{setAmountDue(Number(e.target.value))}}
+    value={amountDue} 
     fullWidth 
     error={!!errors.mobile}
     helperText={errors.mobile?.message}
