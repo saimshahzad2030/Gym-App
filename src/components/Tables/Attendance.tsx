@@ -71,8 +71,15 @@ const headCells: readonly HeadCell[] = [
     id: 'out_time',
     numeric: true,
     disablePadding: false,
-    label: 'Member Name',
+    label: 'Name',
   },
+  {
+    id: 'last_name',
+    numeric: false,
+    disablePadding: false,
+    label: 'Father name',
+  },
+  
   {
     id: 'out_time',
     numeric: true,
@@ -99,7 +106,7 @@ const headCells: readonly HeadCell[] = [
     disablePadding: false,
     label: 'Status',
   },  {
-    id: 'in_time',
+    id: 'out_time',
     numeric: true,
     disablePadding: false,
     label: 'In Time',
@@ -339,9 +346,16 @@ const formatDateOnly = (date: string) => {
 
                     
                     >
-  {`${row.member_info.first_name==null || row.member_info.last_name ==null?` member ${index+1}`:`${row.member_info.first_name} ${row.member_info.last_name}`}`} 
+  {`${row.member_info.first_name==null || row.member_info.last_name ==null?` member ${index+1}`:`${row.member_info.first_name}`}`} 
 </TableCell>
-                   
+<TableCell
+                    align="center"
+                    className='dark:text-white'
+
+                    
+                    >
+  {`${row.member_info.first_name==null || row.member_info.last_name ==null?` member ${index+1}`:`${row.member_info.last_name}`}`} 
+</TableCell>       
 <TableCell
                     align="center"
                     className='dark:text-white'

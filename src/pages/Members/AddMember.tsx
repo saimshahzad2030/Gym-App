@@ -16,6 +16,8 @@ import { CalendarIcon } from "@mui/x-date-pickers/icons";
 import { optionStyle, selectFieldStyle, textFieldStyle } from "../../../constants/constants";
 import { addMember } from "../../services/members.services";
 import { fetchMemberships } from "../../services/memberships.services";
+import EditIcon from '@mui/icons-material/Edit'
+
 interface MembershipData {
   id: number;
     membership_label?: string;
@@ -183,19 +185,7 @@ const AddMember = () => {
     const add = await addMember(transformedData);
     console.log(add)
     if (add.error) {
-      // reset({
-      //   first_name: "",
-      //   last_name: "",
-      //   phone: 0, // Reset to 0 or an empty string
-      //   membership: "",
-      //   address: "",
-      //   joining_date: null,
-      //   dob: null,
-      //   membership_starting_date: null,
-      //   membership_ending_date: null,
-      //   image: null,
-      // });
-      // setSelectedOption("");
+      
       setMessage(add.error)
       setOpen(true);
     }
@@ -241,7 +231,7 @@ const AddMember = () => {
           <form onSubmit={handleSubmit(onSubmit)} onError={(err)=>{console.log(err)}}>
             <div className="p-6.5">
               {/* Image Upload Section */}
-              {/* <div className="mb-4.5 flex flex-col items-center">
+              <div className="mb-4.5 flex flex-col items-center">
                 <label className="mb-2.5 block text-black dark:text-white">
                   Profile Image
                 </label>
@@ -270,13 +260,13 @@ const AddMember = () => {
                   </button>
                 </div>
                 {errors.image && <p className="text-red-500">{errors.image.message}</p>}
-              </div> */}
+              </div>
 
               {/* Other Form Fields */}
               <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
   <div className="w-full xl:w-1/2 border-none">
     <TextField
-      label="First name"
+      label="Name"
       placeholder="Enter your first name"
       variant="outlined"
       fullWidth
@@ -289,7 +279,7 @@ const AddMember = () => {
 
   <div className="w-full xl:w-1/2">
     <TextField
-      label="Last name"
+      label="Father name"
       placeholder="Enter your last name"
       variant="outlined"
       fullWidth
@@ -427,7 +417,9 @@ const AddMember = () => {
     />
   )}
   onChange={(event, value) => {
-    setValue("selected_membership", value?.membership_label);  }}
+    // console.log(String(memberships.indexOf(value)+1));
+    
+    setValue("selected_membership", String(memberships.indexOf(value)+1));  }}
 />
 </div>
 

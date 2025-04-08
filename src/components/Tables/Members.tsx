@@ -252,7 +252,12 @@ const headCells: readonly HeadCell[] = [
     disablePadding: true,
     label: 'Name',
   },
-  
+  {
+    id: 'last_name',
+    numeric: false,
+    disablePadding: true,
+    label: 'Father name',
+  },
   {
     id: 'phone',
     numeric: true,
@@ -352,14 +357,15 @@ export default function EnhancedTable() {
   const handleSearchChange = async(event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
     const members:{results:Data[],count:number,next:string,previous:string,error?:string} = await fetchMembersUsingSearch(event.target.value);
-    setLoading(false)
-    console.log(members)
+    setLoading(false) 
     if (!members.error) {
       setNextUrl(members.next)
       setPreviousUrl(members.previous)
       setTotalEntries(members.count);
 
       setMembers(members.results);
+    console.log(members)
+
     }
   };
 
@@ -382,15 +388,18 @@ export default function EnhancedTable() {
         setTotalEntries(members.count);
 
         setMembers(members.results);
+        console.log(members.results);
       }
     };
     fetchData();
   }, []);
   let filteredRows:Data[];
-  filteredRows = members.filter((row) =>
-    row?.first_name?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
-  row?.last_name?.toLowerCase()?.includes(searchTerm.toLowerCase())
-  );
+  // filteredRows = members.filter((row) =>
+  //   row?.first_name?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
+  // row?.last_name?.toLowerCase()?.includes(searchTerm.toLowerCase())
+  // );
+  filteredRows = members;
+
   const handleChangePage = async(event: unknown, newPage: number) => {
     const isNext = newPage > page;
     const isPrevious = newPage < page;
@@ -556,6 +565,18 @@ className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white'
 
              >
                {`${row.first_name} `}
+             </TableCell>
+
+             <TableCell
+             align="center"
+               component="th"
+               id={labelId}
+               scope="row"
+               padding="none"
+               className='dark:text-white'
+
+             >
+               {`${row.last_name} `}
              </TableCell>
              <TableCell 
              align="center"

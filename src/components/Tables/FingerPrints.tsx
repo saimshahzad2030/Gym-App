@@ -144,7 +144,12 @@ const headCells: readonly HeadCell[] = [
     disablePadding: true,
     label: 'Name',
   },
-  
+  {
+    id: 'last_name',
+    numeric: false,
+    disablePadding: true,
+    label: 'Father Name',
+  },
   {
     id: 'phone',
     numeric: true,
@@ -187,7 +192,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             align={ 'center'}
             padding={headCell.disablePadding ? 'none' : 'normal'}
             sortDirection={orderBy === headCell.id ? order : false} 
-            className='dark:text-white'
+            className='dark:text-white text-center'
           >
             <TableSortLabel
               active={orderBy === headCell.id}
@@ -339,10 +344,11 @@ export default function FingerPrints() {
     fetchData();
   }, []);
   let filteredRows:Data[];
-  filteredRows = members.filter((row) =>
-    row.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-  row.last_name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // filteredRows = members.filter((row) =>
+  //   row.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  // row.last_name.toLowerCase().includes(searchTerm.toLowerCase())
+  // );
+  filteredRows = members
   const handleChangePage = async(event: unknown, newPage: number) => {
     const isNext = newPage > page;
     const isPrevious = newPage < page;
@@ -509,6 +515,18 @@ className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white'
 
              >
                {`${row.first_name} `}
+             </TableCell>
+
+             <TableCell
+             align="center"
+               component="th"
+               id={labelId}
+               scope="row"
+               padding="none"
+               className='dark:text-white text-center'
+
+             >
+               {`${row.last_name} `}
              </TableCell>
              <TableCell 
              align="center"

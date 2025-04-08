@@ -4,7 +4,7 @@ import Cookies from 'js-cookie';
 interface Data {
     member_id: number | string,
     membership_class: 'Regular Monthly' | '3 month Cardio' | 'Cardio Monthly' | '3 Month Gym' | 'none'
-
+    paid_amount: number,
     // membership_amount: number,
     // paid_amount: number,
     // start_date: string,

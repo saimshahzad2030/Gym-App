@@ -189,6 +189,7 @@ const EditMember:React.FC<FormData2Type  & {
   const [selectedOption, setSelectedOption] = React.useState<string>("");
   const [imagePreview, setImagePreview] = React.useState<string | null>(user?.image || null);
   const [open,setOpen] = React.useState<boolean>(false) 
+  const [message,setMessage] = React.useState< string>("") 
 
   const { register, handleSubmit, formState: { errors }, setValue ,control } = useForm<FormDataType>({
     resolver: yupResolver(schema),
@@ -259,15 +260,20 @@ const EditMember:React.FC<FormData2Type  & {
         selected_membership:data?.selected_membership,
         role_name:data?.role_name,
         gender: data?.gender,
-        image: data?.image,
+        image: edit?.image,
           birth_date:data?.birth_date,
           membership_valid_from:data?.membership_valid_from,
           membership_valid_to: data?.membership_valid_to
       })
       setOpen(true);
+      setMessage("Edited Succesfullly")
       setTimeout(()=>{
         setOpenEditDialog(false)
         },1000)
+    }
+    else{
+      setOpen(true);
+      setMessage(edit.error)
     }
     
   };
@@ -387,7 +393,7 @@ const EditMember:React.FC<FormData2Type  & {
      <Select
       labelId="membership-label"
       {...register("gender")}
-      defaultValue={user?.gender || ''}
+      defaultValue={user?.gender.toLowerCase() || ''}
       onChange={(e) => setValue("gender", e.target.value)}
       displayEmpty
       sx={ selectFieldStyle}
@@ -623,7 +629,7 @@ const EditMember:React.FC<FormData2Type  & {
               </button>
               </div>
             </div>
-          <SnackbarComp open={open} setOpen={setOpen} message="Edited Succesfully"/>
+          <SnackbarComp open={open} setOpen={setOpen} message={message}/>
       </form>
         </div>
       </div>

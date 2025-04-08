@@ -238,7 +238,7 @@ export const editMember = async (id: number, data: editData) => {
         return response.data;
     } catch (error) {
         console.error('Login failed:', error.response?.data || error.message);
-        return { error: error.response?.data.detail }
+        return { error: error.response?.data.detail || error.response?.data.image}
     }
 
 }
