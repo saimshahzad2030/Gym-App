@@ -2,6 +2,7 @@ import * as React from 'react';
 import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
+import { useNavigate } from 'react-router-dom';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell'; 
 import EditIcon from '@mui/icons-material/Edit'
@@ -194,6 +195,11 @@ interface EnhancedTableToolbarProps {
 }
  
 export default function Payments() {
+  const navigate = useNavigate();
+
+  const refreshRoute = () => {
+    navigate(0); // Reloads the current route
+  };
   const [order, setOrder] = React.useState<Order>('asc');
   const [orderBy, setOrderBy] = React.useState<keyof Data>('');
   const [selected, setSelected] = React.useState<readonly number[]>([]);
@@ -435,12 +441,12 @@ className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white'
                       }}>
       <DownloadIcon className="dark:text-white text-[#1A222C]" />
     </IconButton>
-                      {/* <IconButton  onClick={() => {
+                      <IconButton  onClick={() => {
                         setSelectedRow(row); 
                         setOpenDeleteDialog(true);
                       }}>
                         <DeleteIcon className='dark:text-white text-[#1A222C]' />
-                      </IconButton> */}
+                      </IconButton>
                     </TableCell>
                   </TableRow>
                   
@@ -463,7 +469,7 @@ className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white'
  <p className='dark:text-white text-graydark p-4'>No Data to show</p>}
       </Paper>}
 
-       {openEditDialog && (
+       {/* {openEditDialog && (
         
         <div
           className=' w-full dark:bg-boxdark bg-white p-4 rounded '
@@ -480,7 +486,7 @@ className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white'
             
             expense={selectedRow} setOpenEditDialog={setOpenEditDialog}/>
           </div> 
-      )}
+      )} */}
        <BootstrapDialog
       onClose={()=>{setOpenDeleteDialog(false)}}
       aria-labelledby="customized-dialog-title"
@@ -503,17 +509,27 @@ className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white'
       </IconButton>
       <DialogContent dividers>
         <Typography gutterBottom>
-         Are you sure you want to delete this member? If yes then click on continue
+         Are you sure you want to delete this payment? If yes then click on continue
         </Typography>
         
       </DialogContent>
       <DialogActions>
         <Button autoFocus onClick={async()=>{
           const deleteEntry = await deleteIncome(selectedRow?.mp_id || 0);
-          if(deleteEntry.status == 204){
+          if(deleteEntry.status == 200){
             setOpenDeleteDialog(false)
             setExpenses((prevExpenses) => prevExpenses.filter((expense) => expense.mp_id !== selectedRow?.mp_id));
             setOpenSnackBar(true)
+            setLoading(true)
+            const members:{results:Data[],count:number,next:string,previous:string,error?:string} = await fetchPayments("");
+            setLoading(false)
+            if (!members.error) {
+              setNextUrl(members.next)
+              setPreviousUrl(members.previous)
+              setTotalEntries(members.count);
+      
+              setExpenses(members.results);
+            }
           }
           console.log(deleteEntry.status)
 
@@ -522,6 +538,7 @@ className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white'
         </Button>
       </DialogActions>
     </BootstrapDialog>
+    
       </div>:
           <SnackbarComp open={openSnackBar} setOpen={setOpenSnackBar} message={  "Deleted Succesfully"}/>
 

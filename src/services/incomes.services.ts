@@ -112,13 +112,17 @@ export const editIncome = async (id: number, data: editData) => {
 
 export const deleteIncome = async (id: number) => {
     try {
-        const response = await axios.delete(`${config.url}api/income-expense/${id}/`,
-
+        const response = await axios.patch(
+            `${config.url}api/membership-payment/${id}/`,
             {
-                headers: {
-                    'Authorization': `Bearer ${Cookies.get('token')}`
-                }
-            });
+                is_active: 0  
+            },
+            {
+              headers: {
+                'Authorization': `Bearer ${Cookies.get('token')}`
+              }
+            }
+          );
         return { data: response.data, status: response.status };
 
     } catch (error) {
