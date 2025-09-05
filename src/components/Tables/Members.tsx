@@ -705,56 +705,56 @@ className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white'
       >
 
         {updatingFingerprint?
-        <>
-         <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
-                 <div className='flex flex-col items-center w-full py-4'>
-                  <FingerPrintOutline className='w-30 h-30 text-green-700'/>
-                  <p className='mt-4 font-bold'>Register/Update  Fingerprint</p>
-                 </div>
-                </DialogTitle>
-                <IconButton
-                  aria-label="close"
-                  onClick={()=>{setOpenDeleteDialog(false)}}
-                  sx={(theme) => ({
-                    position: 'absolute',
-                    right: 8,
-                    top: 8,
-                    color: theme.palette.grey[500],
-                  })}
-                >
-                  <CloseIcon />
-                </IconButton>
-                <DialogContent dividers>
-                  <Typography gutterBottom>
-                   {`Are you sure you want to register fingerprint of this member? If yes then click on continue`}
-                  </Typography>
-                  
-                </DialogContent>
-                <DialogActions>
-                  <Button autoFocus 
-                  onClick={async()=>{
-                    const updateFingerprint = await registerMemberFingerprint(selectedRow?.members_reg_number || "");
-                    console.log(updateFingerprint.status)
-                    // const updateFingerprint = await addFingerprint({mode:isRegister?'attendance':'register' as 'register' | 'attendance',member_id:selectedRow?.id || 0});
-                    if(updateFingerprint.status == 200 ){
-                      // setOpenFingerPrintConfirm(false)
-                      // setMembers((prevMembers) => prevMembers.filter((member) => member.id !== selectedRow?.id));
-                      setMessage(updateFingerprint.data.message)
-                      setOpenSnackBar(true)
-                      // setTotalEntries(totalEntries-1)
-                      // setIsRegister(!isRegister)
-                    } 
-                    else{
-                       setMessage(updateFingerprint.error || "Error Occured")
-                      setOpenSnackBar(true)
-                    }
-                    setOpenDeleteDialog(false)
-                    setUpdatingFingerprint(false)
-                  }}
-                  >
-                    Continue
-                  </Button>
-                </DialogActions></>:
+     <>
+  <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
+    <div className="flex flex-col items-center w-full py-4">
+      <FingerPrintOutline className="w-30 h-30 text-green-700" />
+      <p className="mt-4 font-bold">Register / Update Fingerprint</p>
+    </div>
+  </DialogTitle>
+  <IconButton
+    aria-label="close"
+    onClick={() => {
+      setOpenDeleteDialog(false);
+    }}
+    sx={(theme) => ({
+      position: "absolute",
+      right: 8,
+      top: 8,
+      color: theme.palette.grey[500],
+    })}
+  >
+    <CloseIcon />
+  </IconButton>
+  <DialogContent dividers>
+    <Typography gutterBottom>
+      {`Once you confirm, the user will be registered on the fingerprint device. After registration, the user must scan their fingerprint to complete the process.`}
+    </Typography>
+  </DialogContent>
+  <DialogActions>
+    <Button
+      autoFocus
+      onClick={async () => {
+        const updateFingerprint = await registerMemberFingerprint(
+          selectedRow?.members_reg_number || ""
+        );
+        console.log(updateFingerprint.status);
+        if (updateFingerprint.status == 200) {
+          setMessage(updateFingerprint.data.message);
+          setOpenSnackBar(true);
+        } else {
+          setMessage(updateFingerprint.error || "An error occurred. Please try again later.");
+          setOpenSnackBar(true);
+        }
+        setOpenDeleteDialog(false);
+        setUpdatingFingerprint(false);
+      }}
+    >
+      Continue
+    </Button>
+  </DialogActions>
+</>
+:
                 <>
                    <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
           Warning
