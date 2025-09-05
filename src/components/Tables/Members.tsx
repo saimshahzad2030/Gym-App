@@ -37,7 +37,8 @@ import SnackbarComp from '../SnackBar/Snackbar';
 import LoaderComp from '../Loader/Loader';
 import { useLocation, useNavigate } from 'react-router-dom';
 import AddMemberPayment from '../../pages/Members/AddMemberPayment';
-import { DefaultUserImage } from '../../../constants/icons';
+import { DefaultUserImage, FingerPrint, FingerPrintOutline } from '../../../constants/icons';
+import { registerMemberFingerprint } from '../../services/fingerprint.services';
    
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -344,6 +345,7 @@ export default function EnhancedTable() {
   const [searchTerm, setSearchTerm] = React.useState<string>(query?query:'');
   const [openEditDialog, setOpenEditDialog] = React.useState(false);
   const [openPaymentDialog, setOpenPaymentDialog] = React.useState(false);
+  const [updatingFingerprint, setUpdatingFingerprint] = React.useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = React.useState(false);
   const [totalEntries,setTotalEntries]  = React.useState<number>(0)
   const [selectedRow, setSelectedRow] = React.useState<Data | null>(null);
@@ -353,6 +355,7 @@ export default function EnhancedTable() {
   const [openSnackBar, setOpenSnackBar] = React.useState<boolean>(false);
   const [nextUrl, setNextUrl] = React.useState<string>("");
   const [previousUrl, setPreviousUrl] = React.useState<string>("");
+  const [message, setMessage] = React.useState<string>('');
 
   const handleSearchChange = async(event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
@@ -602,6 +605,14 @@ className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white'
                  <EditIcon                       className='dark:text-white'
                  />
                </IconButton>
+               <IconButton  onClick={() => {
+                 setSelectedRow(row);
+                 setUpdatingFingerprint(true)
+                 setOpenDeleteDialog(true);
+               }}>
+                 <FingerPrint                       className='dark:text-white'
+/>
+               </IconButton>
                <IconButton onClick={() => {
                  setSelectedRow(row);
              
@@ -692,7 +703,60 @@ className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white'
         aria-labelledby="customized-dialog-title"
         open={openDeleteDialog}
       >
-        <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
+
+        {updatingFingerprint?
+        <>
+         <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
+                 <div className='flex flex-col items-center w-full py-4'>
+                  <FingerPrintOutline className='w-30 h-30 text-green-700'/>
+                  <p className='mt-4 font-bold'>Register/Update  Fingerprint</p>
+                 </div>
+                </DialogTitle>
+                <IconButton
+                  aria-label="close"
+                  onClick={()=>{setOpenDeleteDialog(false)}}
+                  sx={(theme) => ({
+                    position: 'absolute',
+                    right: 8,
+                    top: 8,
+                    color: theme.palette.grey[500],
+                  })}
+                >
+                  <CloseIcon />
+                </IconButton>
+                <DialogContent dividers>
+                  <Typography gutterBottom>
+                   {`Are you sure you want to register fingerprint of this member? If yes then click on continue`}
+                  </Typography>
+                  
+                </DialogContent>
+                <DialogActions>
+                  <Button autoFocus 
+                  onClick={async()=>{
+                    const updateFingerprint = await registerMemberFingerprint(selectedRow?.members_reg_number || "");
+                    console.log(updateFingerprint.status)
+                    // const updateFingerprint = await addFingerprint({mode:isRegister?'attendance':'register' as 'register' | 'attendance',member_id:selectedRow?.id || 0});
+                    if(updateFingerprint.status == 200 ){
+                      // setOpenFingerPrintConfirm(false)
+                      // setMembers((prevMembers) => prevMembers.filter((member) => member.id !== selectedRow?.id));
+                      setMessage(updateFingerprint.data.message)
+                      setOpenSnackBar(true)
+                      // setTotalEntries(totalEntries-1)
+                      // setIsRegister(!isRegister)
+                    } 
+                    else{
+                       setMessage(updateFingerprint.error || "Error Occured")
+                      setOpenSnackBar(true)
+                    }
+                    setOpenDeleteDialog(false)
+                    setUpdatingFingerprint(false)
+                  }}
+                  >
+                    Continue
+                  </Button>
+                </DialogActions></>:
+                <>
+                   <DialogTitle sx={{ m: 0, p: 2 }} id="customized-dialog-title">
           Warning
         </DialogTitle>
         <IconButton
@@ -728,9 +792,11 @@ className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white'
             Continue
           </Button>
         </DialogActions>
+</>}
+     
       </BootstrapDialog>
       </div> 
-          <SnackbarComp open={openSnackBar} setOpen={setOpenSnackBar} message={  "Deleted Succesfully"}/>
+          <SnackbarComp open={openSnackBar} setOpen={setOpenSnackBar} message={ message?? "Deleted Succesfully"}/>
 
     </Box>
   );

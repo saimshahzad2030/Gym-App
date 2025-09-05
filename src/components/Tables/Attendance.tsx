@@ -2,6 +2,7 @@ import * as React from 'react';
 import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Table from '@mui/material/Table';
+import { Calendar } from 'rsuite';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';  
 import CloseIcon from '@mui/icons-material/Close'
@@ -16,7 +17,7 @@ import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import Checkbox from '@mui/material/Checkbox'; 
 import { visuallyHidden } from '@mui/utils'; 
-import {   TextField } from '@mui/material';   
+import {   Button, Dialog, DialogContent, DialogTitle, TextField } from '@mui/material';   
 import { fetchAttendance } from '../../services/attendance.services';
 import LoaderComp from '../Loader/Loader'; 
 import { checkBoxStyle, textFieldStyle } from '../../../constants/constants';
@@ -156,7 +157,9 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             </TableSortLabel>
           </TableCell>
         ))}
-        
+        <TableCell align="center" className="dark:text-white">
+  View Previous Month Attendance
+</TableCell>
       </TableRow>
     </TableHead>
   );
@@ -178,6 +181,11 @@ else   {
   return 'Invalid'
 }
  }
+//  import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css';
+
+ 
+
 export default function Attendance() {
   const [order, setOrder] = React.useState<Order>('asc');
   const [orderBy, setOrderBy] = React.useState<keyof Data>('in_time');
@@ -186,6 +194,12 @@ export default function Attendance() {
   const [rowsPerPage, setRowsPerPage] = React.useState(10);
   const [searchTerm, setSearchTerm] = React.useState<string>('');
   const [openEditDialog, setOpenEditDialog] = React.useState(false);
+const [openCalendar, setOpenCalendar] = React.useState(false);
+const [selectedAttendanceDates, setSelectedAttendanceDates] = React.useState<string[]>([
+  // '2025-08-01',
+  // '2025-08-04',
+  // '2025-08-06'
+]);
 
  const [totalEntries,setTotalEntries]  = React.useState<number>(0)
   const [selectedRow, setSelectedRow] = React.useState<Data | null>(null);
@@ -207,6 +221,37 @@ const formatDate = (date:string)=>{
   })
 }
  
+
+function formatDate1(date: Date) {
+  return date.toISOString().split('T')[0];
+}
+ 
+  const renderCell = (date: Date) => {
+    const formatted = formatDate1(date);
+    const isPresent = selectedAttendanceDates.includes(formatted);
+
+    return isPresent ? (
+      <div
+        style={{
+          width: '20px',
+          height: '20px',
+          backgroundColor: '#201919',
+          borderRadius: '50%',
+          color: 'white',
+          fontSize: '10px',
+          lineHeight: '20px',
+          textAlign: 'center',
+          margin: '0 auto'
+        }}
+      >
+        {date.getDate()}
+      </div>
+    ) : (
+      date.getDate()
+    );
+  };
+
+
 const formatDateOnly = (date: string) => {
   const formattedDate = new Date(date);
   return formattedDate.toLocaleString('en-US', {
@@ -218,6 +263,19 @@ const formatDateOnly = (date: string) => {
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
   };
+  const getDummyAttendanceDates = () => {
+  const today = new Date();
+  const dates: string[] = [];
+
+  for (let i = 1; i <= 31; i++) {
+    if (i % 2 === 0) { // mark alternate days as present
+      const date = new Date(today.getFullYear(), today.getMonth() - 1, i); // previous month
+      dates.push(date.toISOString().split("T")[0]);
+    }
+  }
+  return dates;
+};
+
   React.useEffect(() => {
     const fetchData = async () => {
       setLoading(true)
@@ -287,14 +345,12 @@ const formatDateOnly = (date: string) => {
     <Box
     className='w-full mb-2 bg-white dark:bg-[#1A222C] text-[#1A222C]'
     
-    // sx={{ width: '100%',backgroundColor:'rgb(26 34 44)',color:'white' }}
-    
+  
     >
       <div className='flex flex-col items-center w-full relative'>
       {!openEditDialog && <Paper 
       
       className='w-full mb-2 bg-white dark:bg-[#1A222C]'
-      // sx={{ width: '100%', mb: 2,backgroundColor:'white' }}
       >
         <Box sx={{ padding: '16px' }}>
           <TextField
@@ -407,7 +463,20 @@ const formatDateOnly = (date: string) => {
 </TableCell>
                   
                        
-                     
+                     <TableCell align="center">
+  <Button
+    variant="contained"
+    size="small"
+    onClick={() => {
+      const dummyDates = getDummyAttendanceDates();
+      setSelectedAttendanceDates(dummyDates);
+      setOpenCalendar(true);
+    }}
+  >
+    View
+  </Button>
+</TableCell>
+
                   </TableRow>
                   
                 );
@@ -429,6 +498,45 @@ const formatDateOnly = (date: string) => {
       </Paper>}
      
       </div>
+      <Dialog open={openCalendar} onClose={() => setOpenCalendar(false)} maxWidth="sm" fullWidth>
+  <DialogTitle>Previous Month Attendance</DialogTitle>
+  <DialogContent>
+    {/* <Calendar
+  tileContent={renderMarkedDates}
+  defaultView="month"
+  defaultValue={new Date(new Date().setMonth(new Date().getMonth() - 1))}
+  tileClassName={({ date }) => {
+    const formatted = date.toISOString().split("T")[0];
+    return selectedAttendanceDates.includes(formatted)
+      ? 'present-day'  
+      : null;
+  }}
+/> */}
+<Calendar
+  renderCell={(date: Date) => {
+    const formatted = date.toISOString().split('T')[0];
+    if ([
+  "2025-08-03",
+  "2025-08-12",
+  "2025-08-17",
+  "2025-08-09",
+  "2025-08-28",
+  "2025-08-06",
+  "2025-08-15",
+  "2025-08-20",
+  "2025-08-25",
+  "2025-08-31"
+].includes(formatted)) {
+      return <div className="highlight-cell" />;
+    }
+    return null;
+  }}
+/>
+
+ 
+  </DialogContent>
+</Dialog>
+
     </Box>
   );
 }

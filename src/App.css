@@ -2,11 +2,18 @@
     scrollbar-width: thin;
     scrollbar-color: #c0c0c0 #f0f0f0;
   }
-  
+  .present-day {
+  background-color: #ff6a14 !important;
+  color: white !important;
+  border-radius: 100% !important;
+}
+
   .scrollbar-thin::-webkit-scrollbar {
     width: 8px;
   }
-  
+  .react-calendar__month-view__days__day--neighboringMonth {
+  visibility: hidden;
+}
   .scrollbar-thin::-webkit-scrollbar-thumb {
     background-color: #c0c0c0;
     border-radius: 10px;

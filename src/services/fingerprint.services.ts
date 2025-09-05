@@ -35,3 +35,22 @@ export const addFingerprint = async (data: Data) => {
     }
 
 }
+
+export const registerMemberFingerprint = async (code: String) => {
+    try {
+        const response = await axios.post(`${config.url}api/members/${code}/enroll-device/`,
+
+            {} 
+            , {
+                            headers: {
+                                'Authorization': `Bearer ${Cookies.get('token')}`,
+                                'Content-Type': 'multipart/form-data',
+                            },
+                        }
+        );
+        return { data: response.data, status: response.status };
+    } catch (error) { 
+        return { error: error.response?.data.error || error.response?.data.details|| "Error Occured. Try Again Later",status:error.response.status }
+    }
+
+}

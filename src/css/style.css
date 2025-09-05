@@ -7,7 +7,42 @@
     @apply font-satoshi font-normal text-base text-body bg-whiten relative z-1;
   }
 }
+ 
+ /* .present-day {
+  background-color: #201919 !important;
+  color: white !important; 
+  height: 40px;
+  width: 10px;
+  font-size: xx-small;
+  border-radius: 100% !important;
+} */
+.present-day {  
+  font-weight: 900;
+  color: rgb(69, 27, 255) !important; 
+  line-height: 20px;
+  border-radius: 50% !important; 
+  display: flex; 
+  flex-direction: column;
+  align-items: center;
+  justify-content: center; 
+  margin: 0 auto;
+}
 
+.rs-calendar-table-cell {
+  position: relative;
+}
+
+.highlight-cell {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: #1A222C;
+  border-radius: 4px;
+  z-index: 0; /* Sit behind the default date text */
+  pointer-events: none; /* Let clicks pass through */
+}
 
 @layer components {
 }
