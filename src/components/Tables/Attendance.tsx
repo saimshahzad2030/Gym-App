@@ -18,7 +18,7 @@ import Paper from '@mui/material/Paper';
 import Checkbox from '@mui/material/Checkbox'; 
 import { visuallyHidden } from '@mui/utils'; 
 import {   Button, Dialog, DialogContent, DialogTitle, TextField } from '@mui/material';   
-import { fetchAttendance } from '../../services/attendance.services';
+import { fetchAttendance, fetchSpecificMemberAttendance } from '../../services/attendance.services';
 import LoaderComp from '../Loader/Loader'; 
 import { checkBoxStyle, textFieldStyle } from '../../../constants/constants';
 type MemberInfo = {
@@ -183,6 +183,7 @@ else   {
  }
 //  import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
+import Loader from '../../common/Loader';
 
  
 
@@ -200,7 +201,8 @@ const [selectedAttendanceDates, setSelectedAttendanceDates] = React.useState<str
   // '2025-08-04',
   // '2025-08-06'
 ]);
-
+const [attendanceFetching,setAttendanceFetching] = React.useState<boolean>(false)
+const [memberFetchedAtttendance,setMemberFetchedAtttendance] = React.useState<string[]>([])
  const [totalEntries,setTotalEntries]  = React.useState<number>(0)
   const [selectedRow, setSelectedRow] = React.useState<Data | null>(null);
   const [attendance, setAttendance] = React.useState<Data[]>([]);
@@ -352,7 +354,7 @@ const formatDateOnly = (date: string) => {
       
       className='w-full mb-2 bg-white dark:bg-[#1A222C]'
       >
-        <Box sx={{ padding: '16px' }}>
+        {/* <Box sx={{ padding: '16px' }}>
           <TextField
             variant="outlined"
             placeholder="Search by name"
@@ -362,7 +364,7 @@ const formatDateOnly = (date: string) => {
             size='small'
             sx={textFieldStyle}
           />
-        </Box>
+        </Box> */}
        {loading?<LoaderComp/>:
         visibleRows.length>0?
        <>
@@ -467,7 +469,13 @@ const formatDateOnly = (date: string) => {
   <Button
     variant="contained"
     size="small"
-    onClick={() => {
+    onClick={ async() => {
+      setAttendanceFetching(true)
+
+      let fetchedAtt = await fetchSpecificMemberAttendance(row.member_reg_code)
+      setMemberFetchedAtttendance(fetchedAtt)
+      console.log(fetchedAtt)
+      setAttendanceFetching(false)
       const dummyDates = getDummyAttendanceDates();
       setSelectedAttendanceDates(dummyDates);
       setOpenCalendar(true);
@@ -512,26 +520,19 @@ const formatDateOnly = (date: string) => {
       : null;
   }}
 /> */}
+{attendanceFetching?
+<LoaderComp/>:
+
 <Calendar
   renderCell={(date: Date) => {
     const formatted = date.toISOString().split('T')[0];
-    if ([
-  "2025-08-03",
-  "2025-08-12",
-  "2025-08-17",
-  "2025-08-09",
-  "2025-08-28",
-  "2025-08-06",
-  "2025-08-15",
-  "2025-08-20",
-  "2025-08-25",
-  "2025-08-31"
-].includes(formatted)) {
-      return <div className="highlight-cell" />;
+    if (memberFetchedAtttendance.includes(formatted)) {
+      return <div className="highlight-cell flex flex-col items-center justify-start text-white pt-1 p-1" ><div className='rounded-md flex flex-col bg-[#1A222C] items-center w-full h-[100px] pt-1'>
+        {date.getDate()}</div></div>;
     }
     return null;
   }}
-/>
+/>}
 
  
   </DialogContent>

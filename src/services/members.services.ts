@@ -184,6 +184,8 @@ export const addMember = async (data: Data) => {
             }
         });
         formData.append("is_exist", "1");
+       formData.append("created_date", new Date().toISOString().split("T")[0]);
+
 
         const response = await axios.post(`${config.url}api/members/`, formData
             , {
@@ -255,6 +257,23 @@ export const deleteMember = async (id: number) => {
     } catch (error) {
         console.error('Login failed:', error.response?.data || error.message);
         return { error: error.response?.data.detail, status: error?.response?.status }
+    }
+
+}
+
+export const fetchMemberPayment = async (memberId: string | number) => {
+    try {
+        const response = await axios.get(`${config.url}api/membership-payment/?member_id=${Number(memberId)}`
+            , {
+                headers: {
+                    'Authorization': `Bearer ${Cookies.get('token')}`
+                }
+            }
+        ); 
+        return response.data;
+    } catch (error) {
+        console.error('Login failed:', error.response?.data || error.message);
+        return { error: error.response?.data.detail }
     }
 
 }

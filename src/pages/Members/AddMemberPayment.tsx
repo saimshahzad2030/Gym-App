@@ -22,7 +22,7 @@ import {
 } from '@mui/material';
 import { ThemeProvider } from '@emotion/react';
 import { selectFieldStyle, textFieldStyle } from '../../../constants/constants';
-import { editMember } from '../../services/members.services';
+import { editMember, fetchMemberPayment } from '../../services/members.services';
 import LoaderComp from '../../components/Loader/Loader';
 import { fetchMemberships } from '../../services/memberships.services';
 import { addPayment } from '../../services/payment.services';
@@ -152,6 +152,32 @@ type FormData2Type = {
     fingerprint?: string;
   };
 };
+type MembershipPayment = {
+  mp_id: number;
+  member_info: {
+    first_name: string;
+    last_name: string;
+    membership_valid_from: string; // YYYY-MM-DD
+    membership_valid_to: string;   // YYYY-MM-DD
+    membership_status: "expired" | "active" | "Continue" | string; 
+    image: string; // URL
+  };
+  due_amount: number;
+  member_id: number;
+  membership_id: number;
+  membership_amount: number;
+  paid_amount: number;
+  start_date: string; // YYYY-MM-DD
+  end_date: string;   // YYYY-MM-DD
+  membership_status: "expired" | "active" | "Continue" | string;
+  payment_status: string | null;
+  created_date: string; // YYYY-MM-DD
+  created_by: string | number | null;
+  isprinted: string | boolean; // looks like b'\x01' → backend boolean-ish
+  signupfee: number;
+  is_active: boolean | null;
+  delete_reason: string | null;
+};
 
 // Define the validation schema
 const schema = yup.object().shape({
@@ -183,6 +209,8 @@ const AddMemberPayment: React.FC<
   const [open, setOpen] = React.useState<boolean>(false);
   const [messaage, setMessage] = React.useState<string>('');
   const [amountPaid, setAmountPaid] = React.useState<number>(0);
+  const [memberPaymentDetails, setMemberPaymentDetails] = React.useState<MembershipPayment | null>(null);
+  const [registerationAmount, setRegisterationAmount] = React.useState<number>(0);
   const [amountDue, setAmountDue] = React.useState<number>(
     user?.selected_membership == 'Regular Monthly'
       ? 3000 - amountPaid
@@ -260,7 +288,7 @@ const AddMemberPayment: React.FC<
     };
 
     const edit = await addPayment({
-      member_id: user?.member_id || 0,
+      member_id: user?.member_id || user?.members_reg_number || 0,
       membership_class: mem[Number(selectedOption) - 1] as
         | 'Regular Monthly'
         | '3 month Cardio'
@@ -302,13 +330,21 @@ const AddMemberPayment: React.FC<
       if (!fetchedData.error) {
         setMemberships(fetchedData.results);
       }
+      let paymentDetails = await fetchMemberPayment(Number(user?.member_id));
+      setMemberPaymentDetails(paymentDetails)
+      setAmountPaid(paymentDetails?.paid_amount
+      )
+      
+        setSelectedOption(paymentDetails?.membership_id)
+        setValue("selected_membership",String(paymentDetails?.membership_id))
     };
     fetchData();
   }, []);
   React.useEffect(() => {
     if (user) {
       setSelectedOption(
-        user?.selected_membership == 'Regular Monthly'
+        memberPaymentDetails?
+        String(memberPaymentDetails.membership_id):user?.selected_membership == 'Regular Monthly'
           ? '1'
           : user?.selected_membership == '3 month Cardio'
           ? '2'
@@ -316,11 +352,26 @@ const AddMemberPayment: React.FC<
           ? '3'
           : user?.selected_membership == '3 Month Gym'
           ? '4'
-          : '',
+          : ''
       );
       // setAmountPaid(user?.selected_membership?)
-      setValue('membership_valid_from', new Date(user?.membership_valid_from)); // Set the starting date
-      setValue('membership_valid_to', new Date(user?.membership_valid_to));
+        setValue("selected_membership",String(memberPaymentDetails?.membership_id))
+
+      setValue('membership_valid_from', new Date().toISOString().split("T")[0]);
+const abc = memberPaymentDetails?.member_info.membership_valid_to; // string | undefined
+
+if (abc) {
+  const date = new Date(abc); // safe now
+
+  // Add 1 month
+  date.setMonth(date.getMonth() + 1);
+
+  // Format back to YYYY-MM-DD
+  const oneMonthLater = date.toISOString().split("T")[0];
+console.log("oneMonthLater",oneMonthLater)
+  setValue('membership_valid_to', oneMonthLater);
+}
+
     }
   }, [user, setValue]);
 
@@ -334,6 +385,7 @@ const AddMemberPayment: React.FC<
 
               {/* Other Form Fields */}
               <div className="mb-4.5 flex flex-col gap-6 xl:flex-row">
+       
                 <div className="w-full xl:w-1/2 border-none">
                   <TextField
                     label="First name"
@@ -369,20 +421,32 @@ const AddMemberPayment: React.FC<
                   <Select
                     labelId="membership-label"
                     {...register('selected_membership')}
-                    defaultValue={selectedOption}
+                   value={selectedOption || ''}
                     onChange={(e) => {
                       setValue('selected_membership', e.target.value);
 
                       setSelectedOption(e.target.value);
                       // setAmountDue(0)
                       setAmountDue(
-                        memberships[Number(e.target.value) - 1].signup_fee ||
-                          0 +
-                            (memberships[Number(e.target.value) - 1]
-                              .membership_amount || 0),
+                       0
                       );
-                      // setAmountPaid(  memberships[Number(e.target.value)-1].signup_fee  || 0 +  (memberships[Number(e.target.value)-1].membership_amount || 0) )
+                      setAmountPaid(  memberships[Number(e.target.value)-1].signup_fee  || 0 +  (memberships[Number(e.target.value)-1].membership_amount || 0) )
                       const today = new Date();
+const abc = memberPaymentDetails?.member_info?.membership_valid_to; // string | undefined
+
+if (abc) {
+  console.log('object')
+  const date = new Date(abc); // safe now
+date.setDate(
+                        today.getDate() +
+                          (memberships[Number(e.target.value) - 1]
+                            .membership_length || 0),
+                      );
+ 
+  // Format back to YYYY-MM-DD
+  const oneMonthLater = date.toISOString().split("T")[0]; 
+  setValue('membership_valid_to', oneMonthLater);
+}
 
                       // Calculate the "membership_valid_to" date
                       const validToDate = new Date();
@@ -424,6 +488,28 @@ const AddMemberPayment: React.FC<
                     </FormHelperText>
                   )}
                 </FormControl>
+              </div>
+              <div className="mb-4.5">
+                <TextField
+                  label="Registration Amount"
+                  placeholder="Enter Registration Amount"
+                  variant="outlined"
+                  value={registerationAmount}
+                  onChange={(e) => {
+                    const inputValue = Number(e.target.value);
+                    setRegisterationAmount(inputValue);
+
+                    const membershipAmount = Number(
+                      memberships[Number(selectedOption) - 1].membership_amount,
+                    );
+                   setAmountPaid(memberPaymentDetails?.paid_amount? memberPaymentDetails?.paid_amount+ inputValue:membershipAmount+inputValue );
+                
+                  }}
+                  fullWidth
+                  error={!!errors.mobile}
+                  helperText={errors.mobile?.message}
+                  sx={textFieldStyle}
+                />
               </div>
               <div className="mb-4.5">
                 <TextField

@@ -247,6 +247,12 @@ const headCells: readonly HeadCell[] = [
     disablePadding: false,
     label: 'Pic',
   },
+    {
+    id: 'member_id',
+    numeric: false,
+    disablePadding: true,
+    label: 'Member ID',
+  },
   {
     id: 'first_name',
     numeric: false,
@@ -264,6 +270,12 @@ const headCells: readonly HeadCell[] = [
     numeric: true,
     disablePadding: false,
     label: 'Mobile',
+  },
+  {
+    id: 'membership_valid_to',
+    numeric: true,
+    disablePadding: false,
+    label: 'Membership Status',
   },
   {
     id: 'membership_valid_to',
@@ -301,7 +313,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             align={ 'center'}
             padding={headCell.disablePadding ? 'none' : 'normal'}
             sortDirection={orderBy === headCell.id ? order : false} 
-            className='dark:text-white'
+            className='dark:text-white '
           >
             <TableSortLabel
               active={orderBy === headCell.id}
@@ -558,6 +570,18 @@ className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white'
                  
                </div>
                </TableCell> 
+                <TableCell
+             align="center"
+               component="th"
+               id={labelId}
+               scope="row"
+               padding="none"
+               className='dark:text-white'
+
+             >
+               {`${row.member_id} `}
+             </TableCell>
+
              <TableCell
              align="center"
                component="th"
@@ -587,6 +611,12 @@ className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white'
 
              
              >{row.mobile}</TableCell>
+             <TableCell
+             align="center"                      className={`${row.membership_status=='expired'?'bg-red-600':'bg-green-600'} dark:text-white`}
+
+             >
+{row.membership_status}
+</TableCell>
              <TableCell
              align="center"                      className='dark:text-white'
 
