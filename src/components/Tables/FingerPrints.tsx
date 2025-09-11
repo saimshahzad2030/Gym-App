@@ -195,6 +195,15 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             className='dark:text-white text-center'
           >
             <TableSortLabel
+              sx={{
+    color: 'inherit', // respect parent color
+    '&:hover': {
+      color: 'inherit', // keep it white in dark mode
+    },
+    '&.Mui-active': {
+      color: 'inherit', // also for active sorted state
+    },
+  }}
               active={orderBy === headCell.id}
               direction={orderBy === headCell.id ? order : 'asc'}
               onClick={createSortHandler(headCell.id)}

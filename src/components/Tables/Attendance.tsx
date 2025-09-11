@@ -144,6 +144,15 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             className={`dark:text-white } flex flex-col items-center justify-center `}
           >
             <TableSortLabel
+             sx={{
+    color: 'inherit', // respect parent color
+    '&:hover': {
+      color: 'inherit', // keep it white in dark mode
+    },
+    '&.Mui-active': {
+      color: 'inherit', // also for active sorted state
+    },
+  }}
               active={orderBy === headCell.id}
               direction={orderBy === headCell.id ? order : 'asc'}
               onClick={createSortHandler(headCell.id)}
@@ -219,6 +228,7 @@ const formatDate = (date:string)=>{
     hour: 'numeric',
     minute: 'numeric',
     second: 'numeric',
+    timeZone:'UTC',
     hour12: true // For 12-hour format; set to false for 24-hour format
   })
 }
@@ -278,30 +288,83 @@ const formatDateOnly = (date: string) => {
   return dates;
 };
 
+  // React.useEffect(() => {
+  //   const fetchData = async () => {
+  //     setLoading(true)
+  //     const fetchedData:{results:Data[],count:number,next:string,previous:string,error?:string} = await fetchAttendance("");
+  //     setLoading(false)
+  //     if (!fetchedData.error) {
+  //       console.log(fetchedData.results)
+  //       setNextUrl(fetchedData.next)
+  //       setPreviousUrl(fetchedData.previous)
+  //       setTotalEntries(fetchedData.count);
+
+  //       setAttendance(fetchedData.results);
+  //     }
+  //     else{
+  //       setAttendance([])
+  //       setNextUrl('')
+  //       setPreviousUrl('')
+  //       setTotalEntries(3)
+  //     }
+  //   };
+  //   fetchData();
+  // }, []);
+ 
+   const lastAttendanceRef = React.useRef<Data[]>([]);
+const haveDifferentData = (a: Data[], b: Data[]) => {
+  if (a.length !== b.length) return true;
+  for (let i = 0; i < a.length; i++) {
+    if (
+      a[i].id !== b[i].id ||
+      a[i].in_time !== b[i].in_time ||
+      a[i].out_time !== b[i].out_time
+    ) {
+      return true;
+    }
+  }
+  return false;
+};
   React.useEffect(() => {
     const fetchData = async () => {
-      setLoading(true)
-      const fetchedData:{results:Data[],count:number,next:string,previous:string,error?:string} = await fetchAttendance("");
-      setLoading(false)
-      if (!fetchedData.error) {
-        console.log(fetchedData.results)
-        setNextUrl(fetchedData.next)
-        setPreviousUrl(fetchedData.previous)
-        setTotalEntries(fetchedData.count);
+      // setLoading(true);
+      const fetchedData: {
+        results: Data[];
+        count: number;
+        next: string;
+        previous: string;
+        error?: string;
+      } = await fetchAttendance(""); // your API fn
+      setLoading(false);
 
-        setAttendance(fetchedData.results);
-      }
-      else{
-        setAttendance([])
-        setNextUrl('')
-        setPreviousUrl('')
-        setTotalEntries(3)
+      if (!fetchedData.error) {
+        // compare new data with last one
+        const isDifferent =  haveDifferentData(fetchedData.results, lastAttendanceRef.current);
+console.log(isDifferent,"isDifferent")
+        if (isDifferent) {
+          console.log("Updating UI with new attendance:", fetchedData.results);
+          setAttendance(fetchedData.results);
+          lastAttendanceRef.current = fetchedData.results; // update ref
+        }
+
+        setNextUrl(fetchedData.next);
+        setPreviousUrl(fetchedData.previous);
+        setTotalEntries(fetchedData.count);
+      } else {
+        setAttendance([]);
+        setNextUrl("");
+        setPreviousUrl("");
+        setTotalEntries(0);
       }
     };
+
+    // fetch immediately
     fetchData();
+    // set interval every 5 sec
+    const interval = setInterval(fetchData, 5000);
+
+    return () => clearInterval(interval);
   }, []);
- 
- 
   
  
  
