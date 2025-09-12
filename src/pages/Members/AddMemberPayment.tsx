@@ -295,7 +295,7 @@ const AddMemberPayment: React.FC<
         | 'Cardio Monthly'
         | '3 Month Gym',
       paid_amount: amountPaid,
-      registeration_fees:registerationAmount
+      registration_fees:registerationAmount
       // membership_amount:memberships[Number(selectedOption)].membership_amount || 0 ,
       // paid_amount:amountPaid,
       // start_date: formatDateToYYYYMMDD(data.membership_valid_from) || "",
@@ -303,17 +303,17 @@ const AddMemberPayment: React.FC<
     });
     setLoading(false);
     if (!edit.error) {
-      onUpdateMember({
-        id: user?.id || 0,
-        first_name: data?.first_name,
-        last_name: data?.last_name,
-        address: user?.address,
-        selected_membership: user?.selected_membership,
-        role_name: user?.role_name,
-        birth_date: user?.birth_date,
-        membership_valid_from: data?.membership_valid_from,
-        membership_valid_to: data?.membership_valid_to,
-      });
+      // onUpdateMember({
+      //   id: user?.id || 0,
+      //   first_name: data?.first_name,
+      //   last_name: data?.last_name,
+      //   address: user?.address,
+      //   selected_membership: user?.selected_membership,
+      //   role_name: user?.role_name,
+      //   birth_date: user?.birth_date,
+      //   membership_valid_from: data?.membership_valid_from,
+      //   membership_valid_to: data?.membership_valid_to,
+      // });
       setMessage('Added Successfully');
       setOpen(true);
       setTimeout(() => {
