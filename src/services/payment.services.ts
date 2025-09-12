@@ -9,7 +9,7 @@ interface Data {
     // paid_amount: number,
     // start_date: string,
     // end_date: string,
-
+registeration_fees:number
 
 }
 interface editData {

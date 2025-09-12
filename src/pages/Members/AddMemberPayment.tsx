@@ -295,6 +295,7 @@ const AddMemberPayment: React.FC<
         | 'Cardio Monthly'
         | '3 Month Gym',
       paid_amount: amountPaid,
+      registeration_fees:registerationAmount
       // membership_amount:memberships[Number(selectedOption)].membership_amount || 0 ,
       // paid_amount:amountPaid,
       // start_date: formatDateToYYYYMMDD(data.membership_valid_from) || "",
@@ -330,7 +331,8 @@ const AddMemberPayment: React.FC<
       if (!fetchedData.error) {
         setMemberships(fetchedData.results);
       }
-      let paymentDetails = await fetchMemberPayment(Number(user?.member_id));
+      console.log("object",Number(user?.member_id) || Number(user?.members_reg_number))
+      let paymentDetails = await fetchMemberPayment(Number(user?.member_id) || Number(user?.members_reg_number));
       setMemberPaymentDetails(paymentDetails)
       setAmountPaid(paymentDetails?.paid_amount
       )
@@ -502,7 +504,7 @@ date.setDate(
                     const membershipAmount = Number(
                       memberships[Number(selectedOption) - 1].membership_amount,
                     );
-                   setAmountPaid(memberPaymentDetails?.paid_amount? memberPaymentDetails?.paid_amount+ inputValue:membershipAmount+inputValue );
+                  //  setAmountPaid(memberPaymentDetails?.paid_amount? memberPaymentDetails?.paid_amount+ inputValue:membershipAmount+inputValue );
                 
                   }}
                   fullWidth

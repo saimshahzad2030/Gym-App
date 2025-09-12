@@ -418,8 +418,10 @@ const AddMember = () => {
   )}
   onChange={(event, value) => {
     // console.log(String(memberships.indexOf(value)+1));
-    
-    setValue("selected_membership", String(memberships.indexOf(value)+1));  }}
+    // console.log(value.id,"value")
+    // setValue("selected_membership", String(memberships.indexOf(value)+1));  }}
+    setValue("selected_membership", String(value?.id || 0));  }}
+
 />
 </div>
 
