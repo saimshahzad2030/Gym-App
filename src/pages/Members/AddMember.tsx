@@ -417,10 +417,21 @@ const AddMember = () => {
     />
   )}
   onChange={(event, value) => {
-    // console.log(String(memberships.indexOf(value)+1));
-    // console.log(value.id,"value")
-    // setValue("selected_membership", String(memberships.indexOf(value)+1));  }}
-    setValue("selected_membership", String(value?.id || 0));  }}
+ const today = new Date();
+    setValue("selected_membership", String(value?.id || 0));  
+    const date = new Date()
+    date.setDate(
+                        today.getDate() +
+                          (value.membership_length || 0),
+                      );
+     let memToFInd = memberships.find((m)=>m.label==event.target.value)
+                    //  console.log( today.getDate() +
+                    //       (value.membership_length || 0),"memtofind")
+                    //  console.log("object",date.toISOString().split("T")[0])
+    setValue("membership_valid_from", today);  
+    setValue("membership_valid_to", date);  
+  
+  }}
 
 />
 </div>
