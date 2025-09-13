@@ -275,9 +275,9 @@ const AddMemberPayment: React.FC<
     setLoading(true);
     let mem = [
       'Regular Monthly',
-      '3 month Cardio',
       'Cardio Monthly',
       '3 Month Gym',
+      '3 month Cardio',
     ];
     const formatDateToYYYYMMDD = (date) => {
       const d = new Date(date);
@@ -286,16 +286,17 @@ const AddMemberPayment: React.FC<
       const day = String(d.getDate()).padStart(2, '0');
       return `${year}-${month}-${day}`;
     };
-
+    console.log("object",memberships.find((m)=>m.id == selectedOption).membership_label)
     const edit = await addPayment({
       member_id: user?.member_id || user?.members_reg_number || 0,
-      membership_class: mem[Number(selectedOption) - 1] as
+      membership_class: memberships.find((m)=>m.id == selectedOption).membership_label as
         | 'Regular Monthly'
-        | '3 month Cardio'
         | 'Cardio Monthly'
+        | '3 month Cardio'
         | '3 Month Gym',
       paid_amount: amountPaid,
-      registration_fees:registerationAmount
+      registration_fees:registerationAmount,
+      mp_id:memberPaymentDetails.mp_id
       // membership_amount:memberships[Number(selectedOption)].membership_amount || 0 ,
       // paid_amount:amountPaid,
       // start_date: formatDateToYYYYMMDD(data.membership_valid_from) || "",
@@ -426,13 +427,15 @@ console.log("oneMonthLater",oneMonthLater)
                    value={selectedOption || ''}
                     onChange={(e) => {
                       setValue('selected_membership', e.target.value);
-
+console.log(e.target.value,"e.target.value")
                       setSelectedOption(e.target.value);
                       // setAmountDue(0)
                       setAmountDue(
                        0
                       );
-                      setAmountPaid(  memberships[Number(e.target.value)-1].signup_fee  || 0 +  (memberships[Number(e.target.value)-1].membership_amount || 0) )
+                      let memToFInd = memberships.find((m)=>m.id==e.target.value)
+                      console.log(memberships.find((m)=>m.id==e.target.value),"sdsad")
+                      setAmountPaid( memToFInd.signup_fee  || 0 +  (memToFInd.membership_amount || 0) )
                       const today = new Date();
 const abc = memberPaymentDetails?.member_info?.membership_valid_to; // string | undefined
 
@@ -441,8 +444,7 @@ if (abc) {
   const date = new Date(abc); // safe now
 date.setDate(
                         today.getDate() +
-                          (memberships[Number(e.target.value) - 1]
-                            .membership_length || 0),
+                          (memToFInd.membership_length || 0),
                       );
  
   // Format back to YYYY-MM-DD
@@ -454,8 +456,7 @@ date.setDate(
                       const validToDate = new Date();
                       validToDate.setDate(
                         today.getDate() +
-                          (memberships[Number(e.target.value) - 1]
-                            .membership_length || 0),
+                          (memToFInd.membership_length || 0),
                       );
 
                       // Update the "membership_valid_from" and "membership_valid_to" fields
@@ -477,10 +478,10 @@ date.setDate(
                     <MenuItem value={'2'} className="text-black">
                       Cardio Monthly
                     </MenuItem>
-                    <MenuItem value={'3'} className="text-black">
+                    <MenuItem value={'6'} className="text-black">
                       3 Months Gym
                     </MenuItem>
-                    <MenuItem value={'4'} className="text-black">
+                    <MenuItem value={'7'} className="text-black">
                       3 Months Cardio
                     </MenuItem>
                   </Select>
