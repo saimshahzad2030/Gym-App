@@ -331,14 +331,15 @@ const AddMemberPayment: React.FC<
       const fetchedData = await fetchMemberships('');
       if (!fetchedData.error) {
         setMemberships(fetchedData.results);
-      }
-      console.log("object",Number(user?.member_id) || Number(user?.members_reg_number))
+      } 
       let paymentDetails = await fetchMemberPayment(Number(user?.member_id) || Number(user?.members_reg_number));
       setMemberPaymentDetails(paymentDetails)
       setAmountPaid(paymentDetails?.paid_amount
       )
-      
+      console.log("object",paymentDetails)
+      setRegisterationAmount(paymentDetails.signupfee??0)
         setSelectedOption(paymentDetails?.membership_id)
+        setAmountDue(paymentDetails?.due_amount)
         setValue("selected_membership",String(paymentDetails?.membership_id))
     };
     fetchData();
@@ -537,7 +538,7 @@ date.setDate(
                   sx={textFieldStyle}
                 />
               </div>
-              <div className="mb-4.5">
+              {/* <div className="mb-4.5">
                 <TextField
                   label="Due Amount"
                   placeholder="Enter Due Amount"
@@ -548,7 +549,7 @@ date.setDate(
                   helperText={errors.mobile?.message}
                   sx={textFieldStyle}
                 />
-              </div>
+              </div> */}
 
               <div className="mb-4.5 flex flex-col items-center w-full ">
                 <ThemeProvider theme={theme}>

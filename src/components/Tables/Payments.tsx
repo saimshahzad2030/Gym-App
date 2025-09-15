@@ -27,7 +27,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
 import Image from '../Image/Image';
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, styled, TextField, textFieldClasses } from '@mui/material'; 
+import { Button, createTheme, Dialog, DialogActions, DialogContent, DialogTitle, styled, TextField, textFieldClasses } from '@mui/material'; 
 import EditMember from '../../pages/Members/EditMember';
 import EditPayment from '../../pages/Payments/EditPayment';
 import EditExpense from '../../pages/Expenses/EditExpense';
@@ -37,7 +37,12 @@ import LoaderComp from '../Loader/Loader';
 import SnackbarComp from '../SnackBar/Snackbar';
 import EditIncome from '../../pages/Incomes/EditIncome';
 import { deleteIncome, downloadPdfIncome, fetchIncomes, fetchIncomesUsingSearch } from '../../services/incomes.services';
-import { downloadPdfPayment, fetchPayments, fetchPaymentsUsingSearch } from '../../services/payment.services';
+import { downloadPdfPayment, fetchPayments, fetchPaymentsUsingDate, fetchPaymentsUsingGlobalSearch, fetchPaymentsUsingSearch } from '../../services/payment.services';
+import { ThemeProvider } from '@emotion/react';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { Controller } from 'react-hook-form';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
    
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -53,6 +58,7 @@ interface Data {
     member_id: number;
     member_info:any;
     membership_id: number;
+    due_amount:number;
     membership_amount: number;
     paid_amount: number;
     start_date: string; // ISO 8601 date string
@@ -164,7 +170,8 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             sortDirection={orderBy === headCell.id ? order : false} 
             className='dark:text-white'
           >
-            <TableSortLabel
+            {headCell.label}
+            {/* <TableSortLabel
               sx={{
     color: 'inherit', // respect parent color
     '&:hover': {
@@ -184,7 +191,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
                   {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
                 </Box>
               ) : null}
-            </TableSortLabel>
+            </TableSortLabel> */}
           </TableCell>
         ))}
         <TableCell 
@@ -326,8 +333,49 @@ export default function Payments() {
     setSelected(newSelected);
   };
 
- 
-
+  const theme = createTheme({
+     palette: {
+       mode: 'light', // or 'dark', dynamically set this based on your app
+       primary: {
+         main: '#ffffffff', // Example color
+       },
+     },
+     components: {
+      MuiOutlinedInput: {
+      styleOverrides: {
+        root: {
+          '& .MuiOutlinedInput-notchedOutline': {
+            borderColor: 'white', // default border
+          },
+          '&:hover .MuiOutlinedInput-notchedOutline': {
+            borderColor: 'white', // on hover
+          },
+          '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+            borderColor: 'white', // on focus
+          },
+        },
+        input: {
+          color: 'white', // text color
+        },
+      },
+    },
+       MuiTextField: {
+         styleOverrides: {
+           root: {
+             '& .MuiInputBase-input': {
+               color: 'white', // Set text color to white
+               border: 'white',
+             },
+             '& .MuiInputLabel-root': {
+               color: 'white', // Set label color to white
+               border: 'white',
+             },
+           },
+         },
+       },
+     },
+   });
+const [value, setValue] = React.useState(null);
  
 
   // const emptyRows =
@@ -351,8 +399,78 @@ export default function Payments() {
       
       className='w-full mb-2 bg-white dark:bg-[#1A222C]'  
       >
-          
-   {loading?<LoaderComp />:
+             <div className='flex flex-row items-center w-full justify-between'>
+              <Box sx={{ padding: '16px',width:'60%' }}>
+          <TextField
+            variant="outlined"
+            placeholder="Search by Name, Id or Status"
+            label='Search by Name, Id or Status'
+            value={searchTerm}
+            onChange={async(event: React.ChangeEvent<HTMLInputElement>) => {
+              setLoading(true)
+                setSearchTerm(event.target.value);
+                const members:{results:Data[],count:number,next:string,previous:string,error?:string} = await fetchPaymentsUsingGlobalSearch(event.target.value);
+                
+                if (!members.error) {
+                  setNextUrl(members.next)
+                  setPreviousUrl(members.previous)
+                  setTotalEntries(members.count);
+            
+                  setExpenses(members.results);
+                console.log(members)
+            
+                }
+                setLoading(false) 
+              }}
+            fullWidth
+            size='medium'
+           sx={textFieldStyle}
+          />
+        </Box>
+        <div>
+          <ThemeProvider theme={theme}>
+            <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <DatePicker
+      
+        label="Filter By Payment Date"
+        value={value}
+        onChange={async(newValue) => { 
+          setLoading(true)
+          let isoDate = new Date(newValue).toISOString().split("T")[0]
+          const members:{results:Data[],count:number,next:string,previous:string,error?:string} = await fetchPaymentsUsingDate(isoDate);
+                setLoading(false) 
+                if (!members.error) {
+                  setNextUrl(members.next)
+                  setPreviousUrl(members.previous)
+                  setTotalEntries(members.count);
+            
+                  setExpenses(members.results);
+                console.log(members)
+            
+                }
+
+          console.log(new Date(newValue).toISOString().split("T")[0],"newValue")
+          // onDateChange?.(newValue ? newValue.toDate() : null); // trigger search
+        }}
+        sx={{  color:'white',
+              width: "100%",
+    "& .MuiSvgIcon-root": {
+      color: "gray", // makes the calendar icon white
+    },
+    "& .MuiInputBase-input": {
+      color: "gray", // input text white
+    },
+    "& .MuiInputLabel-root": {
+      color: "gray", // label white
+    },
+         }}
+      />
+    </LocalizationProvider>
+    </ThemeProvider>
+        </div>
+             </div>
+   {loading?<LoaderComp className='my-12'/>:<>{!loading &&  <>{
+   
    visibleRows.length>0?    <> <TableContainer>
    <Table
      sx={{ minWidth: 750,backgroundColor:'rgb(26 34 44)' }}
@@ -428,7 +546,7 @@ className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white'
 
                       // sx={{color:'white'}}
                     
-                    >{`${row.membership_amount - row.paid_amount}` }</TableCell>
+                    >{`${row.due_amount}` }</TableCell>
                       <TableCell 
                     align="center"
                     className='dark:text-white'
@@ -475,7 +593,7 @@ className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white'
    onPageChange={handleChangePage} 
  /></>
  :
- <p className='dark:text-white text-graydark p-4'>No Data to show</p>}
+ <p className='dark:text-white text-graydark p-4'>No Data to show</p>}</>}</>}
       </Paper>}
 
        {/* {openEditDialog && (

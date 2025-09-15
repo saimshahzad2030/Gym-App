@@ -37,6 +37,38 @@ export const fetchPayments = async (url: string) => {
     }
 
 }
+
+export const fetchPaymentsUsingGlobalSearch = async (searchQuery: string) => {
+    console.log('object',`${config.url}api/membership-payment/?global_search=${searchQuery}`)
+    try {
+        const response = await axios.get(`${config.url}api/membership-payment/?global_search=${searchQuery}`, {
+            headers: {
+                'Authorization': `Bearer ${Cookies.get('token')}`
+            }
+        }
+        );
+        return response.data;
+    } catch (error) {
+        console.error('Login failed:', error.response?.data || error.message);
+        return { error: error.response?.data.detail }
+    }
+
+}
+export const fetchPaymentsUsingDate = async (created_date: string) => { 
+    try {
+        const response = await axios.get(`${config.url}api/membership-payment/?created_date=${created_date}`, {
+            headers: {
+                'Authorization': `Bearer ${Cookies.get('token')}`
+            }
+        }
+        );
+        return response.data;
+    } catch (error) {
+        console.error('Login failed:', error.response?.data || error.message);
+        return { error: error.response?.data.detail }
+    }
+
+}
 export const fetchPaymentsUsingSearch = async (searchQuery: string) => {
     try {
         const response = await axios.get(`${config.url}api/membership-payment/?global_search=${searchQuery}&invoice_type=income`, {

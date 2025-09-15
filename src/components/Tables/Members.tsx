@@ -313,9 +313,10 @@ function EnhancedTableHead(props: EnhancedTableProps) {
             align={ 'center'}
             padding={headCell.disablePadding ? 'none' : 'normal'}
             sortDirection={orderBy === headCell.id ? order : false} 
-            className='dark:text-white '
+            className='dark:text-white font-bold'
           >
-            <TableSortLabel
+            {headCell.label}
+            {/* <TableSortLabel
               sx={{
     color: 'inherit', // respect parent color
     '&:hover': {
@@ -335,7 +336,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
                   {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
                 </Box>
               ) : null}
-            </TableSortLabel>
+            </TableSortLabel> */}
           </TableCell>
         ))}
         <TableCell 

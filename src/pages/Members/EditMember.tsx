@@ -14,7 +14,7 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { Autocomplete, createTheme, FormControl, FormHelperText,  MenuItem, Select, TextField } from "@mui/material";
 import { ThemeProvider } from "@emotion/react"; 
 import { selectFieldStyle, textFieldStyle } from "../../../constants/constants";
-import { editMember } from "../../services/members.services"; 
+import { editMember, fetchMemberPayment } from "../../services/members.services"; 
 import LoaderComp from "../../components/Loader/Loader";
 import { fetchMemberships } from "../../services/memberships.services";
 interface MembershipData {
@@ -161,8 +161,7 @@ const schema = yup.object().shape({
   gender: yup.string().required("Please select gender of member"),
   image: yup
     .mixed<FileList>()
-    .nullable()
-    .required("Profile image is required"),
+    .nullable() ,
     birth_date: yup.date().transform((value, originalValue) => {
       if (isDate(originalValue)) return originalValue; // Already a valid Date
       return parse(originalValue, 'dd/MM/yyyy', new Date());
@@ -186,7 +185,7 @@ const EditMember:React.FC<FormData2Type  & {
   onUpdateMember: (updatedMember: FormDataType) => void;
   setOpenEditDialog: React.Dispatch<React.SetStateAction<boolean>> }> = ({ user,onUpdateMember , setOpenEditDialog }) => {
   const [loading,setLoading] = React.useState(false)
-  const [selectedOption, setSelectedOption] = React.useState<string>("");
+  // const [selectedOption, setSelectedOption] = React.useState<string>("");
   const [imagePreview, setImagePreview] = React.useState<string | null>(user?.image || null);
   const [open,setOpen] = React.useState<boolean>(false) 
   const [message,setMessage] = React.useState< string>("") 
@@ -250,20 +249,22 @@ const EditMember:React.FC<FormData2Type  & {
     console.log(edit)
     setLoading(false)
     if(!edit.error){
-      
+      console.log("object")
       onUpdateMember({
-        id:user?.id || 0,
+        id:edit.member_id,
+        member_id:edit.member_id,
         first_name:data?.first_name,
         last_name: data?.last_name,
         address:data?.address,
-        mobile:data?.mobile,
-        selected_membership:data?.selected_membership,
-        role_name:data?.role_name,
-        gender: data?.gender,
+        mobile:edit?.mobile,
+        membership_status:edit.membership_status,
+        selected_membership:edit?.selected_membership,
+        role_name:edit?.role_name,
+        gender: edit?.gender,
         image: edit?.image,
-          birth_date:data?.birth_date,
-          membership_valid_from:data?.membership_valid_from,
-          membership_valid_to: data?.membership_valid_to
+          birth_date:edit?.birth_date,
+          membership_valid_from:edit?.membership_valid_from,
+          membership_valid_to: edit?.membership_valid_to
       })
       setOpen(true);
       setMessage("Edited Succesfullly")
@@ -276,31 +277,97 @@ const EditMember:React.FC<FormData2Type  & {
       setMessage(edit.error)
     }
     
+  };type MembershipPayment = {
+  mp_id: number;
+  member_info: {
+    first_name: string;
+    last_name: string;
+    membership_valid_from: string; // YYYY-MM-DD
+    membership_valid_to: string;   // YYYY-MM-DD
+    membership_status: "expired" | "active" | "Continue" | string; 
+    image: string; // URL
   };
+  due_amount: number;
+  member_id: number;
+  membership_id: number;
+  membership_amount: number;
+  paid_amount: number;
+  start_date: string; // YYYY-MM-DD
+  end_date: string;   // YYYY-MM-DD
+  membership_status: "expired" | "active" | "Continue" | string;
+  payment_status: string | null;
+  created_date: string; // YYYY-MM-DD
+  created_by: string | number | null;
+  isprinted: string | boolean; // looks like b'\x01' → backend boolean-ish
+  signupfee: number;
+  is_active: boolean | null;
+  delete_reason: string | null;
+};
+    const [selectedOption, setSelectedOption] = React.useState<string>(
+      user?.selected_membership == 'Regular Monthly'
+        ? '1'
+        : user?.selected_membership == '3 month Cardio'
+        ? '2'
+        : user?.selected_membership == 'Cardio Monthly'
+        ? '6'
+        : user?.selected_membership == '3 Month Gym'
+        ? '7'
+        : '',
+    );
+     const [memberPaymentDetails, setMemberPaymentDetails] = React.useState<MembershipPayment | null>(null);
+      
   const [memberships,setMemberships] = React.useState<MembershipData[]>([])
   React.useEffect(() => {
     const fetchData = async () => {
-      const fetchedData = await fetchMemberships("");
+      const fetchedData = await fetchMemberships('');
       if (!fetchedData.error) {
-        console.log(fetchedData)
         setMemberships(fetchedData.results);
-      }
+      } 
+      let paymentDetails = await fetchMemberPayment(Number(user?.member_id) || Number(user?.members_reg_number));
+      setMemberPaymentDetails(paymentDetails)
+      // setValue('membership_valid_from', new Date(paymentDetails).toISOString().split("T")[0]);
+      // setValue('membership_valid_to', new Date(paymentDetails).toISOString().split("T")[0]);
+      
+        setSelectedOption(paymentDetails?.membership_id)
+         
+        setValue("selected_membership",String(paymentDetails?.membership_id))
     };
     fetchData();
   }, []);
   React.useEffect(() => {
-    if (user && user.selected_membership) {
-      setSelectedOption(user.selected_membership);
-      setValue("selected_membership", user.selected_membership); // Set the value for react-hook-form
-      setValue("membership_valid_from", new Date(user?.membership_valid_from)); // Set the starting date
-      setValue("membership_valid_to", new Date(user?.membership_valid_to));
-      setValue("birth_date", new Date(user?.birth_date));
-      setValue("image",user?.image); 
-      setValue("role_name", user?.role_name); 
+    if (user) {
+      setSelectedOption(
+        memberPaymentDetails?
+        String(memberPaymentDetails.membership_id):user?.selected_membership == 'Regular Monthly'
+          ? '1'
+          : user?.selected_membership == '3 month Cardio'
+          ? '2'
+          : user?.selected_membership == 'Cardio Monthly'
+          ? '6'
+          : user?.selected_membership == '3 Month Gym'
+          ? '7'
+          : ''
+      );
+      // setAmountPaid(user?.selected_membership?)
+        setValue("selected_membership",String(memberPaymentDetails?.membership_id))
+
+// const abc = memberPaymentDetails?.member_info.membership_valid_to; // string | undefined
+
+// if (abc) {
+//   const date = new Date(abc); // safe now
+
+//   // Add 1 month
+//   date.setMonth(date.getMonth() + 1);
+
+//   // Format back to YYYY-MM-DD
+//   const oneMonthLater = date.toISOString().split("T")[0];
+// console.log("oneMonthLater",oneMonthLater)
+//   setValue('membership_valid_to', oneMonthLater);
+// }
 
     }
   }, [user, setValue]);
-  console.log('member:',user)
+
   return (
     <div>
       <div className="flex flex-col gap-9">
@@ -385,7 +452,7 @@ const EditMember:React.FC<FormData2Type  & {
 
   />
 </div>
-<div className="mb-4.5">
+{/* <div className="mb-4.5">
 <FormControl fullWidth error={!!errors.gender} 
     sx={ selectFieldStyle}
     
@@ -409,14 +476,88 @@ const EditMember:React.FC<FormData2Type  & {
     {errors.gender && <FormHelperText>{errors.gender.message}</FormHelperText>}
   </FormControl>
   
-</div>
+</div> */}
+  <div className="mb-4.5">
+                <FormControl
+                  fullWidth
+                  error={!!errors.selected_membership}
+                  sx={selectFieldStyle}
+                >
+                  <Select
+                    labelId="membership-label"
+                    {...register('selected_membership')}
+                   value={selectedOption || ''}
+                    onChange={(e) => {
+                      setValue('selected_membership', e.target.value);
+console.log(e.target.value,"e.target.value")
+                      setSelectedOption(e.target.value);
+                      // setAmountDue(0)
+                      
+                      let memToFInd = memberships.find((m)=>m.id==e.target.value)
+                      console.log(memberships.find((m)=>m.id==e.target.value),"sdsad")
+                       const today = new Date();
+const abc = memberPaymentDetails?.member_info?.membership_valid_to; // string | undefined
+
+if (abc) {
+  console.log('object')
+  const date = new Date(abc); // safe now
+date.setDate(
+                        today.getDate() +
+                          (memToFInd.membership_length || 0),
+                      );
+ 
+  // Format back to YYYY-MM-DD
+  const oneMonthLater = date.toISOString().split("T")[0]; 
+  setValue('membership_valid_to', oneMonthLater);
+}
+
+                      // Calculate the "membership_valid_to" date
+                      const validToDate = new Date();
+                      validToDate.setDate(
+                        today.getDate() +
+                          (memToFInd.membership_length || 0),
+                      );
+
+                      // Update the "membership_valid_from" and "membership_valid_to" fields
+                      setValue('membership_valid_from', today.toISOString());
+                      setValue(
+                        'membership_valid_to',
+                        validToDate.toISOString(),
+                      );
+                    }}
+                    displayEmpty
+                    sx={selectFieldStyle}
+                  >
+                    <MenuItem value={''} disabled className="text-black">
+                      Select membership
+                    </MenuItem>
+                    <MenuItem value={'1'} className="text-black">
+                      Regular Monthly
+                    </MenuItem>
+                    <MenuItem value={'2'} className="text-black">
+                      Cardio Monthly
+                    </MenuItem>
+                    <MenuItem value={'6'} className="text-black">
+                      3 Months Gym
+                    </MenuItem>
+                    <MenuItem value={'7'} className="text-black">
+                      3 Months Cardio
+                    </MenuItem>
+                  </Select>
+                  {errors.selected_membership && (
+                    <FormHelperText>
+                      {errors.selected_membership.message}
+                    </FormHelperText>
+                  )}
+                </FormControl>
+              </div>
 <div className="mb-4.5">
 <FormControl fullWidth error={!!errors.role_name} 
     sx={ selectFieldStyle}
     
     >
      <Select
-      labelId="membership-label"
+      labelId="member-label"
       {...register("role_name")}
       defaultValue={user?.role_name || 'admin'}
       onChange={(e) => setValue("role_name", e.target.value)}
@@ -469,50 +610,7 @@ const EditMember:React.FC<FormData2Type  & {
   />
 </div>
 
-<div className="mb-4.5">
-<FormControl fullWidth error={!!errors.selected_membership} 
-    sx={ selectFieldStyle}
-    
-    >
-     <Select
-      labelId="membership-label"
-      {...register("selected_membership")}
-      defaultValue={Number(user?.selected_membership) >4?"":user?.selected_membership || ''}
-      onChange={(e) => setValue("selected_membership", e.target.value)}
-      displayEmpty
-      sx={ selectFieldStyle}
-
-    >
-      <MenuItem value={""} disabled className="text-black">
-        Select membership 
-      </MenuItem>
-      <MenuItem value={'1'}  className="text-black">Regular Monthly</MenuItem>
-      <MenuItem value={'2'}  className="text-black">Cardio Monthly</MenuItem>
-      <MenuItem value={'3'}  className="text-black">3 Months Gym</MenuItem> 
-      <MenuItem value={'4'}  className="text-black">3 Months Cardio</MenuItem> 
-    </Select>
-    {errors.selected_membership && <FormHelperText>{errors.selected_membership.message}</FormHelperText>}
-  </FormControl>
-{/* <Autocomplete
-  disablePortal
-  options={memberships}
-  getOptionLabel={(option) => option.membership_label} // Specify how to display options
-  sx={{ width: '100%' }}
-  renderInput={(params) => (
-    <TextField
-      {...params}
-      label="Membership"
-      placeholder="Enter Membership Name"
-      variant="outlined"
-      error={!!errors.selected_membership}
-      helperText={errors.selected_membership?.message}
-      sx={textFieldStyle}
-    />
-  )}
-  onChange={(event, value) => {
-    setValue("selected_membership", value?.membership_label || 'sdas' );  }}
-/> */}
-</div>
+ 
               <div className="mb-4.5 flex flex-col items-center w-full ">
       <ThemeProvider theme={theme}>
       <LocalizationProvider 
@@ -520,7 +618,7 @@ const EditMember:React.FC<FormData2Type  & {
         <Controller
           name="membership_valid_from"
           control={control}
-          defaultValue={user?.membership_valid_from}
+          defaultValue={memberPaymentDetails?.member_info.membership_valid_from}
           render={({ field: { onChange, value } }) => (
             <DatePicker
               className="w-full"
@@ -557,7 +655,7 @@ const EditMember:React.FC<FormData2Type  & {
         <Controller
           name="membership_valid_to"
           control={control}
-          defaultValue={user?.membership_valid_to}
+          defaultValue={memberPaymentDetails?.member_info.membership_valid_to}
           render={({ field: { onChange, value } }) => (
             <DatePicker
               className="w-full"
