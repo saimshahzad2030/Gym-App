@@ -27,7 +27,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
 import Image from '../Image/Image';
-import { Button, createTheme, Dialog, DialogActions, DialogContent, DialogTitle, styled, TextField, textFieldClasses } from '@mui/material'; 
+import { Button, createTheme, Dialog, DialogActions, DialogContent, DialogTitle, InputAdornment, styled, TextField, textFieldClasses } from '@mui/material'; 
 import EditMember from '../../pages/Members/EditMember';
 import EditPayment from '../../pages/Payments/EditPayment';
 import EditExpense from '../../pages/Expenses/EditExpense';
@@ -43,6 +43,7 @@ import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { Controller } from 'react-hook-form';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import { ClearIcon } from '@mui/x-date-pickers/icons';
    
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -376,7 +377,7 @@ export default function Payments() {
      },
    });
 const [value, setValue] = React.useState(null);
- 
+   const [open, setOpen] = React.useState(false);
 
   // const emptyRows =
   //   page > 0 ? Math.max(0, (1 + page) * rowsPerPage - filteredRows.length) : 0;
@@ -428,13 +429,16 @@ const [value, setValue] = React.useState(null);
           />
         </Box>
         <div>
-          <ThemeProvider theme={theme}>
-            <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <DatePicker
       
-        label="Filter By Payment Date"
-        value={value}
-        onChange={async(newValue) => { 
+          <ThemeProvider theme={theme}>     <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <div onClick={() => setOpen(true)}>
+        <DatePicker
+          open={open}
+          onClose={() => setOpen(false)}
+          label="Filter By Payment Date"
+          value={value}
+            onChange={async(newValue) => { 
+              setValue(newValue) 
           setLoading(true)
           let isoDate = new Date(newValue).toISOString().split("T")[0]
           const members:{results:Data[],count:number,next:string,previous:string,error?:string} = await fetchPaymentsUsingDate(isoDate);
@@ -448,25 +452,51 @@ const [value, setValue] = React.useState(null);
                 console.log(members)
             
                 }
-
-          console.log(new Date(newValue).toISOString().split("T")[0],"newValue")
-          // onDateChange?.(newValue ? newValue.toDate() : null); // trigger search
+ 
+          onDateChange?.(newValue ? newValue.toDate() : null); // trigger search
         }}
-        sx={{  color:'white',
-              width: "100%",
-    "& .MuiSvgIcon-root": {
-      color: "gray", // makes the calendar icon white
-    },
-    "& .MuiInputBase-input": {
-      color: "gray", // input text white
-    },
-    "& .MuiInputLabel-root": {
-      color: "gray", // label white
-    },
-         }}
-      />
-    </LocalizationProvider>
-    </ThemeProvider>
+          slotProps={{
+            textField: {
+              InputProps: {
+                endAdornment: value ? (
+                  <InputAdornment position="end">
+                    <IconButton
+                      onClick={async(e) => {
+                        e.stopPropagation(); // prevent reopening calendar
+                        setLoading(true)
+                        setValue(null);
+
+      const members:{results:Data[],count:number,next:string,previous:string,error?:string} = await fetchPayments("");
+      setLoading(false)
+      if (!members.error) {
+        setNextUrl(members.next)
+        setPreviousUrl(members.previous)
+        setTotalEntries(members.count);
+
+        setExpenses(members.results);
+      }
+                       
+                        onDateChange?.(null);
+                       
+                      }}
+                      size="small"
+                    >
+                      <ClearIcon fontSize="small" />
+                    </IconButton>
+                  </InputAdornment>
+                ) : null,
+              },
+            },
+          }}
+          sx={{
+            width: "100%",
+            "& .MuiInputBase-input": { color: "white" },
+            "& .MuiInputLabel-root": { color: "white" },
+            "& .MuiSvgIcon-root": { color: "white" },
+          }}
+        />
+      </div>
+    </LocalizationProvider>    </ThemeProvider>
         </div>
              </div>
    {loading?<LoaderComp className='my-12'/>:<>{!loading &&  <>{
