@@ -588,7 +588,8 @@ console.log(isDifferent,"isDifferent")
 
 <Calendar
   renderCell={(date: Date) => {
-    const formatted = date.toISOString().split('T')[0];
+     const formatted = date.toLocaleDateString("en-CA");
+    // const formatted = date.toISOString().split('T')[0];
     if (memberFetchedAtttendance.includes(formatted)) {
       return <div className="highlight-cell flex flex-col items-center justify-start text-white pt-1 p-1" ><div className='rounded-md flex flex-col bg-[#1A222C] items-center w-full h-[100px] pt-1'>
         {date.getDate()}</div></div>;
