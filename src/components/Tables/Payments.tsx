@@ -125,6 +125,18 @@ const headCells: readonly HeadCell[] = [
     label: 'Paid Amount',
   },
   {
+    id: 'signup_fee',
+    numeric: true,
+    disablePadding: false,
+    label: 'Signup Fee',
+  },
+  {
+    id: 'total_amount',
+    numeric: true,
+    disablePadding: false,
+    label: 'Total Amount',
+  },
+  {
     id: 'member_id',
     numeric: true,
     disablePadding: false,
@@ -570,6 +582,22 @@ className='dark:bg-[#1A222C] bg-white text-[#1A222C] dark:text-white'
                       // sx={{color:'white'}}
                     
                     >{row.paid_amount}</TableCell>
+
+                     <TableCell 
+                    align="center"
+                    className='dark:text-white'
+
+                      // sx={{color:'white'}}
+                    
+                    >{row.signupfee}</TableCell>
+
+                     <TableCell 
+                    align="center"
+                    className='dark:text-white'
+
+                      // sx={{color:'white'}}
+                    
+                    >{row.total_amount}</TableCell>
                           <TableCell 
                     align="center"
                     className='dark:text-white'
