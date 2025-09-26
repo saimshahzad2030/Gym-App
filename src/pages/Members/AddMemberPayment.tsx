@@ -337,7 +337,7 @@ const AddMemberPayment: React.FC<
       setAmountPaid(paymentDetails?.paid_amount
       )
       console.log("object",paymentDetails)
-      setRegisterationAmount(paymentDetails.signupfee??0)
+      setRegisterationAmount(0)
         setSelectedOption(paymentDetails?.membership_id)
         setAmountDue(paymentDetails?.due_amount)
         setValue("selected_membership",String(paymentDetails?.membership_id))
